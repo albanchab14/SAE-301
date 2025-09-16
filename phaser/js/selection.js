@@ -74,9 +74,9 @@ export default class selection extends Phaser.Scene {
     /****************************
      *  Ajout des portes   *
      ****************************/
-    this.porte1 = this.physics.add.staticSprite(600, 414, "img_porte1");
-    this.porte2 = this.physics.add.staticSprite(50, 264, "img_porte2");
-    this.porte3 = this.physics.add.staticSprite(750, 234, "img_porte3");
+    this.porte1 = this.physics.add.staticSprite(100, 620, "img_porte1");
+    this.porte2 = this.physics.add.staticSprite(50, 620, "img_porte2");
+    this.porte3 = this.physics.add.staticSprite(150, 620, "img_porte3");
 
     /****************************
      *  CREATION DU PERSONNAGE  *
@@ -110,9 +110,10 @@ export default class selection extends Phaser.Scene {
     this.physics.add.collider(player, calque_plateformes);
 
     // monde & caméra
-    this.physics.world.setBounds(0, 0, 6400, 1280);
-    this.cameras.main.setBounds(0, 0, 6400, 1280);
+    this.physics.world.setBounds(0, 0, 6400, 1920);
+    this.cameras.main.setBounds(0, 0, 6400, 1920);
     this.cameras.main.startFollow(player);
+    this.cameras.main.setZoom(1.5);
 
     /***************************
      *  CREATION DES ANIMATIONS *
@@ -177,7 +178,7 @@ export default class selection extends Phaser.Scene {
     }
 
     if (clavier.jump.isDown && player.body.blocked.down) {
-      player.setVelocityY(-330);
+      player.setVelocityY(-290);
     }
 
     if (Phaser.Input.Keyboard.JustDown(clavier.jump)) {
