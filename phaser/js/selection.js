@@ -17,21 +17,16 @@ export default class selection extends Phaser.Scene {
   /** FONCTION PRELOAD 
 /***********************************************************************/
 
-  /** La fonction preload est appelée une et une seule fois,
-   * lors du chargement de la scene dans le jeu.
-   * On y trouve surtout le chargement des assets (images, son ..)
-   */
   preload() {
     const baseURL = this.sys.game.config.baseURL;
-    
     this.load.setBaseURL(baseURL);
-    
+
     // tous les assets du jeu sont placés dans le sous-répertoire src/assets/
     this.load.image("Phaser_tuilesdejeu", "./assets/tuilesJeu.png");
     this.load.tilemapTiledJSON("carte", "./assets/map.json");
     this.load.spritesheet("img_perso", "./assets/dude.png", {
-      frameWidth: 64,
-      frameHeight: 64
+      frameWidth: 53,
+      frameHeight: 58
     });
     this.load.image("img_porte1", "./assets/door1.png");
     this.load.image("img_porte2", "./assets/door2.png");
@@ -42,63 +37,33 @@ export default class selection extends Phaser.Scene {
   /** FONCTION CREATE 
 /***********************************************************************/
 
-  /* La fonction create est appelée lors du lancement de la scene
-   * si on relance la scene, elle sera appelée a nouveau
-   * on y trouve toutes les instructions permettant de créer la scene
-   * placement des peronnages, des sprites, des platesformes, création des animations
-   * ainsi que toutes les instructions permettant de planifier des evenements
-   */
   create() {
-      fct.doNothing();
-      fct.doAlsoNothing();
-
-    /*************************************
-     *  CREATION DU MONDE + PLATEFORMES  *
-     *************************************/
+    fct.doNothing();
+    fct.doAlsoNothing();
 
     // chargement carte
-    const carteDuNiveau = this.add.tilemap("carte");
-    const tileset = carteDuNiveau.addTilesetImage(
-      "tuiles_de_jeu",
-      "Phaser_tuilesdejeu"
-    );
-    // une fois le groupe créé, on va créer les platesformes , le sol, et les ajouter au groupe groupe_plateformes
+    this.map = this.add.tilemap("carte"); // ✅ on stocke la carte dans this.map
+    const tileset = this.map.addTilesetImage("tuiles_de_jeu", "Phaser_tuilesdejeu");
 
-    
     // calques
-    const calque_background2 = carteDuNiveau.createLayer("calque_background_2", tileset);
-    const calque_background = carteDuNiveau.createLayer("calque_background", tileset);
-    const calque_plateformes = carteDuNiveau.createLayer("calque_plateformes", tileset);
-    const calque_echelles = carteDuNiveau.createLayer("calque_echelles", tileset);
-    
+    this.calque_background2 = this.map.createLayer("calque_background_2", tileset);
+    this.calque_background  = this.map.createLayer("calque_background", tileset);
+    this.calque_plateformes = this.map.createLayer("calque_plateformes", tileset);
+    this.calque_echelles    = this.map.createLayer("calque_echelles", tileset); // ✅ stocké dans this
 
-
-    /****************************
-     *  Ajout des portes   *
-     ****************************/
+    // portes
     this.porte1 = this.physics.add.staticSprite(100, 620, "img_porte1");
     this.porte2 = this.physics.add.staticSprite(50, 620, "img_porte2");
     this.porte3 = this.physics.add.staticSprite(150, 620, "img_porte3");
 
-    /****************************
-     *  CREATION DU PERSONNAGE  *
-     ****************************/
-
-    // On créée un nouveeau personnage : player
+    // joueur
     player = this.physics.add.sprite(100, 450, "img_perso");
-
-    //  propriétées physiqyes de l'objet player :
     player.setCollideWorldBounds(true);
-    // on active l'écouteur sur les collisions avec le monde
     player.body.onWorldBounds = true;
-    // on met en place l'écouteur sur les bornes du monde
     player.body.world.on(
-      "worldbounds", // evenement surveillé
-      function (body, up, down, left, right) {
-        // on verifie si la hitbox qui est rentrée en collision est celle du player,
-        // et si la collision a eu lieu sur le bord inférieur du player
+      "worldbounds",
+      function (body, up, down) {
         if (body.gameObject === player && down == true) {
-          // si oui : GAME OVER on arrete la physique et on colorie le personnage en rouge
           this.physics.pause();
           player.setTint(0xff0000);
         }
@@ -107,25 +72,16 @@ export default class selection extends Phaser.Scene {
     ); 
     player.setBounce(0.2);
     
-    // collisions
-    calque_plateformes.setCollisionByProperty({ estSolide: true });
-    this.physics.add.collider(player, calque_plateformes);
-    calque_echelles.setCollisionByProperty({ estEchelle: true });
+    // collisions plateformes
+    this.calque_plateformes.setCollisionByProperty({ estSolide: true });
+    this.physics.add.collider(player, this.calque_plateformes);
 
     // monde & caméra
     this.physics.world.setBounds(0, 0, 6400, 1920);
     this.cameras.main.setBounds(0, 0, 6400, 1920);
     this.cameras.main.startFollow(player);
-    this.cameras.main.setZoom(1.5);
+    this.cameras.main.setZoom(1.2);
 
-    /***************************
-     *  CREATION DES ANIMATIONS *
-     ****************************/
-    // dans cette partie, on crée les animations, à partir des spritesheet
-    // chaque animation est une succession de frame à vitesse de défilement défini
-    // une animation doit avoir un nom. Quand on voudra la jouer sur un sprite, on utilisera la méthode play()
-    // creation de l'animation "anim_tourne_gauche" qui sera jouée sur le player lorsque ce dernier tourne à gauche
-    
     // animations
     this.anims.create({
       key: "anim_tourne_gauche",
@@ -145,22 +101,14 @@ export default class selection extends Phaser.Scene {
       frameRate: 20
     });
 
-    /***********************
-     *  CREATION DU CLAVIER *
-     ************************/
-    // Clavier personnalisé
+    // clavier
     clavier = this.input.keyboard.addKeys({
       left: Phaser.Input.Keyboard.KeyCodes.Q,
       right: Phaser.Input.Keyboard.KeyCodes.D,
-      jump: Phaser.Input.Keyboard.KeyCodes.SPACE
+      jump: Phaser.Input.Keyboard.KeyCodes.SPACE,
+      down: Phaser.Input.Keyboard.KeyCodes.S,
+      up: Phaser.Input.Keyboard.KeyCodes.Z,
     });
-
-    /*****************************************************
-     *  GESTION DES INTERATIONS ENTRE  GROUPES ET ELEMENTS *
-     ******************************************************/
-
-    //  Collide the player and the groupe_etoiles with the groupe_plateformes
-    this.physics.add.collider(player, calque_plateformes);
   }
 
   /***********************************************************************/
@@ -168,7 +116,6 @@ export default class selection extends Phaser.Scene {
 /***********************************************************************/
 
   update() {
-    
     if (clavier.left.isDown) {
       player.setVelocityX(-160);
       player.anims.play("anim_tourne_gauche", true);
@@ -189,9 +136,21 @@ export default class selection extends Phaser.Scene {
       if (this.physics.overlap(player, this.porte2)) this.scene.switch("niveau2");
       if (this.physics.overlap(player, this.porte3)) this.scene.switch("niveau3");
     }
+
+    /*************************
+     * gestion des échelles  *
+     *************************/
+    const tile = this.calque_echelles.getTileAtWorldXY(player.x, player.y, true); // ✅ utilise le calque stocké
+
+    if (tile && tile.properties.estEchelle) {
+      player.setGravityY(0);
+      if (clavier.up.isDown) {
+        player.setVelocityY(-160);
+      } else if (clavier.down.isDown) {
+        player.setVelocityY(160);
+      } else {
+        player.setVelocityY(0);
+      }
+    }
   }
 }
-
-/***********************************************************************/
-/** CONFIGURATION GLOBALE DU JEU ET LANCEMENT 
-/***********************************************************************/
