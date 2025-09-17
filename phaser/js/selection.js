@@ -69,6 +69,8 @@ export default class selection extends Phaser.Scene {
     const calque_background2 = carteDuNiveau.createLayer("calque_background_2", tileset);
     const calque_background = carteDuNiveau.createLayer("calque_background", tileset);
     const calque_plateformes = carteDuNiveau.createLayer("calque_plateformes", tileset);
+    const calque_echelles = carteDuNiveau.createLayer("calque_echelles", tileset);
+    
 
 
     /****************************
@@ -108,6 +110,7 @@ export default class selection extends Phaser.Scene {
     // collisions
     calque_plateformes.setCollisionByProperty({ estSolide: true });
     this.physics.add.collider(player, calque_plateformes);
+    calque_echelles.setCollisionByProperty({ estEchelle: true });
 
     // monde & caméra
     this.physics.world.setBounds(0, 0, 6400, 1920);
