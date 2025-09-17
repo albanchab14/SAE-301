@@ -126,14 +126,14 @@ export default class selection extends Phaser.Scene {
     // animations
     this.anims.create({
       key: "anim_tourne_gauche",
-      frames: this.anims.generateFrameNumbers("img_perso", { start: 0, end: 2 }),
-      frameRate: 10,
+      frames: this.anims.generateFrameNumbers("img_perso", { start: 0, end: 3 }),
+      frameRate: 8,
       repeat: -1
     });
     this.anims.create({
       key: "anim_tourne_droite",
-      frames: this.anims.generateFrameNumbers("img_perso", { start: 5, end: 7 }),
-      frameRate: 10,
+      frames: this.anims.generateFrameNumbers("img_perso", { start: 5, end: 8 }),
+      frameRate: 8,
       repeat: -1
     });
     this.anims.create({
