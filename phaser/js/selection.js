@@ -28,9 +28,15 @@ export default class selection extends Phaser.Scene {
       frameWidth: 53,
       frameHeight: 58
     });
+    this.load.spritesheet("img_bandit", "./assets/bandit.png", {
+      frameWidth: 40,
+      frameHeight: 57
+    });
     this.load.image("img_porte1", "./assets/door1.png");
     this.load.image("img_porte2", "./assets/door2.png");
     this.load.image("img_porte3", "./assets/door3.png");
+
+    this.load.image("couteau", "./assets/couteau.png");
   }
 
   /***********************************************************************/
@@ -49,7 +55,7 @@ export default class selection extends Phaser.Scene {
     this.calque_background2 = this.map.createLayer("calque_background_2", tileset);
     this.calque_background  = this.map.createLayer("calque_background", tileset);
     this.calque_plateformes = this.map.createLayer("calque_plateformes", tileset);
-    this.calque_echelles    = this.map.createLayer("calque_echelles", tileset); // ✅ stocké dans this
+    this.calque_echelles    = this.map.createLayer("calque_echelles", tileset);
 
     // portes
     this.porte1 = this.physics.add.staticSprite(100, 620, "img_porte1");
@@ -72,6 +78,107 @@ export default class selection extends Phaser.Scene {
     ); 
     player.setBounce(0.2);
     
+    // Groupe des bandits
+    this.bandits = this.physics.add.group();
+
+    // Récupère les objets depuis le calque "objets"
+    const objets = this.map.getObjectLayer("objets")?.objects || [];
+    objets.forEach(obj => {
+      // Cherche la propriété personnalisée "type"
+      const typeProp = obj.properties?.find(p => p.name === "type")?.value;
+
+      if (typeProp === "bandit") {
+        // Crée un sprite bandit à la position de l'objet
+        // Ajuste la Y si nécessaire selon la hauteur du sprite
+        const bandit = this.bandits.create(obj.x, obj.y - 32, "img_bandit");
+
+        bandit.setCollideWorldBounds(true);
+        bandit.setBounce(1, 0);
+        const vitesseBandit = 80; // Vitesse de déplacement du bandit
+        bandit.setVelocityX(obj.properties?.find(p => p.name === "direction")?.value === "gauche" ? -vitesseBandit : vitesseBandit); // direction initiale
+        bandit.setGravityY(300);
+      }
+    });
+
+    // Collision bandits/plateformes
+    this.physics.add.collider(this.bandits, this.calque_plateformes);
+
+    // Collision joueur/bandits
+    this.physics.add.overlap(player, this.bandits, (player, bandit) => {
+      // Ici tu peux gérer la réaction (ex: perdre une vie, recommencer, etc.)
+      player.setTint(0xff0000);
+      this.physics.pause();
+    }, null, this);
+
+    // Animations des bandits
+    this.anims.create({
+        key: "bandit_gauche",
+        frames: this.anims.generateFrameNumbers("img_bandit", { start: 0, end: 3 }),
+        frameRate: 6,
+        repeat: -1
+    });
+    this.anims.create({
+        key: "bandit_droite",
+        frames: this.anims.generateFrameNumbers("img_bandit", { start: 4, end: 7 }),
+        frameRate: 6,
+        repeat: -1
+    });
+
+    // COUTEAUX
+    this.projectiles = this.physics.add.group();
+
+    // Collision projectiles / plateformes
+    this.physics.add.collider(this.projectiles, this.calque_plateformes, (proj) => {
+        proj.destroy();
+    });
+
+    // Collision projectiles / joueur
+    this.physics.add.overlap(player, this.projectiles, (player, proj) => {
+        player.setTint(0xff0000);
+        this.physics.pause();
+        proj.destroy();
+    });
+
+    // Fonction pour tirer un projectile
+    this.launchProjectile = (bandit) => {
+      const projectile = this.projectiles.create(bandit.x, bandit.y, 'couteau');
+
+      projectile.body.allowGravity = false;
+      projectile.setBounce(0);
+      projectile.setCollideWorldBounds(true);
+
+      const angle = Phaser.Math.Angle.Between(bandit.x, bandit.y, player.x, player.y);
+      const vitesseProjectile = 200;
+
+      // Rotation corrigée
+      projectile.setRotation(angle + Math.PI);
+
+      projectile.setVelocity(
+          Math.cos(angle) * vitesseProjectile,
+          Math.sin(angle) * vitesseProjectile
+      );
+
+      projectile.body.onWorldBounds = true;
+      projectile.body.world.on('worldbounds', (body) => {
+          if (body.gameObject === projectile) projectile.destroy();
+      });
+
+      this.physics.add.collider(projectile, this.calque_plateformes, () => {
+          projectile.destroy();
+      });
+    };
+
+
+
+    // On lance l'animation initiale selon la vélocité X
+    this.bandits.getChildren().forEach(bandit => {
+        if (bandit.body.velocity.x < 0) {
+            bandit.anims.play("bandit_gauche", true);
+        } else {
+            bandit.anims.play("bandit_droite", true);
+        }
+    });
+
     // collisions plateformes
     this.calque_plateformes.setCollisionByProperty({ estSolide: true });
     this.physics.add.collider(player, this.calque_plateformes);
@@ -100,6 +207,21 @@ export default class selection extends Phaser.Scene {
       frames: [{ key: "img_perso", frame: 4 }],
       frameRate: 20
     });
+
+    // ANIMATIONS BANDITS (non fonctionnelles pour l'instant)
+    this.anims.create({
+      key: "bandit_gauche",
+      frames: this.anims.generateFrameNumbers("img_bandit", { start: 0, end: 3 }),
+      frameRate: 8,
+      repeat: -1
+    });
+    this.anims.create({
+      key: "bandit_droite",
+      frames: this.anims.generateFrameNumbers("img_bandit", { start: 4, end: 7 }),
+      frameRate: 8,
+      repeat: -1
+    });
+
 
     // clavier
     clavier = this.input.keyboard.addKeys({
@@ -152,5 +274,54 @@ export default class selection extends Phaser.Scene {
         player.setVelocityY(0);
       }
     }
+
+    // Mise à jour animation des bandits selon direction
+    this.bandits.getChildren().forEach(bandit => {
+        if (bandit.body.velocity.x < 0) {
+            bandit.anims.play("bandit_gauche", true);
+        } else if (bandit.body.velocity.x > 0) {
+            bandit.anims.play("bandit_droite", true);
+        }
+    });
+
+    // PATROLd + ATTAQUE BANDITS
+    // Mise à jour des bandits : patrol + attaque + détection bord
+    this.bandits.getChildren().forEach(bandit => {
+        const distance = Phaser.Math.Distance.Between(bandit.x, bandit.y, player.x, player.y);
+
+        if(distance < 250) {
+            // Mode attaque
+            bandit.isAttacking = true;
+            bandit.setVelocityX(0);
+
+            if(!bandit.lastShot || this.time.now - bandit.lastShot > 2000) {
+                this.launchProjectile(bandit);
+                bandit.lastShot = this.time.now;
+            }
+        } else {
+            // Mode patrol
+            if(bandit.isAttacking) bandit.isAttacking = false;
+
+            // Vérifie la tuile juste devant pour ne pas tomber
+            const frontX = bandit.body.velocity.x > 0 ? bandit.x + bandit.width/2 + 1 : bandit.x - bandit.width/2 - 1;
+            const frontY = bandit.y + bandit.height/2 + 1;
+            const tile = this.calque_plateformes.getTileAtWorldXY(frontX, frontY);
+
+            // Si pas de sol devant ou collision avec le bord
+            if(!tile || bandit.body.blocked.left || bandit.body.blocked.right) {
+                bandit.setVelocityX(-bandit.body.velocity.x || 80); // inverse la direction
+            }
+
+            // Si aucune vitesse, attribue la vitesse par défaut
+            if(bandit.body.velocity.x === 0) bandit.setVelocityX(80);
+        }
+
+        // Animation selon direction
+        if(bandit.body.velocity.x < 0) bandit.anims.play('bandit_gauche', true);
+        else if(bandit.body.velocity.x > 0) bandit.anims.play('bandit_droite', true);
+    });
+
+
+
   }
 }
