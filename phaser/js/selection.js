@@ -30,8 +30,8 @@ export default class selection extends Phaser.Scene {
     this.load.image("Phaser_tuilesdejeu", "./assets/tuilesJeu.png");
     this.load.tilemapTiledJSON("carte", "./assets/map.json");
     this.load.spritesheet("img_perso", "./assets/dude.png", {
-      frameWidth: 32,
-      frameHeight: 48
+      frameWidth: 64,
+      frameHeight: 64
     });
     this.load.image("img_porte1", "./assets/door1.png");
     this.load.image("img_porte2", "./assets/door2.png");
@@ -66,8 +66,8 @@ export default class selection extends Phaser.Scene {
 
     
     // calques
-    const calque_background = carteDuNiveau.createLayer("calque_background", tileset);
     const calque_background2 = carteDuNiveau.createLayer("calque_background_2", tileset);
+    const calque_background = carteDuNiveau.createLayer("calque_background", tileset);
     const calque_plateformes = carteDuNiveau.createLayer("calque_plateformes", tileset);
 
 
