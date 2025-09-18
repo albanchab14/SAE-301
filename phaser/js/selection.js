@@ -148,7 +148,7 @@ export default class selection extends Phaser.Scene {
       projectile.setCollideWorldBounds(true);
 
       const angle = Phaser.Math.Angle.Between(bandit.x, bandit.y, player.x, player.y);
-      const vitesseProjectile = 200;
+      const vitesseProjectile = 300;
 
       // Rotation corrigée
       projectile.setRotation(angle + Math.PI);
