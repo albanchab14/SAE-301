@@ -1,3 +1,5 @@
+import * as fct from "./fonctions.js";
+
 export default class niveau3 extends Phaser.Scene {
   constructor() {
     super({ key: "niveau3" });
@@ -74,15 +76,19 @@ export default class niveau3 extends Phaser.Scene {
 
   update() {
     // Déplacement horizontal
-    if (this.clavier.left.isDown) {
-      this.player.setVelocityX(-160);
-      this.player.anims.play("anim_tourne_gauche", true);
-    } else if (this.clavier.right.isDown) {
-      this.player.setVelocityX(160);
-      this.player.anims.play("anim_tourne_droite", true);
-    } else {
-      this.player.setVelocityX(0);
-      this.player.anims.play("anim_face");
+    if (!this.player.isAttacking) {
+      if (this.clavier.left.isDown) {
+        this.player.setVelocityX(-160);
+        this.player.anims.play("anim_tourne_gauche", true);
+        this.player.direction = "gauche";
+      } else if (this.clavier.right.isDown) {
+        this.player.setVelocityX(160);
+        this.player.anims.play("anim_tourne_droite", true);
+        this.player.direction = "droite";
+      } else {
+        this.player.setVelocityX(0);
+        this.player.anims.play("anim_face");
+      }
     }
 
     // Saut

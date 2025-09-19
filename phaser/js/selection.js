@@ -10,9 +10,6 @@ export default class selection extends Phaser.Scene {
     // Joueur
     this.load.spritesheet("img_perso", "./assets/dude.png", { frameWidth: 53, frameHeight: 58 });
 
-    // Animations du joueur (globales)
-    this.animsGlobalCreated = false; // flag pour créer une seule fois
-
     // Clavier
     this.clavier = this.input.keyboard.addKeys({
       left: Phaser.Input.Keyboard.KeyCodes.Q,
@@ -20,7 +17,8 @@ export default class selection extends Phaser.Scene {
       up: Phaser.Input.Keyboard.KeyCodes.Z,
       down: Phaser.Input.Keyboard.KeyCodes.S,
       jump: Phaser.Input.Keyboard.KeyCodes.SPACE,
-      action: Phaser.Input.Keyboard.KeyCodes.E
+      action: Phaser.Input.Keyboard.KeyCodes.E,
+      attaque: Phaser.Input.Keyboard.KeyCodes.F
     });
 
     // Maps & portes du lobby
@@ -29,12 +27,15 @@ export default class selection extends Phaser.Scene {
     this.load.image("img_porte1", "./assets/door1.png");
     this.load.image("img_porte2", "./assets/door2.png");
     this.load.image("img_porte3", "./assets/door3.png");
+
+    // Hitbox invisible de l'attaque
+    this.load.image("attack_hitbox", "./assets/attack_hitbox.png");
+
+    this.load.spritesheet("img_perso_attack", "./assets/dude_attack.png", { frameWidth: 64, frameHeight: 57 });
+
   }
 
   create() {
-    fct.doNothing();
-    fct.doAlsoNothing();
-
     // --- ANIMATIONS GLOBALES ---
     if (!this.animsGlobalCreated) {
       this.anims.create({
@@ -54,6 +55,20 @@ export default class selection extends Phaser.Scene {
         frames: [{ key: "img_perso", frame: 4 }],
         frameRate: 20
       });
+      // Attaques
+      this.anims.create({
+        key: "attack_gauche",
+        frames: this.anims.generateFrameNumbers("img_perso_attack", { start: 2, end: 0 }), // 4 → 1
+        frameRate: 20,
+        repeat: 0
+      });
+      this.anims.create({
+        key: "attack_droite",
+        frames: this.anims.generateFrameNumbers("img_perso_attack", { start: 5, end: 7 }), // 5 → 8
+        frameRate: 20,
+        repeat: 0
+      });
+
       this.animsGlobalCreated = true;
     }
 
@@ -69,7 +84,7 @@ export default class selection extends Phaser.Scene {
     // Collision plateformes
     this.calque_plateformes.setCollisionByProperty({ estSolide: true });
 
-    // Ajuster les limites du monde à la taille de la carte
+    // Ajuster les limites du monde
     this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
     // Joueur
@@ -78,7 +93,10 @@ export default class selection extends Phaser.Scene {
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.calque_plateformes);
     
-    // Camera
+    this.player.canAttack = true;
+    this.player.direction = "droite"; // Direction initiale
+
+    // Caméra
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
@@ -86,22 +104,27 @@ export default class selection extends Phaser.Scene {
     this.porte1 = this.physics.add.staticSprite(100, 620, "img_porte1");
     this.porte2 = this.physics.add.staticSprite(675, 620, "img_porte2");
     this.porte3 = this.physics.add.staticSprite(1150, 620, "img_porte3");
+    
   }
 
   update() {
-    // Déplacement horizontal
-    if (this.clavier.left.isDown) {
-      this.player.setVelocityX(-160);
-      this.player.anims.play("anim_tourne_gauche", true);
-    } else if (this.clavier.right.isDown) {
-      this.player.setVelocityX(160);
-      this.player.anims.play("anim_tourne_droite", true);
-    } else {
-      this.player.setVelocityX(0);
-      this.player.anims.play("anim_face");
+    // --- Déplacement horizontal ---
+    if (!this.player.isAttacking) {
+      if (this.clavier.left.isDown) {
+        this.player.setVelocityX(-160);
+        this.player.anims.play("anim_tourne_gauche", true);
+        this.player.direction = "gauche";
+      } else if (this.clavier.right.isDown) {
+        this.player.setVelocityX(160);
+        this.player.anims.play("anim_tourne_droite", true);
+        this.player.direction = "droite";
+      } else {
+        this.player.setVelocityX(0);
+        this.player.anims.play("anim_face");
+      }
     }
 
-    // Gestion des échelles
+    // --- Gestion échelles ---
     const tile = this.calque_echelles.getTileAtWorldXY(this.player.x, this.player.y, true);
     if (tile && tile.properties.estEchelle) {
       this.player.setGravityY(0);
@@ -109,12 +132,33 @@ export default class selection extends Phaser.Scene {
       else if (this.clavier.down.isDown) this.player.setVelocityY(160);
       else this.player.setVelocityY(0);
     }
-
-    // Saut
+    
+    // --- Saut ---
     if (this.clavier.jump.isDown && this.player.body.blocked.down) this.player.setVelocityY(-290);
 
-    // Portes vers les niveaux
+
+    // --- Attaque ---
+    if (this.clavier.attaque.isDown && this.player.canAttack) {
+      // Joue l'animation d'attaque selon la direction
+      if(this.player.direction === "gauche") {
+        this.player.anims.play("attack_gauche", true);
+      } else {
+        this.player.anims.play("attack_droite", true);
+      }
+
+      fct.attack(this.player, this);
+      this.player.canAttack = false;
+
+      // Remet l'animation idle/tourne après la fin de l'attaque (300 ms ou duration animation)
+      this.time.delayedCall(300, () => { this.player.canAttack = true; });
+    }
+
+
+
+    // --- Portes vers les niveaux ---
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
+      
+
       if (this.physics.overlap(this.player, this.porte1)) this.scene.switch("niveau1");
       if (this.physics.overlap(this.player, this.porte2)) this.scene.switch("niveau2");
       if (this.physics.overlap(this.player, this.porte3)) this.scene.switch("niveau3");

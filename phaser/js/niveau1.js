@@ -1,3 +1,5 @@
+import * as fct from "./fonctions.js";
+
 export default class niveau1 extends Phaser.Scene {
   constructor() {
     super({ key: "niveau1" });
@@ -32,6 +34,9 @@ export default class niveau1 extends Phaser.Scene {
     this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.calque_plateformes);
+
+    this.player.canAttack = true;
+    this.player.direction = "droite"; // Direction initiale
 
     // Caméra
     this.cameras.main.startFollow(this.player);
@@ -82,7 +87,8 @@ export default class niveau1 extends Phaser.Scene {
       up: Phaser.Input.Keyboard.KeyCodes.Z,
       down: Phaser.Input.Keyboard.KeyCodes.S,
       jump: Phaser.Input.Keyboard.KeyCodes.SPACE,
-      action: Phaser.Input.Keyboard.KeyCodes.E
+      action: Phaser.Input.Keyboard.KeyCodes.E,
+      attaque: Phaser.Input.Keyboard.KeyCodes.F
     });
   }
 
@@ -152,15 +158,19 @@ export default class niveau1 extends Phaser.Scene {
 
   update() {
     // --- Déplacement joueur ---
-    if (this.clavier.left.isDown) {
-      this.player.setVelocityX(-160);
-      this.player.anims.play("anim_tourne_gauche", true);
-    } else if (this.clavier.right.isDown) {
-      this.player.setVelocityX(160);
-      this.player.anims.play("anim_tourne_droite", true);
-    } else {
-      this.player.setVelocityX(0);
-      this.player.anims.play("anim_face");
+    if (!this.player.isAttacking) {
+      if (this.clavier.left.isDown) {
+        this.player.setVelocityX(-160);
+        this.player.anims.play("anim_tourne_gauche", true);
+        this.player.direction = "gauche";
+      } else if (this.clavier.right.isDown) {
+        this.player.setVelocityX(160);
+        this.player.anims.play("anim_tourne_droite", true);
+        this.player.direction = "droite";
+      } else {
+        this.player.setVelocityX(0);
+        this.player.anims.play("anim_face");
+      }
     }
 
     // --- Gestion échelles ---
@@ -191,9 +201,17 @@ export default class niveau1 extends Phaser.Scene {
       }
     });
 
+    // Attaque
+    if (this.clavier.attaque.isDown && this.player.canAttack) {
+      fct.attack(this.player, this, this.bandits); // <-- passer les ennemis
+      this.player.canAttack = false;
+
+      this.time.delayedCall(300, () => { this.player.canAttack = true; });
+    }
+
+
     // --- Retour au lobby ---
-    if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
-        this.physics.overlap(this.player, this.porte_retour)) {
+    if (Phaser.Input.Keyboard.JustDown(this.clavier.action) && this.physics.overlap(this.player, this.porte_retour)) {
       this.scene.switch("selection");
     }
   }
