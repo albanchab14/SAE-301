@@ -69,11 +69,18 @@ export default class selection extends Phaser.Scene {
     // Collision plateformes
     this.calque_plateformes.setCollisionByProperty({ estSolide: true });
 
+    // Ajuster les limites du monde à la taille de la carte
+    this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+
     // Joueur
     this.player = this.physics.add.sprite(100, 450, "img_perso");
     this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.calque_plateformes);
+    
+    // Camera
+    this.cameras.main.startFollow(this.player);
+    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
     // Portes
     this.porte1 = this.physics.add.staticSprite(100, 620, "img_porte1");

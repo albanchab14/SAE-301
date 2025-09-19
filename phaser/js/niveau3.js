@@ -24,11 +24,15 @@ export default class niveau3 extends Phaser.Scene {
     // Collision plateformes
     this.calque_plateformes.setCollisionByProperty({ estSolide: true });
 
-    // Joueur (réutilisation global préchargé)
+    // Joueur
     this.player = this.physics.add.sprite(100, 600, "img_perso");
     this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.calque_plateformes);
+
+    // Camera
+    this.cameras.main.startFollow(this.player);
+    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
     // Porte retour
     this.porte_retour = this.physics.add.staticSprite(100, 620, "img_porte_retour");
