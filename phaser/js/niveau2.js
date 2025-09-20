@@ -27,7 +27,7 @@ export default class niveau2 extends Phaser.Scene {
     this.calque_plateformes.setCollisionByProperty({ estSolide: true });
 
     // Porte retour
-    this.porte_retour = this.physics.add.staticSprite(100, 620, "img_porte_retour");
+    this.porte_retour = this.physics.add.staticSprite(100, 597, "img_porte_retour");
     
     // Joueur
     this.player = this.physics.add.sprite(100, 600, "img_perso");

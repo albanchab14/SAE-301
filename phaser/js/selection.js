@@ -90,7 +90,7 @@ export default class selection extends Phaser.Scene {
     // Portes
     this.porte1 = this.physics.add.staticSprite(100, 601, "img_porte1");
     this.porte2 = this.physics.add.staticSprite(675, 597, "img_porte2");
-    this.porte3 = this.physics.add.staticSprite(1150, 620, "img_porte3");
+    this.porte3 = this.physics.add.staticSprite(1150, 595, "img_porte3");
 
     // Joueur
     this.player = this.physics.add.sprite(100, 450, "img_perso");

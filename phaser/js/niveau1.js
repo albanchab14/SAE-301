@@ -30,7 +30,7 @@ export default class niveau1 extends Phaser.Scene {
     this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
     // Porte retour
-    this.porte_retour = this.physics.add.staticSprite(100, 620, "img_porte_retour");
+    this.porte_retour = this.physics.add.staticSprite(100, 605, "img_porte_retour");
     
     // Joueur
     this.player = this.physics.add.sprite(100, 600, "img_perso");
