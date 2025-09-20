@@ -134,7 +134,7 @@ export default class selection extends Phaser.Scene {
     }
     
     // --- Saut ---
-    if (this.clavier.jump.isDown && this.player.body.blocked.down) this.player.setVelocityY(-290);
+    if (this.clavier.jump.isDown && this.player.body.blocked.down) this.player.setVelocityY(-320);
 
 
     // --- Attaque ---

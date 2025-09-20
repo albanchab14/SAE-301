@@ -182,7 +182,7 @@ export default class niveau1 extends Phaser.Scene {
 
     // --- Saut ---
     if (this.clavier.jump.isDown && this.player.body.blocked.down) {
-      this.player.setVelocityY(-290);
+      this.player.setVelocityY(-320);
     }
 
     // --- Vérification des bandits ---
