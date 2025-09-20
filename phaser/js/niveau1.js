@@ -29,6 +29,9 @@ export default class niveau1 extends Phaser.Scene {
     // Ajuster limites du monde
     this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
+    // Porte retour
+    this.porte_retour = this.physics.add.staticSprite(100, 620, "img_porte_retour");
+    
     // Joueur
     this.player = this.physics.add.sprite(100, 600, "img_perso");
     this.player.setBounce(0.2);
@@ -41,9 +44,6 @@ export default class niveau1 extends Phaser.Scene {
     // Caméra
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-
-    // Porte retour
-    this.porte_retour = this.physics.add.staticSprite(100, 620, "img_porte_retour");
 
     // Projectiles
     this.projectiles = this.physics.add.group();
@@ -82,13 +82,13 @@ export default class niveau1 extends Phaser.Scene {
 
     // Clavier global
     this.clavier = this.input.keyboard.addKeys({
-      left: Phaser.Input.Keyboard.KeyCodes.Q,
-      right: Phaser.Input.Keyboard.KeyCodes.D,
-      up: Phaser.Input.Keyboard.KeyCodes.Z,
-      down: Phaser.Input.Keyboard.KeyCodes.S,
-      jump: Phaser.Input.Keyboard.KeyCodes.SPACE,
-      action: Phaser.Input.Keyboard.KeyCodes.E,
-      attaque: Phaser.Input.Keyboard.KeyCodes.F
+      left: Phaser.Input.Keyboard.KeyCodes.LEFT,   // Flèche gauche
+      right: Phaser.Input.Keyboard.KeyCodes.RIGHT, // Flèche droite
+      up: Phaser.Input.Keyboard.KeyCodes.UP,       // Flèche haut
+      down: Phaser.Input.Keyboard.KeyCodes.DOWN,   // Flèche bas
+      jump: Phaser.Input.Keyboard.KeyCodes.UP,     // Même que flèche haut
+      action: Phaser.Input.Keyboard.KeyCodes.I,    // I au lieu de E
+      attaque: Phaser.Input.Keyboard.KeyCodes.O    // O au lieu de F
     });
   }
 
@@ -158,19 +158,17 @@ export default class niveau1 extends Phaser.Scene {
 
   update() {
     // --- Déplacement joueur ---
-    if (!this.player.isAttacking) {
-      if (this.clavier.left.isDown) {
-        this.player.setVelocityX(-160);
-        this.player.anims.play("anim_tourne_gauche", true);
-        this.player.direction = "gauche";
-      } else if (this.clavier.right.isDown) {
-        this.player.setVelocityX(160);
-        this.player.anims.play("anim_tourne_droite", true);
-        this.player.direction = "droite";
-      } else {
-        this.player.setVelocityX(0);
-        this.player.anims.play("anim_face");
-      }
+    if (this.clavier.left.isDown) {
+      this.player.setVelocityX(-160);
+      if (!this.player.isAttacking) this.player.anims.play("anim_tourne_gauche", true);
+      this.player.direction = "gauche";
+    } else if (this.clavier.right.isDown) {
+      this.player.setVelocityX(160);
+      if (!this.player.isAttacking) this.player.anims.play("anim_tourne_droite", true);
+      this.player.direction = "droite";
+    } else {
+      this.player.setVelocityX(0);
+      if (!this.player.isAttacking) this.player.anims.play("anim_face");
     }
 
     // --- Gestion échelles ---

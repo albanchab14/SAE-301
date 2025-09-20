@@ -8,17 +8,17 @@ export default class selection extends Phaser.Scene {
   preload() {
     // --- GLOBAL PRELOAD ---
     // Joueur
-    this.load.spritesheet("img_perso", "./assets/dude.png", { frameWidth: 53, frameHeight: 58 });
+    this.load.spritesheet("img_perso", "./assets/dude.png", { frameWidth: 46, frameHeight: 58 });
 
     // Clavier
     this.clavier = this.input.keyboard.addKeys({
-      left: Phaser.Input.Keyboard.KeyCodes.Q,
-      right: Phaser.Input.Keyboard.KeyCodes.D,
-      up: Phaser.Input.Keyboard.KeyCodes.Z,
-      down: Phaser.Input.Keyboard.KeyCodes.S,
-      jump: Phaser.Input.Keyboard.KeyCodes.SPACE,
-      action: Phaser.Input.Keyboard.KeyCodes.E,
-      attaque: Phaser.Input.Keyboard.KeyCodes.F
+      left: Phaser.Input.Keyboard.KeyCodes.LEFT,   // Flèche gauche
+      right: Phaser.Input.Keyboard.KeyCodes.RIGHT, // Flèche droite
+      up: Phaser.Input.Keyboard.KeyCodes.UP,       // Flèche haut
+      down: Phaser.Input.Keyboard.KeyCodes.DOWN,   // Flèche bas
+      jump: Phaser.Input.Keyboard.KeyCodes.UP,     // Même que flèche haut
+      action: Phaser.Input.Keyboard.KeyCodes.I,    // I au lieu de E
+      attaque: Phaser.Input.Keyboard.KeyCodes.O    // O au lieu de F
     });
 
     // Maps & portes du lobby
@@ -59,13 +59,13 @@ export default class selection extends Phaser.Scene {
       this.anims.create({
         key: "attack_gauche",
         frames: this.anims.generateFrameNumbers("img_perso_attack", { start: 2, end: 0 }), // 4 → 1
-        frameRate: 20,
+        frameRate: 25,
         repeat: 0
       });
       this.anims.create({
         key: "attack_droite",
         frames: this.anims.generateFrameNumbers("img_perso_attack", { start: 5, end: 7 }), // 5 → 8
-        frameRate: 20,
+        frameRate: 40,
         repeat: 0
       });
 
@@ -86,6 +86,11 @@ export default class selection extends Phaser.Scene {
 
     // Ajuster les limites du monde
     this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+    
+    // Portes
+    this.porte1 = this.physics.add.staticSprite(100, 601, "img_porte1");
+    this.porte2 = this.physics.add.staticSprite(675, 597, "img_porte2");
+    this.porte3 = this.physics.add.staticSprite(1150, 620, "img_porte3");
 
     // Joueur
     this.player = this.physics.add.sprite(100, 450, "img_perso");
@@ -100,28 +105,23 @@ export default class selection extends Phaser.Scene {
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
-    // Portes
-    this.porte1 = this.physics.add.staticSprite(100, 620, "img_porte1");
-    this.porte2 = this.physics.add.staticSprite(675, 620, "img_porte2");
-    this.porte3 = this.physics.add.staticSprite(1150, 620, "img_porte3");
+    
     
   }
 
   update() {
     // --- Déplacement horizontal ---
-    if (!this.player.isAttacking) {
-      if (this.clavier.left.isDown) {
-        this.player.setVelocityX(-160);
-        this.player.anims.play("anim_tourne_gauche", true);
-        this.player.direction = "gauche";
-      } else if (this.clavier.right.isDown) {
-        this.player.setVelocityX(160);
-        this.player.anims.play("anim_tourne_droite", true);
-        this.player.direction = "droite";
-      } else {
-        this.player.setVelocityX(0);
-        this.player.anims.play("anim_face");
-      }
+    if (this.clavier.left.isDown) {
+      this.player.setVelocityX(-160);
+      if (!this.player.isAttacking) this.player.anims.play("anim_tourne_gauche", true);
+      this.player.direction = "gauche";
+    } else if (this.clavier.right.isDown) {
+      this.player.setVelocityX(160);
+      if (!this.player.isAttacking) this.player.anims.play("anim_tourne_droite", true);
+      this.player.direction = "droite";
+    } else {
+      this.player.setVelocityX(0);
+      if (!this.player.isAttacking) this.player.anims.play("anim_face");
     }
 
     // --- Gestion échelles ---
@@ -138,19 +138,8 @@ export default class selection extends Phaser.Scene {
 
 
     // --- Attaque ---
-    if (this.clavier.attaque.isDown && this.player.canAttack) {
-      // Joue l'animation d'attaque selon la direction
-      if(this.player.direction === "gauche") {
-        this.player.anims.play("attack_gauche", true);
-      } else {
-        this.player.anims.play("attack_droite", true);
-      }
-
+    if (Phaser.Input.Keyboard.JustDown(this.clavier.attaque) && this.player.canAttack) {
       fct.attack(this.player, this);
-      this.player.canAttack = false;
-
-      // Remet l'animation idle/tourne après la fin de l'attaque (300 ms ou duration animation)
-      this.time.delayedCall(300, () => { this.player.canAttack = true; });
     }
 
 

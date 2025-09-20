@@ -26,6 +26,9 @@ export default class niveau3 extends Phaser.Scene {
     // Collision plateformes
     this.calque_plateformes.setCollisionByProperty({ estSolide: true });
 
+    // Porte retour
+    this.porte_retour = this.physics.add.staticSprite(100, 620, "img_porte_retour");
+    
     // Joueur
     this.player = this.physics.add.sprite(100, 600, "img_perso");
     this.player.setBounce(0.2);
@@ -35,9 +38,6 @@ export default class niveau3 extends Phaser.Scene {
     // Camera
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-
-    // Porte retour
-    this.porte_retour = this.physics.add.staticSprite(100, 620, "img_porte_retour");
 
     // Bandits
     this.bandits = this.physics.add.group();
@@ -63,32 +63,31 @@ export default class niveau3 extends Phaser.Scene {
     this.projectiles = this.physics.add.group();
     this.physics.add.collider(this.projectiles, this.calque_plateformes, p => p.destroy());
 
-    // --- Clavier global (réutiliser comme dans selection.js)
+    // Clavier 
     this.clavier = this.input.keyboard.addKeys({
-      left: Phaser.Input.Keyboard.KeyCodes.Q,
-      right: Phaser.Input.Keyboard.KeyCodes.D,
-      up: Phaser.Input.Keyboard.KeyCodes.Z,
-      down: Phaser.Input.Keyboard.KeyCodes.S,
-      jump: Phaser.Input.Keyboard.KeyCodes.SPACE,
-      action: Phaser.Input.Keyboard.KeyCodes.E  // <-- touche pour interagir
+      left: Phaser.Input.Keyboard.KeyCodes.LEFT,
+      right: Phaser.Input.Keyboard.KeyCodes.RIGHT,
+      up: Phaser.Input.Keyboard.KeyCodes.UP,
+      down: Phaser.Input.Keyboard.KeyCodes.DOWN,
+      jump: Phaser.Input.Keyboard.KeyCodes.UP,
+      action: Phaser.Input.Keyboard.KeyCodes.I,
+      attaque: Phaser.Input.Keyboard.KeyCodes.O
     });
   }
 
   update() {
     // Déplacement horizontal
-    if (!this.player.isAttacking) {
-      if (this.clavier.left.isDown) {
-        this.player.setVelocityX(-160);
-        this.player.anims.play("anim_tourne_gauche", true);
-        this.player.direction = "gauche";
-      } else if (this.clavier.right.isDown) {
-        this.player.setVelocityX(160);
-        this.player.anims.play("anim_tourne_droite", true);
-        this.player.direction = "droite";
-      } else {
-        this.player.setVelocityX(0);
-        this.player.anims.play("anim_face");
-      }
+    if (this.clavier.left.isDown) {
+      this.player.setVelocityX(-160);
+      if (!this.player.isAttacking) this.player.anims.play("anim_tourne_gauche", true);
+      this.player.direction = "gauche";
+    } else if (this.clavier.right.isDown) {
+      this.player.setVelocityX(160);
+      if (!this.player.isAttacking) this.player.anims.play("anim_tourne_droite", true);
+      this.player.direction = "droite";
+    } else {
+      this.player.setVelocityX(0);
+      if (!this.player.isAttacking) this.player.anims.play("anim_face");
     }
 
     // Saut
