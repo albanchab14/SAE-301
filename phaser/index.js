@@ -1,5 +1,7 @@
 // chargement des librairies
 import menu from "./js/menu.js";
+import settings from "./js/settings.js";
+import credits from "./js/credits.js";
 import selection from "./js/selection.js";
 import niveau1 from "./js/niveau1.js";
 import niveau2 from "./js/niveau2.js";
@@ -27,7 +29,7 @@ var config = {
       debug: true // permet de voir les hitbox et les vecteurs d'acceleration quand mis à true
     }
   },
-  scene: [menu, selection, niveau1, niveau2, niveau3],
+  scene: [menu, settings, credits, selection, niveau1, niveau2, niveau3],
   baseURL: window.location.pathname.replace(/\/[^/]*$/, '')
 };
 
