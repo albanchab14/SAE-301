@@ -26,8 +26,15 @@ export function attack(player, scene, targets = null) {
     // Collision avec cibles
     if (targets) {
         scene.physics.add.overlap(hitbox, targets, (h, t) => {
-            t.setTint(0xff0000);
-            t.destroy();
+            // ANTI-SPAM COUP: On ne touche qu'une fois par hitbox
+            if (!t.justHit || scene.time.now - t.justHit > 300) {
+                if (typeof t.vie === "undefined") t.vie = 2; // valeur cohérente avec le niveau
+                t.vie -= 1;
+                t.setTint(0xff0000);
+                scene.time.delayedCall(500, () => t.setTint(0xffffff));
+                t.justHit = scene.time.now;
+                if (t.vie <= 0) t.destroy();
+            }
         });
     }
 
@@ -39,3 +46,10 @@ export function attack(player, scene, targets = null) {
         player.isAttacking = false;
     });
 }
+
+export function updateHearts(scene) {
+  for (let i = 0; i < scene.coeurs.length; i++) {
+    scene.coeurs[i].setFrame(i < scene.game.config.pointsDeVie ? 0 : 1);
+  }
+}
+

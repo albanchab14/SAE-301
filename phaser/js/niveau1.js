@@ -41,6 +41,17 @@ export default class niveau1 extends Phaser.Scene {
     this.player.canAttack = true;
     this.player.direction = "droite"; // Direction initiale
 
+    // Vies joueur
+    this.game.config.pointsDeVie = 5;
+    this.maxVies = 5;
+    this.coeurs = [];
+    for (let i = 0; i < this.maxVies; i++) {
+      let coeur = this.add.sprite(32 + i*40, 48, "hero_hp", 0).setScrollFactor(0);
+      this.coeurs.push(coeur);
+    }
+    // Mise à jour initiale des cœurs
+    fct.updateHearts(this);
+
     // Caméra
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
@@ -64,21 +75,53 @@ export default class niveau1 extends Phaser.Scene {
         // Sauvegarder direction et temps tir
         bandit.directionInitiale = vitesse;
         bandit.nextShot = 0;
+        bandit.vie = 3;
       }
     });
     this.physics.add.collider(this.bandits, this.calque_plateformes);
 
     // Collision joueur / bandits
-    this.physics.add.overlap(this.player, this.bandits, () => {
-      this.player.setTint(0xff0000);
-      this.physics.pause();
+    this.player.lastHit = 0; // Ajoute ça dans create()
+
+    this.physics.add.overlap(this.player, this.bandits, (player, bandit) => {
+      const now = this.time.now;
+      if (!player.lastHit || now - player.lastHit > 1000) { // 1 seconde d'immunité
+        this.game.config.pointsDeVie -= 1;
+        this.registry.set('playerVie', this.game.config.pointsDeVie);
+        fct.updateHearts(this);
+        console.log("Vie lue dans registry:", this.game.config.pointsDeVie);
+        player.setTint(0xff0000);
+        this.time.delayedCall(300, () => player.setTint(0xffffff));
+        player.lastHit = now;
+
+        if (this.game.config.pointsDeVie <= 0) {
+          this.physics.pause();
+          // Animation game over
+        }
+      }
     });
 
+
     // Collision joueur / projectiles
-    this.physics.add.overlap(this.player, this.projectiles, () => {
-      this.player.setTint(0xff0000);
-      this.physics.pause();
+    this.physics.add.overlap(this.player, this.projectiles, (player, projectile) => {
+      const now = this.time.now;
+      if (!player.lastHit || now - player.lastHit > 1000) {
+        this.game.config.pointsDeVie -= 1;
+        this.registry.set('playerVie', this.game.config.pointsDeVie);
+        fct.updateHearts(this);
+        console.log("Vie lue dans registry:", this.game.config.pointsDeVie);
+        player.setTint(0xff0000);
+        this.time.delayedCall(300, () => player.setTint(0xffffff));
+        player.lastHit = now;
+
+        if (this.game.config.pointsDeVie <= 0) {
+          this.physics.pause();
+          // Animation game over
+        }
+        projectile.destroy();
+      }
     });
+
 
     // Clavier global
     this.clavier = this.input.keyboard.addKeys({
@@ -210,6 +253,8 @@ export default class niveau1 extends Phaser.Scene {
 
     // --- Retour au lobby ---
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) && this.physics.overlap(this.player, this.porte_retour)) {
+      this.registry.set('playerVie', this.game.config.pointsDeVie);
+      console.log("Vie lue dans registry:", this.game.config.pointsDeVie);
       this.scene.switch("selection");
     }
   }

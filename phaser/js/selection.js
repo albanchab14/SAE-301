@@ -9,6 +9,7 @@ export default class selection extends Phaser.Scene {
     // --- GLOBAL PRELOAD ---
     // Joueur
     this.load.spritesheet("img_perso", "./assets/dude.png", { frameWidth: 46, frameHeight: 58 });
+    this.load.spritesheet("hero_hp", "./assets/hero_hp.png", { frameWidth: 30, frameHeight: 28 });
 
     // Clavier
     this.clavier = this.input.keyboard.addKeys({
@@ -86,7 +87,7 @@ export default class selection extends Phaser.Scene {
 
     // Ajuster les limites du monde
     this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-    
+
     // Portes
     this.porte1 = this.physics.add.staticSprite(100, 601, "img_porte1");
     this.porte2 = this.physics.add.staticSprite(640, 597, "img_porte2");
@@ -100,6 +101,20 @@ export default class selection extends Phaser.Scene {
     
     this.player.canAttack = true;
     this.player.direction = "droite"; // Direction initiale
+    
+    // Valeur conservée ou valeur max par défaut
+    const savedVie = this.registry.get('playerVie');
+    this.maxVies = 5;
+    this.game.config.pointsDeVie = this.game.config.pointsDeVie ?? 5;
+
+    // Création des cœurs
+    this.coeurs = [];
+    for (let i = 0; i < this.maxVies; i++) {
+      let coeur = this.add.sprite(32 + i*40, 48, "hero_hp", 0).setScrollFactor(0);
+      this.coeurs.push(coeur);
+    }
+    fct.updateHearts(this);
+
 
     // Caméra
     this.cameras.main.startFollow(this.player);
@@ -110,6 +125,8 @@ export default class selection extends Phaser.Scene {
   }
 
   update() {
+    fct.updateHearts(this);
+
     // --- Déplacement horizontal ---
     if (this.clavier.left.isDown) {
       this.player.setVelocityX(-160);
@@ -148,7 +165,11 @@ export default class selection extends Phaser.Scene {
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
       
 
-      if (this.physics.overlap(this.player, this.porte1)) this.scene.switch("niveau1");
+      if (this.physics.overlap(this.player, this.porte1)) {
+        console.log("Vie lue dans registry:", this.game.config.pointsDeVie);
+        this.registry.set('playerVie', this.game.config.pointsDeVie);
+        this.scene.switch("niveau1");
+      }
       if (this.physics.overlap(this.player, this.porte2)) this.scene.switch("niveau2");
       if (this.physics.overlap(this.player, this.porte3)) this.scene.switch("niveau3");
     }
