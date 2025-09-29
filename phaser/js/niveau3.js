@@ -57,6 +57,7 @@ export default class niveau3 extends Phaser.Scene {
     this.physics.add.overlap(this.player, this.bandits, () => {
       this.player.setTint(0xff0000);
       this.physics.pause();
+      this.scene.start("defaite");
     });
 
     // Projectiles

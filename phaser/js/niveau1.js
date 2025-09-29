@@ -96,7 +96,7 @@ export default class niveau1 extends Phaser.Scene {
 
         if (this.game.config.pointsDeVie <= 0) {
           this.physics.pause();
-          // Animation game over
+          this.scene.start("defaite");
         }
       }
     });
@@ -116,7 +116,7 @@ export default class niveau1 extends Phaser.Scene {
 
         if (this.game.config.pointsDeVie <= 0) {
           this.physics.pause();
-          // Animation game over
+          this.scene.start("defaite");
         }
         projectile.destroy();
       }
