@@ -28,7 +28,7 @@ export function attack(player, scene, targets = null) {
         scene.physics.add.overlap(hitbox, targets, (h, t) => {
             // ANTI-SPAM COUP: On ne touche qu'une fois par hitbox
             if (!t.justHit || scene.time.now - t.justHit > 300) {
-                if (typeof t.vie === "undefined") t.vie = 2; // valeur cohérente avec le niveau
+                if (typeof t.vie === "undefined") t.vie =3; // valeur cohérente avec le niveau
                 t.vie -= 1;
                 t.setTint(0xff0000);
                 scene.time.delayedCall(500, () => t.setTint(0xffffff));
