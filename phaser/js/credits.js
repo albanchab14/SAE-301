@@ -19,7 +19,7 @@ export default class credits extends Phaser.Scene {
         .setDepth(0);
 
         // Création des boutons
-        var bouton_retour = this.add.image(655, 650, "menu_bouton").setDepth(1);
+        bouton_retour = this.add.image(655, 650, "menu_bouton").setDepth(1);
 
         // on rend le bouton interratif
         bouton_retour.setInteractive();
