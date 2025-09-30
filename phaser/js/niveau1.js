@@ -12,6 +12,7 @@ export default class niveau1 extends Phaser.Scene {
     this.load.spritesheet("img_bandit", "./assets/bandit.png", { frameWidth: 40, frameHeight: 57 });
     this.load.image("img_porte_retour", "./assets/door1.png");
     this.load.image("couteau", "./assets/couteau.png");
+    this.load.spritesheet("img_loup", "./assets/loup.png", { frameWidth: 96, frameHeight: 57 }); // ajuste les dimensions
   }
 
   create() {
@@ -56,24 +57,67 @@ export default class niveau1 extends Phaser.Scene {
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
+    const objets = this.map.getObjectLayer("objets")?.objects || [];
+    
+    // ENNEMIS
+
+    // Loups
+    this.loups = this.physics.add.group();
+    objets.forEach(obj => {
+      if (obj.properties?.find(p => p.name === "type")?.value === "loup") {
+        const loup = this.loups.create(obj.x, obj.y - 32, "img_loup");
+        loup.setCollideWorldBounds(true);
+        loup.setBounce(0);
+        const loup_vitesse = obj.properties?.find(p => p.name==="direction")?.value==="gauche" ? -120 : 120;
+        loup.setVelocityX(loup_vitesse);
+        loup.setGravityY(300);
+
+        // Sauvegarder direction et temps tir
+        loup.directionInitiale = loup_vitesse;
+        loup.nextShot = 0;
+        loup.vie = 2;
+      }
+    });
+    this.physics.add.collider(this.loups, this.calque_plateformes);
+
+
+    // Collision joueur / loups
+    this.player.lastHit = 0; // Ajoute ça dans create()
+
+    this.physics.add.overlap(this.player, this.loups, (player, loup) => {
+      const now = this.time.now;
+      if (!player.lastHit || now - player.lastHit > 1000) { // 1 seconde d'immunité
+        this.game.config.pointsDeVie -= 1;
+        fct.updateHearts(this);
+        console.log("Vie lue dans registry:", this.game.config.pointsDeVie);
+        player.setTint(0xff0000);
+        this.time.delayedCall(300, () => player.setTint(0xffffff));
+        player.lastHit = now;
+
+        if (this.game.config.pointsDeVie <= 0) {
+          this.physics.pause();
+          this.scene.start("defaite");
+        }
+      }
+    });
+
     // Projectiles
     this.projectiles = this.physics.add.group();
     this.physics.add.collider(this.projectiles, this.calque_plateformes, p => p.destroy());
 
     // Bandits
     this.bandits = this.physics.add.group();
-    const objets = this.map.getObjectLayer("objets")?.objects || [];
     objets.forEach(obj => {
       if (obj.properties?.find(p => p.name === "type")?.value === "bandit") {
         const bandit = this.bandits.create(obj.x, obj.y - 32, "img_bandit");
         bandit.setCollideWorldBounds(true);
         bandit.setBounce(0);
-        const vitesse = obj.properties?.find(p => p.name==="direction")?.value==="gauche" ? -80 : 80;
-        bandit.setVelocityX(vitesse);
+        const bandit_vitesse = obj.properties?.find(p => p.name==="direction")?.value==="gauche" ? -80 : 80;
+        bandit.setVelocityX(bandit_vitesse);
         bandit.setGravityY(300);
 
         // Sauvegarder direction et temps tir
-        bandit.directionInitiale = vitesse;
+        bandit.directionInitiale = bandit_vitesse;
         bandit.nextShot = 0;
         bandit.vie = 3;
       }
@@ -87,7 +131,6 @@ export default class niveau1 extends Phaser.Scene {
       const now = this.time.now;
       if (!player.lastHit || now - player.lastHit > 1000) { // 1 seconde d'immunité
         this.game.config.pointsDeVie -= 1;
-        this.registry.set('playerVie', this.game.config.pointsDeVie);
         fct.updateHearts(this);
         console.log("Vie lue dans registry:", this.game.config.pointsDeVie);
         player.setTint(0xff0000);
@@ -107,7 +150,6 @@ export default class niveau1 extends Phaser.Scene {
       const now = this.time.now;
       if (!player.lastHit || now - player.lastHit > 1000) {
         this.game.config.pointsDeVie -= 1;
-        this.registry.set('playerVie', this.game.config.pointsDeVie);
         fct.updateHearts(this);
         console.log("Vie lue dans registry:", this.game.config.pointsDeVie);
         player.setTint(0xff0000);
@@ -121,6 +163,11 @@ export default class niveau1 extends Phaser.Scene {
         projectile.destroy();
       }
     });
+
+    // Puis regrouper pour l’attaque
+    this.enemies = this.physics.add.group();
+    this.enemies.addMultiple(this.bandits.getChildren());
+    this.enemies.addMultiple(this.loups.getChildren());
 
 
     // Clavier global
@@ -185,17 +232,17 @@ export default class niveau1 extends Phaser.Scene {
   }
 
   // --- Vérifie si le bandit arrive au bord de sa plateforme ---
-  checkPlatformEdge(bandit) {
-    const direction = bandit.body.velocity.x > 0 ? 1 : -1;
-    const nextX = bandit.x + direction * (bandit.width / 2 + 1);
-    const nextY = bandit.y + bandit.height / 2 + 1;
+  checkPlatformEdge(ennemi) {
+    const direction = ennemi.body.velocity.x > 0 ? 1 : -1;
+    const nextX = ennemi.x + direction * (ennemi.width / 2 + 1);
+    const nextY = ennemi.y + ennemi.height / 2 + 1;
 
     const tile = this.calque_plateformes.getTileAtWorldXY(nextX, nextY);
 
     if (!tile) {
       // Demi-tour
-      bandit.setVelocityX(-bandit.body.velocity.x);
-      bandit.directionInitiale = bandit.body.velocity.x;
+      ennemi.setVelocityX(-ennemi.body.velocity.x);
+      ennemi.directionInitiale = ennemi.body.velocity.x;
     }
   }
 
@@ -241,14 +288,30 @@ export default class niveau1 extends Phaser.Scene {
         }
       }
     });
+    // --- Vérification des loups ---
+    this.loups.children.iterate(loup => {
+      if (loup) {
+        this.checkPlatformEdge(loup);
+
+        // Si collision avec mur ou à l’arrêt
+        if (loup.body.blocked.left || loup.body.blocked.right || loup.body.velocity.x === 0) {
+          // Inverse direction et force la vitesse
+          loup.directionInitiale = - (loup.directionInitiale || 120); // valeur par défaut si pas définie
+          loup.setVelocityX(loup.directionInitiale);
+          loup.flipX = loup.directionInitiale < 0;
+        }
+      }
+    });
+
+
 
     // Attaque
     if (this.clavier.attaque.isDown && this.player.canAttack) {
-      fct.attack(this.player, this, this.bandits); // <-- passer les ennemis
+      fct.attack(this.player, this, this.enemies);
       this.player.canAttack = false;
-
       this.time.delayedCall(300, () => { this.player.canAttack = true; });
     }
+
 
 
     // --- Retour au lobby ---

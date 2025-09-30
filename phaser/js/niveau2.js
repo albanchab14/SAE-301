@@ -34,36 +34,24 @@ export default class niveau2 extends Phaser.Scene {
     this.player.setBounce(0.2);
     this.player.setCollideWorldBounds(true);
     this.physics.add.collider(this.player, this.calque_plateformes);
+    
+    this.player.canAttack = true;
+    this.player.direction = "droite"; // Direction initiale
+    
+    // Vies joueur
+    this.maxVies = 5;
+    this.coeurs = [];
+    for (let i = 0; i < this.maxVies; i++) {
+      let coeur = this.add.sprite(32 + i*40, 48, "hero_hp", 0).setScrollFactor(0);
+      this.coeurs.push(coeur);
+    }
+    // Mise à jour initiale des cœurs
+    fct.updateHearts(this);
 
     // Camera
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
-    // Bandits
-    this.bandits = this.physics.add.group();
-    const objets = this.map.getObjectLayer("objets")?.objects || [];
-    objets.forEach(obj => {
-      const typeProp = obj.properties?.find(p => p.name === "type")?.value;
-      if(typeProp === "bandit") {
-        const bandit = this.bandits.create(obj.x, obj.y - 32, "img_bandit");
-        bandit.setCollideWorldBounds(true);
-        bandit.setBounce(1,0);
-        const vitesse = obj.properties?.find(p => p.name==="direction")?.value==="gauche"? -80:80;
-        bandit.setVelocityX(vitesse);
-        bandit.setGravityY(300);
-      }
-    });
-    this.physics.add.collider(this.bandits, this.calque_plateformes);
-    this.physics.add.overlap(this.player, this.bandits, () => {
-      this.player.setTint(0xff0000);
-      this.physics.pause();
-      this.scene.start("defaite");
-    });
-
-    // Projectiles
-    this.projectiles = this.physics.add.group();
-    this.physics.add.collider(this.projectiles, this.calque_plateformes, p => p.destroy());
-    
     // --- Clavier global (réutiliser comme dans selection.js)
     this.clavier = this.input.keyboard.addKeys({
       left: Phaser.Input.Keyboard.KeyCodes.LEFT,   // Flèche gauche
@@ -96,7 +84,14 @@ export default class niveau2 extends Phaser.Scene {
       this.player.setVelocityY(-320);
     }
 
-    // Retour vers la sélection avec E
+    // Attaque
+    if (this.clavier.attaque.isDown && this.player.canAttack) {
+      fct.attack(this.player, this, this.enemies);
+      this.player.canAttack = false;
+      this.time.delayedCall(300, () => { this.player.canAttack = true; });
+    }
+    
+    // Retour vers la sélection avec I
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
         this.physics.overlap(this.player, this.porte_retour)) {
       this.scene.switch("selection");

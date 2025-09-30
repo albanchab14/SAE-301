@@ -103,9 +103,8 @@ export default class selection extends Phaser.Scene {
     this.player.direction = "droite"; // Direction initiale
     
     // Valeur conservée ou valeur max par défaut
-    const savedVie = this.registry.get('playerVie');
     this.maxVies = 5;
-    this.game.config.pointsDeVie = this.game.config.pointsDeVie ?? 5;
+    this.game.config.pointsDeVie = 5
 
     // Création des cœurs
     this.coeurs = [];
