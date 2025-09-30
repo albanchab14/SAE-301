@@ -34,5 +34,9 @@ export default class victoire extends Phaser.Scene {
         bouton_retour.on("pointerup", () => { // au clic
             this.scene.start("menu");
         });
+
+        this.input.keyboard.on('keydown-I', () => {
+            this.scene.start("menu");
+        });
     }
 }

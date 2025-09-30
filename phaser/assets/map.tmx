@@ -47,7 +47,7 @@
   </tile>
   <tile id="10">
    <properties>
-    <property name="estEchelle" type="bool" value="false"/>
+    <property name="estEchelle" type="bool" value="true"/>
    </properties>
   </tile>
   <tile id="16">
