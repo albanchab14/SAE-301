@@ -16,15 +16,17 @@ export default class niveau2 extends Phaser.Scene {
 
   create() {
     // Map
-    this.map = this.add.tilemap("carte2");
-    const tileset = this.map.addTilesetImage("map2_tileset", "Phaser_tuilesdejeu2");
-    this.calque_background2 = this.map.createLayer("calque_background_2", tileset);
-    this.calque_background  = this.map.createLayer("calque_background", tileset);
-    this.calque_plateformes = this.map.createLayer("calque_plateformes", tileset);
-    this.calque_echelles    = this.map.createLayer("calque_echelles", tileset);
+    this.map2 = this.add.tilemap("carte2");
+    const tileset = this.map2.addTilesetImage("map2_tileset", "Phaser_tuilesdejeu2");
+    this.calque_background2 = this.map2.createLayer("calque_background_2", tileset);
+    this.calque_background  = this.map2.createLayer("calque_background", tileset);
+    this.calque_plateformes = this.map2.createLayer("calque_plateformes", tileset);
+    this.calque_echelles    = this.map2.createLayer("calque_echelles", tileset);
 
     // Collision plateformes
     this.calque_plateformes.setCollisionByProperty({ estSolide: true });
+
+    this.physics.world.setBounds(0, 0, this.map2.widthInPixels, this.map2.heightInPixels);
 
     // Porte retour
     this.porte_retour = this.physics.add.staticSprite(100, 597, "img_porte_retour");
@@ -50,7 +52,7 @@ export default class niveau2 extends Phaser.Scene {
 
     // Camera
     this.cameras.main.startFollow(this.player);
-    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+    this.cameras.main.setBounds(0, 0, this.map2.widthInPixels, this.map2.heightInPixels);
 
     // --- Clavier global (réutiliser comme dans selection.js)
     this.clavier = this.input.keyboard.addKeys({
