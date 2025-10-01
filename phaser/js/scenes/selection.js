@@ -51,8 +51,8 @@ export default class Selection extends BaseScene {
   }
 
   update() {
-    fct.lifeManager.updateHearts(this);
     this.updatePlayerMovement();
+    fct.lifeManager.updateHearts(this);
 
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
       if (this.physics.overlap(this.player, this.porte1)) {

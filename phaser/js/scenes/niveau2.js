@@ -74,8 +74,8 @@ export default class Niveau2 extends Basescene {
   }
 
   update() {
-    
     this.updatePlayerMovement();
+    fct.lifeManager.updateHearts(this);
 
     /*
     this.handleAttack(this.enemies);

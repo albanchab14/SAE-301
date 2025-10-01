@@ -32,10 +32,12 @@ export default class defaite extends Phaser.Scene {
         });
 
         bouton_retour.on("pointerup", () => { // au clic
+            this.registry.set('pointsDeVie', this.maxVies); 
             this.scene.start("menu");
         });
 
         this.input.keyboard.on('keydown-I', () => {
+            this.registry.set('pointsDeVie', this.maxVies); 
             this.scene.start("menu");
         });
     }

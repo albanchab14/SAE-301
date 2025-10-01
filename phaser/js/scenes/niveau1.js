@@ -67,7 +67,7 @@ export default class Niveau1 extends Basescene {
       const now = this.time.now;
       if (!player.lastHit || now - player.lastHit > 1000) { // 1 seconde d'immunité
         fct.lifeManager.retirerPV(this, 1);
-        console.log("Vie lue dans registry:", this.game.config.pointsDeVie);
+        fct.lifeManager.updateHearts(this);
         player.setTint(0xff0000);
         this.time.delayedCall(300, () => player.setTint(0xffffff));
         player.lastHit = now;
@@ -84,7 +84,6 @@ export default class Niveau1 extends Basescene {
       const now = this.time.now;
       if (!player.lastHit || now - player.lastHit > 1000) {
         fct.lifeManager.retirerPV(this, 1);
-        console.log("Vie lue dans registry:", this.game.config.pointsDeVie);
         player.setTint(0xff0000);
         this.time.delayedCall(300, () => player.setTint(0xffffff));
         player.lastHit = now;
@@ -102,7 +101,6 @@ export default class Niveau1 extends Basescene {
   }
 
   update() {
-    fct.lifeManager.updateHearts(this);
     this.updatePlayerMovement();
     this.handleAttack(this.enemies);
 
