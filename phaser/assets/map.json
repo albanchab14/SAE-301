@@ -290,7 +290,7 @@
         {
          "draworder":"topdown",
          "id":6,
-         "name":"objets",
+         "name":"ennemis",
          "objects":[
                 {
                  "height":0,

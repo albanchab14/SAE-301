@@ -57,13 +57,13 @@ export default class niveau1 extends Phaser.Scene {
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
-    const objets = this.map.getObjectLayer("objets")?.objects || [];
+    const ennemis = this.map.getObjectLayer("ennemis")?.objects || [];
     
     // ENNEMIS
 
     // Loups
     this.loups = this.physics.add.group();
-    objets.forEach(obj => {
+    ennemis.forEach(obj => {
       if (obj.properties?.find(p => p.name === "type")?.value === "loup") {
         const loup = this.loups.create(obj.x, obj.y - 32, "img_loup");
         loup.setCollideWorldBounds(true);
@@ -107,7 +107,7 @@ export default class niveau1 extends Phaser.Scene {
 
     // Bandits
     this.bandits = this.physics.add.group();
-    objets.forEach(obj => {
+    ennemis.forEach(obj => {
       if (obj.properties?.find(p => p.name === "type")?.value === "bandit") {
         const bandit = this.bandits.create(obj.x, obj.y - 32, "img_bandit");
         bandit.setCollideWorldBounds(true);

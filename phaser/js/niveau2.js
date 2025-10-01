@@ -81,6 +81,15 @@ export default class niveau2 extends Phaser.Scene {
       if (!this.player.isAttacking) this.player.anims.play("anim_face");
     }
 
+    // --- Gestion échelles ---
+    const tile = this.calque_echelles.getTileAtWorldXY(this.player.x, this.player.y, true);
+    if (tile && tile.properties.estEchelle) {
+      this.player.setGravityY(0);
+      if (this.clavier.up.isDown) this.player.setVelocityY(-160);
+      else if (this.clavier.down.isDown) this.player.setVelocityY(160);
+      else this.player.setVelocityY(0);
+    }
+    
     // Saut
     if (this.clavier.jump.isDown && this.player.body.blocked.down) {
       this.player.setVelocityY(-320);
