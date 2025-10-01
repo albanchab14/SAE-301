@@ -42,7 +42,8 @@ export default class Niveau2 extends Basescene {
     // Caméra
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(0, 0, this.map2.widthInPixels, this.map2.heightInPixels);
-
+    
+    /*
     // Ennemis
     this.enemies = this.add.group();
     this.projectiles = this.physics.add.group();
@@ -66,6 +67,7 @@ export default class Niveau2 extends Basescene {
       this.player.takeDamage(1);
       projectile.destroy();
     });
+    */
 
     // Clavier
     this.createClavier();
@@ -74,13 +76,15 @@ export default class Niveau2 extends Basescene {
   update() {
     
     this.updatePlayerMovement();
+
+    /*
     this.handleAttack(this.enemies);
 
     this.enemies.children.iterate(enemy => {
       if (enemy instanceof Loup) enemy.update(this.calque_plateformes);
       if (enemy instanceof Bandit) enemy.update(this.player, this.projectiles, this.calque_plateformes);
     });
-
+    */
     // Retour
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
         this.physics.overlap(this.player, this.porte_retour)) {
