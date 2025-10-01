@@ -1,13 +1,14 @@
 // chargement des librairies
-import menu from "./js/menu.js";
-import settings from "./js/settings.js";
-import credits from "./js/credits.js";
-import selection from "./js/selection.js";
-import niveau1 from "./js/niveau1.js";
-import niveau2 from "./js/niveau2.js";
-import niveau3 from "./js/niveau3.js";
-import defaite from "./js/defaite.js";
-import victoire from "./js/victoire.js";
+import basescene from "./js/scenes/basescene.js";
+import menu from "./js/scenes/menu.js";
+import settings from "./js/scenes/settings.js";
+import credits from "./js/scenes/credits.js";
+import selection from "./js/scenes/selection.js";
+import Niveau1 from "./js/scenes/niveau1.js";
+import Niveau2 from "./js/scenes/niveau2.js";
+import Niveau3 from "./js/scenes/niveau3.js";
+import defaite from "./js/scenes/defaite.js";
+import victoire from "./js/scenes/victoire.js";
 
 // configuration générale du jeu
 var config = {
@@ -31,11 +32,11 @@ var config = {
       debug: true // permet de voir les hitbox et les vecteurs d'acceleration quand mis à true
     }
   },
-  scene: [menu, settings, credits, selection, niveau1, niveau2, niveau3, defaite, victoire], // liste des scènes du jeu
+  scene: [basescene, menu, settings, credits, selection, Niveau1, Niveau2, Niveau3, defaite, victoire], // liste des scènes du jeu
   baseURL: window.location.pathname.replace(/\/[^/]*$/, '')
 };
 
 
 // création et lancement du jeu
-var game = new Phaser.Game(config);
+export var game = new Phaser.Game(config);
 game.scene.start("menu");
