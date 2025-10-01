@@ -11,25 +11,23 @@ export default class Niveau2 extends Basescene {
   }
 
   preload() {
-    this.load.image("Phaser_tuilesdejeu", "../assets/selectionJeu.png");
+    this.load.image("Phaser_tuilesdejeu2", "../assets/selectionJeu.png");
     this.load.tilemapTiledJSON("carte2", "../assets/map2.json");
-    this.load.spritesheet("img_bandit", "../assets/bandit.png", { frameWidth: 40, frameHeight: 57 });
     this.load.image("img_porte_retour", "../assets/door1.png");
-    this.load.image("couteau", "../assets/couteau.png");
-    this.load.spritesheet("img_loup", "../assets/loup.png", { frameWidth: 96, frameHeight: 57 });
   }
 
   create() {
     // Map
-    this.map = this.add.tilemap("carte2");
-    const tileset = this.map.addTilesetImage("map2_tileset", "Phaser_tuilesdejeu");
-    this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
-    this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
+    this.map2 = this.add.tilemap("carte2");
+    const tileset = this.map2.addTilesetImage("map2_tileset", "Phaser_tuilesdejeu2");
+    this.calque_background2 = this.map2.createLayer("calque_background_2", tileset);
+    this.calque_background  = this.map2.createLayer("calque_background", tileset);
+    this.calque_plateformes = this.map2.createLayer("calque_plateformes", tileset);
+    this.calque_echelles    = this.map2.createLayer("calque_echelles", tileset);
 
-    this.calque_background = this.map.createLayer("calque_background", tileset);
-    this.calque_plateformes = this.map.createLayer("calque_plateformes", tileset);
-    this.calque_echelles = this.map.createLayer("calque_echelles", tileset);
+    // Collision plateformes
     this.calque_plateformes.setCollisionByProperty({ estSolide: true });
+    this.physics.world.setBounds(0, 0, this.map2.widthInPixels, this.map2.heightInPixels);
 
     // Porte retour
     this.porte_retour = this.physics.add.staticSprite(100, 605, "img_porte_retour");
@@ -43,6 +41,7 @@ export default class Niveau2 extends Basescene {
 
     // Caméra
     this.cameras.main.startFollow(this.player);
+    this.cameras.main.setBounds(0, 0, this.map2.widthInPixels, this.map2.heightInPixels);
 
     // Ennemis
     this.enemies = this.add.group();
