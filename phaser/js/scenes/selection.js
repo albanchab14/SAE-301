@@ -36,6 +36,11 @@ export default class Selection extends BaseScene {
     this.player = this.createPlayer(100, 600);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
+    // Fragments collectés
+    const initialCollected = this.registry.get('collectedFragments') || 0;
+    const totalFragments = this.registry.get('totalFragments') || 0;
+    this.createFragmentsText(initialCollected, totalFragments);
+
     // Vie et UI
     this.createHearts();
     fct.lifeManager.init(this, this.maxVies);

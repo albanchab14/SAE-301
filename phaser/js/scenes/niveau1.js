@@ -52,15 +52,12 @@ export default class Niveau1 extends Basescene {
     this.totalFragments = this.collectiblesGroup.getLength();
     this.collectedFragments = 0;
 
-    // Exemple position en haut à gauche, tu peux ajuster X, Y, style
-    this.fragmentsText = this.add.text(16, 16, 'Fragments : 0/3', { fontSize: '20px', fill: '#fff' });
-    this.fragmentsText.setScrollFactor(0); // Pour que le texte reste fixe à l’écran même en scroll caméra
+    this.createFragmentsText(this.collectedFragments, this.totalFragments);
 
     this.physics.add.overlap(this.player, this.collectiblesGroup, (player, collectible) => {
       collectible.collect();
-      console.log("Overlap détecté !");
+      this.updateFragmentsText(this.collectedFragments, this.totalFragments);
     }, null, this);
-
 
     // Ennemis
     this.enemies = this.add.group();

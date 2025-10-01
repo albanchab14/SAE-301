@@ -71,14 +71,14 @@ export default class Basescene extends Phaser.Scene {
     return this.player;
   }
 
-    // --- Crée les cœurs de vie ---
-    createHearts() {
-        this.coeurs = [];
-        for (let i = 0; i < this.maxVies; i++) {
-            const coeur = this.add.sprite(32 + i * 40, 48, "hero_hp", 0).setScrollFactor(0);
-            this.coeurs.push(coeur);
-        }
-    }
+  // --- Crée les cœurs de vie ---
+  createHearts() {
+      this.coeurs = [];
+      for (let i = 0; i < this.maxVies; i++) {
+        const coeur = this.add.sprite(32 + i * 40, 48, "hero_hp", 0).setScrollFactor(0);
+        this.coeurs.push(coeur);
+      }
+  }
 
   // --- Clavier global ---
   createClavier() {
@@ -131,6 +131,18 @@ export default class Basescene extends Phaser.Scene {
   handleAttack(targets = null) {
     if (Phaser.Input.Keyboard.JustDown(this.clavier.attaque) && this.player.canAttack) {
       fct.attack(this.player, this, targets);
+    }
+  }
+
+  // --- Fragments collectés ---
+  createFragmentsText(initialCollected = 0, initialTotal = 0) {
+    this.fragmentsText = this.add.text(16, 16, `Fragments : ${initialCollected}/${initialTotal}`, { fontSize: '20px', fill: '#fff' });
+    this.fragmentsText.setScrollFactor(0);
+  }
+
+  updateFragmentsText(collected, total) {
+    if (this.fragmentsText) {
+      this.fragmentsText.setText(`Fragments : ${collected}/${total}`);
     }
   }
 }
