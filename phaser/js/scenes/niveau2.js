@@ -2,8 +2,11 @@
 import * as fct from '../fonctions.js';
 
 import Basescene from "./basescene.js";
+/*
 import Loup from "../entities/loup.js";
 import Bandit from "../entities/bandit.js";
+import Collectible from '../entities/collectible.js';
+*/
 
 export default class Niveau2 extends Basescene {
   constructor() {

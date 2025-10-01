@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="200" height="60" tilewidth="32" tileheight="32" infinite="0" nextlayerid="10" nextobjectid="51">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="200" height="60" tilewidth="32" tileheight="32" infinite="0" nextlayerid="10" nextobjectid="55">
  <editorsettings>
   <export target="map.json" format="json"/>
  </editorsettings>
@@ -718,18 +718,6 @@
    </properties>
    <point/>
   </object>
-  <object id="43" x="612" y="608">
-   <properties>
-    <property name="type " value="ronce"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="49" x="825" y="512">
-   <properties>
-    <property name="type" value="ronce"/>
-   </properties>
-   <point/>
-  </object>
  </objectgroup>
  <objectgroup id="7" name="collectibles">
   <object id="16" x="868" y="1052">
@@ -747,6 +735,27 @@
   <object id="18" x="4300" y="256">
    <properties>
     <property name="type" value="miroir"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="51" x="478.667" y="621.333">
+   <properties>
+    <property name="texture" value="0"/>
+    <property name="type" value="miroir_fragment"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="53" x="499.333" y="578">
+   <properties>
+    <property name="texture" value="1"/>
+    <property name="type" value="miroir_fragment"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="54" x="548.667" y="568">
+   <properties>
+    <property name="texture" value="2"/>
+    <property name="type" value="miroir_fragment"/>
    </properties>
    <point/>
   </object>

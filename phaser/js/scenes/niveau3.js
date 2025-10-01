@@ -1,7 +1,7 @@
 // scenes/niveau3.js
 import * as fct from '../fonctions.js';
-
 import Basescene from "./basescene.js";
+import Collectible from '../entities/collectible.js';
 
 export default class Niveau3 extends Basescene {
   constructor() {

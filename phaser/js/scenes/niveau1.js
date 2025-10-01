@@ -4,6 +4,7 @@ import * as fct from '../fonctions.js';
 import Basescene from "./basescene.js";
 import Loup from "../entities/loup.js";
 import Bandit from "../entities/bandit.js";
+import Collectible from '../entities/collectible.js';
 
 export default class Niveau1 extends Basescene {
   constructor() {
@@ -44,6 +45,22 @@ export default class Niveau1 extends Basescene {
 
     // Caméra
     this.cameras.main.startFollow(this.player);
+
+    // Objets
+    const collectiblesLayer = this.map.getObjectLayer('collectibles');
+    this.collectiblesGroup = Collectible.createFromTilemap(this, collectiblesLayer);
+    this.totalFragments = this.collectiblesGroup.getLength();
+    this.collectedFragments = 0;
+
+    // Exemple position en haut à gauche, tu peux ajuster X, Y, style
+    this.fragmentsText = this.add.text(16, 16, 'Fragments : 0/3', { fontSize: '20px', fill: '#fff' });
+    this.fragmentsText.setScrollFactor(0); // Pour que le texte reste fixe à l’écran même en scroll caméra
+
+    this.physics.add.overlap(this.player, this.collectiblesGroup, (player, collectible) => {
+      collectible.collect();
+      console.log("Overlap détecté !");
+    }, null, this);
+
 
     // Ennemis
     this.enemies = this.add.group();

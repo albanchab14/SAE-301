@@ -16,6 +16,9 @@ export default class Basescene extends Phaser.Scene {
     this.load.image("img_porte1", "../assets/door1.png");
     this.load.image("img_porte2", "../assets/door2.png");
     this.load.image("img_porte3", "../assets/door3.png");
+
+    this.load.spritesheet('miroir_fragments', '../assets/miroir_fragments.png', { frameWidth: 32, frameHeight: 32 });
+
   }
   // --- Crée le joueur et initialise ses propriétés ---
   createPlayer(x, y) {
