@@ -56,8 +56,8 @@ export default class Niveau1 extends Basescene {
     this.porte_retour_boss.body.enable = false;
     
 
-    // Joueur, placé en (100, 600)
-    this.player = this.createPlayer(3000, 150);
+    // Joueur, placé en (100, 600) / (3000,250 pour boss)
+    this.player = this.createPlayer(100, 600);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
 
@@ -84,7 +84,7 @@ export default class Niveau1 extends Basescene {
     this.createFragmentsText(this.game.config.collectedFragments, 9);
     this.events.on('wake', () => { // 1 appel au lancement de scène
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
-      this.player.setPosition(3000, 150);
+      this.player.setPosition(100, 600);
       // Si tu veux remettre la caméra sur le joueur
       this.cameras.main.startFollow(this.player);
     });

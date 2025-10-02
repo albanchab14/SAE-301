@@ -557,7 +557,7 @@
                 }],
          "opacity":1,
          "type":"objectgroup",
-         "visible":true,
+         "visible":false,
          "x":0,
          "y":0
         }, 
@@ -899,6 +899,24 @@
                  "width":0,
                  "x":4328,
                  "y":1271
+                }, 
+                {
+                 "height":0,
+                 "id":58,
+                 "name":"",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"loup"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":951.515151515152,
+                 "y":618.181818181818
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -907,7 +925,7 @@
          "y":0
         }],
  "nextlayerid":11,
- "nextobjectid":58,
+ "nextobjectid":59,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
