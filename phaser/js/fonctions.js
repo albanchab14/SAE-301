@@ -52,24 +52,20 @@ export function attack(player, scene, targets = null) {
 // ...existing code...
 
 function updateHearts(scene) {
-  const vies = scene.registry.get('pointsDeVie') ?? scene.maxVies;
   for (let i = 0; i < scene.coeurs.length; i++) {
-    scene.coeurs[i].setFrame(i < vies ? 0 : 1);
+    scene.coeurs[i].setFrame(i < scene.game.config.pointsDeVie ? 0 : 1);
   }
 }
 
 
 export let lifeManager = {
   init(scene, maxVies) {
-  // Lis la valeur du registry si elle existe
-  if (!scene.registry.has('pointsDeVie')) {
-    scene.registry.set('pointsDeVie', maxVies);
+  // Lis la valeur des PV si elle existe
+  if (!scene.game.config.pointsDeVie) {
+    scene.game.config.pointsDeVie = maxVies;
   }
-  const registryPV = scene.registry.get('pointsDeVie');
-  scene.game.config.pointsDeVie = registryPV;
-  scene.maxVies = maxVies;
   updateHearts(scene);
-  console.log("Vie lue dans registry:", scene.game.config.pointsDeVie);
+  console.log("Nombre de vies :", scene.game.config.pointsDeVie);
 },
 
   retirerPV(scene, amount = 1) {
@@ -77,9 +73,8 @@ export let lifeManager = {
     if (scene.game.config.pointsDeVie < 0) {
       scene.game.config.pointsDeVie = 0;
     }
-    scene.registry.set('pointsDeVie', scene.game.config.pointsDeVie);
     updateHearts(scene);
-    console.log("Vie lue dans registry:", scene.game.config.pointsDeVie);
+    console.log("Nombre de vies :", scene.game.config.pointsDeVie);
     // Tu peux ajouter ici un effet visuel ou sonore de perte de vie
   },
 
@@ -88,7 +83,6 @@ export let lifeManager = {
     if (scene.game.config.pointsDeVie > scene.maxVies) {
       scene.game.config.pointsDeVie = scene.maxVies;
     }
-    scene.registry.set('pointsDeVie', scene.game.config.pointsDeVie);
     updateHearts(scene);
     // Tu peux ajouter ici un effet visuel ou sonore de heal
   },
@@ -98,7 +92,6 @@ export let lifeManager = {
     if (scene.game.config.pointsDeVie > newMax) {
       scene.game.config.pointsDeVie = newMax;
     }
-    scene.registry.set('pointsDeVie', scene.game.config.pointsDeVie);
     updateHearts(scene);
   },
 

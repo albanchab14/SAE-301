@@ -5,8 +5,9 @@ import Basescene from "./basescene.js";
 /*
 import Loup from "../entities/loup.js";
 import Bandit from "../entities/bandit.js";
-import Collectible from '../entities/collectible.js';
 */
+import Collectible from '../entities/collectible.js';
+
 
 export default class Niveau2 extends Basescene {
   constructor() {
@@ -39,12 +40,25 @@ export default class Niveau2 extends Basescene {
     this.player = this.createPlayer(100, 600);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
-    // Vie et UI
-    this.createHearts();
-
     // Caméra
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(0, 0, this.map2.widthInPixels, this.map2.heightInPixels);
+    
+    // Fragments collectés
+    if (typeof this.game.config.collectedFragments !== "number") {
+      this.game.config.collectedFragments = 0;
+    }
+
+    this.createFragmentsText(this.game.config.collectedFragments, 9);
+    this.events.on('wake', () => { // 1 appel au lancement de scène
+      this.updateFragmentsText(this.game.config.collectedFragments, 9);
+    });
+    
+    // Vies
+    this.events.on('wake', () => { // 1 appel au lancement de scène
+      fct.lifeManager.updateHearts(this);
+    });
+    this.createHearts();
     
     /*
     // Ennemis
@@ -78,7 +92,6 @@ export default class Niveau2 extends Basescene {
 
   update() {
     this.updatePlayerMovement();
-    fct.lifeManager.updateHearts(this);
 
     /*
     this.handleAttack(this.enemies);
@@ -89,8 +102,7 @@ export default class Niveau2 extends Basescene {
     });
     */
     // Retour
-    if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
-        this.physics.overlap(this.player, this.porte_retour)) {
+    if (Phaser.Input.Keyboard.JustDown(this.clavier.action) && this.physics.overlap(this.player, this.porte_retour)) {
       this.scene.switch("selection");
     }
   }

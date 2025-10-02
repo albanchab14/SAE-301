@@ -135,7 +135,7 @@ export default class Basescene extends Phaser.Scene {
   }
 
   // --- Fragments collectés ---
-  createFragmentsText(initialCollected = 0, initialTotal = 0) {
+  createFragmentsText(initialCollected = 0, initialTotal = 9) {
     this.fragmentsText = this.add.text(16, 16, `Fragments : ${initialCollected}/${initialTotal}`, { fontSize: '20px', fill: '#fff' });
     this.fragmentsText.setScrollFactor(0);
   }

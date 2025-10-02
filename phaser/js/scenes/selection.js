@@ -1,6 +1,7 @@
 // scenes/selection.js
 import * as fct from "../fonctions.js";
 import BaseScene from "./basescene.js";
+import Collectible from '../entities/collectible.js';
 
 export default class Selection extends BaseScene {
   constructor() {
@@ -37,32 +38,39 @@ export default class Selection extends BaseScene {
     this.physics.add.collider(this.player, this.calque_plateformes);
 
     // Fragments collectés
-    const initialCollected = this.registry.get('collectedFragments') || 0;
-    const totalFragments = this.registry.get('totalFragments') || 0;
-    this.createFragmentsText(initialCollected, totalFragments);
+    // Pour éviter undefined
+    if (typeof this.game.config.collectedFragments !== "number") {
+      this.game.config.collectedFragments = 0;
+    }
 
+    this.createFragmentsText(this.game.config.collectedFragments, 9);
+    this.events.on('wake', () => { // 1 appel au lancement de scène
+      this.updateFragmentsText(this.game.config.collectedFragments, 9);
+    });
+    
     // Vie et UI
     this.createHearts();
     fct.lifeManager.init(this, this.maxVies);
-    fct.lifeManager.updateHearts(this);
+
+
+    this.events.on('wake', () => { // 1 appel au lancement de scène
+      fct.lifeManager.updateHearts(this);
+    });
 
     // Caméra
     this.cameras.main.startFollow(this.player);
 
     // Clavier
-    this.createClavier();
-
-    
+    this.createClavier();    
   }
 
   update() {
     this.updatePlayerMovement();
-    fct.lifeManager.updateHearts(this);
 
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
       if (this.physics.overlap(this.player, this.porte1)) {
         this.scene.switch("niveau1");
-        console.log("Vie lue dans registry:", this.game.config.pointsDeVie);
+        console.log("Nombre de fragments :", this.game.config.collectedFragments);
       }
       if (this.physics.overlap(this.player, this.porte2)) {
         this.scene.switch("niveau2");

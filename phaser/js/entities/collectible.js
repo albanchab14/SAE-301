@@ -6,7 +6,6 @@ export default class Collectible extends Phaser.Physics.Arcade.Sprite {
 
         scene.add.existing(this);
         this.setOrigin(0.5, 0.5);
-
         this.collected = false;
     }
 
@@ -15,20 +14,18 @@ export default class Collectible extends Phaser.Physics.Arcade.Sprite {
     collect() {
         if (this.collected) return;
         this.collected = true;
-        
-        console.log("Collectible ramassé !");
+
+        if (typeof this.scene.game.config.collectedFragments !== "number") {
+            this.scene.game.config.collectedFragments = 0;
+        }
+
         this.disableBody(true, true);
 
-        if (!this.scene.collectedFragments) {
-            this.scene.collectedFragments = 0;
-        }
-        this.scene.collectedFragments++;
-
-        // Met à jour le texte
-        if (this.scene.fragmentsText) {
-            this.scene.fragmentsText.setText(`Fragments : ${this.scene.collectedFragments}/${this.scene.totalFragments}`);
-        }
+        this.scene.game.config.collectedFragments++;
+        
+        this.scene.updateFragmentsText(this.scene.game.config.collectedFragments, 9);
     }
+
 
 
   // Méthode statique pour créer tous les collectibles à partir du calque "collectibles"

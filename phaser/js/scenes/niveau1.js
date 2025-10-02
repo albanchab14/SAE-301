@@ -31,6 +31,8 @@ export default class Niveau1 extends Basescene {
     this.calque_background = this.map.createLayer("calque_background", tileset);
     this.calque_plateformes = this.map.createLayer("calque_plateformes", tileset);
     this.calque_echelles = this.map.createLayer("calque_echelles", tileset);
+
+    // Collisions plateformes
     this.calque_plateformes.setCollisionByProperty({ estSolide: true });
 
     // Porte retour
@@ -40,26 +42,38 @@ export default class Niveau1 extends Basescene {
     this.player = this.createPlayer(100, 600);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
-    // Vie et UI
-    this.createHearts();
-
     // Caméra
     this.cameras.main.startFollow(this.player);
+    
+    // Vies
+    this.events.on('wake', () => { // 1 appel au lancement de scène
+      fct.lifeManager.updateHearts(this);
+    });
+    this.createHearts();
 
-    // Objets
+    // --- CREATION OBJETS ---
+
     const collectiblesLayer = this.map.getObjectLayer('collectibles');
     this.collectiblesGroup = Collectible.createFromTilemap(this, collectiblesLayer);
     this.totalFragments = this.collectiblesGroup.getLength();
-    this.collectedFragments = 0;
 
-    this.createFragmentsText(this.collectedFragments, this.totalFragments);
+    // Affichage fragments
+    if (typeof this.game.config.collectedFragments !== "number") {
+      this.game.config.collectedFragments = 0;
+    }
 
+    this.createFragmentsText(this.game.config.collectedFragments, 9);
+    this.events.on('wake', () => { // 1 appel au lancement de scène
+      this.updateFragmentsText(this.game.config.collectedFragments, 9);
+    });
+
+    // Fragment collecté
     this.physics.add.overlap(this.player, this.collectiblesGroup, (player, collectible) => {
       collectible.collect();
-      this.updateFragmentsText(this.collectedFragments, this.totalFragments);
+      this.updateFragmentsText(this.game.config.collectedFragments, 9);
     }, null, this);
 
-    // Ennemis
+    // --- ENNEMIS ---
     this.enemies = this.add.group();
     this.projectiles = this.physics.add.group();
 
@@ -81,7 +95,6 @@ export default class Niveau1 extends Basescene {
       const now = this.time.now;
       if (!player.lastHit || now - player.lastHit > 1000) { // 1 seconde d'immunité
         fct.lifeManager.retirerPV(this, 1);
-        fct.lifeManager.updateHearts(this);
         player.setTint(0xff0000);
         this.time.delayedCall(300, () => player.setTint(0xffffff));
         player.lastHit = now;
@@ -126,7 +139,7 @@ export default class Niveau1 extends Basescene {
     // Retour
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
         this.physics.overlap(this.player, this.porte_retour)) {
-          console.log("Vie lue dans registry:", this.game.config.pointsDeVie);
+          console.log("Nombre de fragments :", this.game.config.collectedFragments);
       this.scene.switch("selection");
     }
   }
