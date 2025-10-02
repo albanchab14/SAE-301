@@ -685,7 +685,7 @@
   </object>
  </objectgroup>
  <objectgroup id="10" name="zones">
-  <object id="56" name="boss1Zone" x="1984" y="62.6667" width="700" height="385">
+  <object id="56" name="boss1Zone" x="1984" y="62.6667" width="900" height="385">
    <properties>
     <property name="bossname" value="MINOTAURE"/>
    </properties>
