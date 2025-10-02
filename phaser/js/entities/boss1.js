@@ -119,14 +119,14 @@ export default class Boss1 extends Enemy {
 
   // Détruire le boss et son point d'exclamation
   destroy(fromScene) {
-      if (this.alert) {
-          this.alert.destroy();
-      }
-      if (this.scene.porte_retour_boss && this.scene.porte_retour_boss.body) {
-        this.scene.porte_retour_boss.setVisible(true);
-        this.scene.porte_retour_boss.body.enable = true;
-      }
-      super.destroy(fromScene);
+    if (this.alert) {
+        this.alert.destroy();
+    }
+    if (this.scene && this.scene.porte_retour_boss && this.scene.porte_retour_boss.body) {
+      this.scene.porte_retour_boss.setVisible(true);
+      this.scene.porte_retour_boss.body.enable = true;
+    }
+    super.destroy(fromScene);
   }
 
 }

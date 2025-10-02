@@ -37,7 +37,7 @@ export default class defaite extends Phaser.Scene {
         });
 
         this.input.keyboard.on('keydown-I', () => {
-            this.registry.set('pointsDeVie', this.maxVies); 
+            this.registry.set('pointsDeVie', this.maxVies);
             this.scene.start("menu");
         });
     }

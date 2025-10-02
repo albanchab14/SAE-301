@@ -18,6 +18,7 @@ export default class Basescene extends Phaser.Scene {
     this.load.image("img_porte3", "../assets/door3.png");
 
     this.load.spritesheet('miroir_fragments', '../assets/miroir_fragments.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.audio('son_attaque', './assets/sfx/hit.mp3');
 
   }
   // --- Crée le joueur et initialise ses propriétés ---
@@ -67,6 +68,8 @@ export default class Basescene extends Phaser.Scene {
         repeat: 0
       });
     }
+
+    this.sonAttaque = this.sound.add('son_attaque');
 
     return this.player;
   }
@@ -131,6 +134,7 @@ export default class Basescene extends Phaser.Scene {
   handleAttack(targets = null) {
     if (Phaser.Input.Keyboard.JustDown(this.clavier.attaque) && this.player.canAttack) {
       fct.attack(this.player, this, targets);
+      this.sonAttaque.play();
     }
   }
 

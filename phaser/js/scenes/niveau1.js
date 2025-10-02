@@ -173,6 +173,7 @@ export default class Niveau1 extends Basescene {
 
         if (this.game.config.pointsDeVie <= 0) {
           this.physics.pause();
+          this.game.config.collectedFragments = 0;
           this.scene.start("defaite");
         }
       }
@@ -189,6 +190,7 @@ export default class Niveau1 extends Basescene {
 
         if (this.game.config.pointsDeVie <= 0) {
           this.physics.pause();
+          this.game.config.collectedFragments = 0;
           this.scene.start("defaite");
         }
         projectile.destroy();
