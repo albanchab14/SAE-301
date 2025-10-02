@@ -18,16 +18,27 @@ export default class Niveau1 extends Basescene {
     this.load.image("img_porte_retour", "./assets/door1.png");
     this.load.image("couteau", "./assets/couteau.png");
     this.load.spritesheet("img_loup", "./assets/loup.png", { frameWidth: 96, frameHeight: 57 });
+
+    this.load.image("background_fixe", "./assets/fond_map_1.png");
+
   }
 
   create() {
+    //backgroung map
+    const bg = this.add.image(0, 0, "background_fixe")
+        .setOrigin(0, 0)
+        .setScrollFactor(0);
+    // Mise à l’échelle si besoin :
+    bg.displayWidth = this.scale.width;
+    bg.displayHeight = this.scale.height;
+
+
     // Map
     this.map = this.add.tilemap("carte");
     const tileset = this.map.addTilesetImage("tuiles_de_jeu", "Phaser_tuilesdejeu");
     this.physics.world.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
     this.cameras.main.setBounds(0, 0, this.map.widthInPixels, this.map.heightInPixels);
 
-    this.calque_background2 = this.map.createLayer("calque_background_2", tileset);
     this.calque_background = this.map.createLayer("calque_background", tileset);
     this.calque_plateformes = this.map.createLayer("calque_plateformes", tileset);
     this.calque_echelles = this.map.createLayer("calque_echelles", tileset);
@@ -112,6 +123,7 @@ export default class Niveau1 extends Basescene {
 
     // Clavier
     this.createClavier();
+
   }
 
   update() {
