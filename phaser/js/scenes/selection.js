@@ -37,7 +37,6 @@ export default class Selection extends BaseScene {
     this.physics.add.collider(this.player, this.calque_plateformes);
 
     // Fragments collectés
-    // Pour éviter undefined
     if (typeof this.game.config.collectedFragments !== "number") {
       this.game.config.collectedFragments = 0;
     }

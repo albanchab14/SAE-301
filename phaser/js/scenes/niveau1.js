@@ -49,12 +49,17 @@ export default class Niveau1 extends Basescene {
     // Collisions plateformes
     this.calque_plateformes.setCollisionByProperty({ estSolide: true });
 
-    // Porte retour
+    // Portes retour
     this.porte_retour = this.physics.add.staticSprite(100, 605, "img_porte_retour");
+    this.porte_retour_boss = this.physics.add.staticSprite(2050, 412, "img_porte_retour");
+    this.porte_retour_boss.setVisible(false);
+    this.porte_retour_boss.body.enable = false;
+    
 
     // Joueur, placé en (100, 600)
     this.player = this.createPlayer(3000, 150);
     this.physics.add.collider(this.player, this.calque_plateformes);
+
 
     // Caméra
     this.cameras.main.startFollow(this.player);
@@ -79,6 +84,9 @@ export default class Niveau1 extends Basescene {
     this.createFragmentsText(this.game.config.collectedFragments, 9);
     this.events.on('wake', () => { // 1 appel au lancement de scène
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
+      this.player.setPosition(3000, 150);
+      // Si tu veux remettre la caméra sur le joueur
+      this.cameras.main.startFollow(this.player);
     });
 
     // Fragment collecté
@@ -90,7 +98,6 @@ export default class Niveau1 extends Basescene {
     // --- ENNEMIS ---
 
     // Animations
-
     this.anims.create({
       key: 'boss1_walk_left',
       frames: this.anims.generateFrameNumbers('img_boss1', { start: 0, end: 4 }),
@@ -213,7 +220,7 @@ export default class Niveau1 extends Basescene {
 
     // Retour
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
-        this.physics.overlap(this.player, this.porte_retour)) {
+    (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss))) {
           console.log("Nombre de fragments :", this.game.config.collectedFragments);
       this.scene.switch("selection");
     }

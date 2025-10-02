@@ -5,7 +5,7 @@ export default class Boss1 extends Enemy {
   constructor(scene, x, y) {
     super(scene, x, y, "img_boss1", 0);
 
-    this.vie = 20;
+    this.vie = 10;
     this.setGravityY(300);
     this.setCollideWorldBounds(true);
 
@@ -67,6 +67,7 @@ export default class Boss1 extends Enemy {
     }
   }
   playWalkAnimation() {
+    if (!this.body) return;
     if (this.direction === 1) {
       this.anims.play('boss1_walk_right', true);
     } else {
@@ -75,6 +76,7 @@ export default class Boss1 extends Enemy {
   }
 
   checkPlayerDetection(player) {
+    if (!this.body) return;
     const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
     if (distance < this.detectionRange) {
       this.enterPause(player);
@@ -82,6 +84,7 @@ export default class Boss1 extends Enemy {
   }
 
   enterPause(player) {
+    if (!this.body) return;
     this.state = "pause";
     this.scene.time.delayedCall(this.pauseDuration, () => {
       this.startCharge(player);
@@ -89,18 +92,21 @@ export default class Boss1 extends Enemy {
   }
 
   startCharge(player) {
+    if (!this.body) return;
     this.state = "charge";
     this.direction = player.x > this.x ? 1 : -1;
     this.setVelocityX(this.direction * this.chargeSpeed);
   }
 
   checkCollisionWithWall() {
+    if (!this.body) return;
     if (this.body.blocked.left || this.body.blocked.right) {
       this.enterStunned();
     }
   }
 
   enterStunned() {
+    if (!this.body) return;
     this.state = "stunned";
     this.setVelocityX(0);
     this.setTint(0xffff66); // visuel simple pour montrer l'étourdissement
@@ -110,4 +116,17 @@ export default class Boss1 extends Enemy {
       this.setVelocityX(this.normalSpeed * this.direction);
     });
   }
+
+  // Détruire le boss et son point d'exclamation
+  destroy(fromScene) {
+      if (this.alert) {
+          this.alert.destroy();
+      }
+      if (this.scene.porte_retour_boss) {
+        this.scene.porte_retour_boss.setVisible(true);
+        this.scene.porte_retour_boss.body.enable = true;
+      }
+      super.destroy(fromScene);
+  }
+
 }

@@ -453,90 +453,11 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup color="#aa0000" id="6" name="ennemis">
-  <object id="4" x="3192" y="1084">
+ <objectgroup id="10" name="zones">
+  <object id="56" name="boss1Zone" x="1984" y="62.6667" width="900" height="385">
    <properties>
-    <property name="type" value="bandit"/>
+    <property name="bossname" value="MINOTAURE"/>
    </properties>
-   <point/>
-  </object>
-  <object id="5" x="5300" y="1788">
-   <properties>
-    <property name="type" value="bandit"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="6" x="5740" y="732">
-   <properties>
-    <property name="type" value="bandit"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="7" x="5800" y="1372">
-   <properties>
-    <property name="type " value="bandit"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="8" x="3944" y="1840">
-   <properties>
-    <property name="type" value="bandit"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="10" x="1864" y="1888">
-   <properties>
-    <property name="type" value="bandit"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="11" x="2690" y="1348">
-   <properties>
-    <property name="type" value="loup"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="12" x="3334" y="1726">
-   <properties>
-    <property name="type" value="loup"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="14" x="748" y="1818">
-   <properties>
-    <property name="type" value="loup"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="19" x="4456" y="1180">
-   <properties>
-    <property name="type" value="loup"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="20" x="4888" y="1224">
-   <properties>
-    <property name="type" value="loup"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="21" x="3476" y="288">
-   <properties>
-    <property name="type" value="loup"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="48" x="2512.61" y="406.061">
-   <properties>
-    <property name="type" value="boss1"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="50" x="4328" y="1271">
-   <properties>
-    <property name="type" value="bandit"/>
-   </properties>
-   <point/>
   </object>
  </objectgroup>
  <objectgroup color="#005500" id="8" name="ronce">
@@ -669,14 +590,14 @@
    </properties>
    <point/>
   </object>
-  <object id="53" x="499.333" y="578">
+  <object id="53" x="3131.33" y="198">
    <properties>
     <property name="texture" value="1"/>
     <property name="type" value="miroir_fragment"/>
    </properties>
    <point/>
   </object>
-  <object id="54" x="548.667" y="568">
+  <object id="54" x="2856.67" y="379">
    <properties>
     <property name="texture" value="2"/>
     <property name="type" value="miroir_fragment"/>
@@ -684,11 +605,90 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="10" name="zones">
-  <object id="56" name="boss1Zone" x="1984" y="62.6667" width="900" height="385">
+ <objectgroup color="#aa0000" id="6" name="ennemis">
+  <object id="4" x="3192" y="1084">
    <properties>
-    <property name="bossname" value="MINOTAURE"/>
+    <property name="type" value="bandit"/>
    </properties>
+   <point/>
+  </object>
+  <object id="5" x="5300" y="1788">
+   <properties>
+    <property name="type" value="bandit"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="6" x="5740" y="732">
+   <properties>
+    <property name="type" value="bandit"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="7" x="5800" y="1372">
+   <properties>
+    <property name="type " value="bandit"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="8" x="3944" y="1840">
+   <properties>
+    <property name="type" value="bandit"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="10" x="1864" y="1888">
+   <properties>
+    <property name="type" value="bandit"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="11" x="2690" y="1348">
+   <properties>
+    <property name="type" value="loup"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="12" x="3334" y="1726">
+   <properties>
+    <property name="type" value="loup"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="14" x="748" y="1818">
+   <properties>
+    <property name="type" value="loup"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="19" x="4456" y="1180">
+   <properties>
+    <property name="type" value="loup"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="20" x="4888" y="1224">
+   <properties>
+    <property name="type" value="loup"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="21" x="3476" y="288">
+   <properties>
+    <property name="type" value="loup"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="48" x="2450" y="406.061">
+   <properties>
+    <property name="type" value="boss1"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="50" x="4328" y="1271">
+   <properties>
+    <property name="type" value="bandit"/>
+   </properties>
+   <point/>
   </object>
  </objectgroup>
 </map>
