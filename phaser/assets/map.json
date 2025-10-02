@@ -216,6 +216,7 @@
          "y":0
         }, 
         {
+         "color":"#aa0000",
          "draworder":"topdown",
          "id":6,
          "name":"ennemis",
@@ -515,6 +516,7 @@
          "y":0
         }, 
         {
+         "color":"#005500",
          "draworder":"topdown",
          "id":8,
          "name":"ronce",
@@ -832,6 +834,7 @@
          "y":0
         }, 
         {
+         "color":"#ffff00",
          "draworder":"topdown",
          "id":7,
          "name":"collectibles",

@@ -227,7 +227,76 @@
          "draworder":"topdown",
          "id":6,
          "name":"collectibles",
-         "objects":[],
+         "objects":[
+                {
+                 "height":0,
+                 "id":1,
+                 "name":"",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"texture",
+                         "type":"int",
+                         "value":3
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"miroir_fragment"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":175,
+                 "y":601
+                }, 
+                {
+                 "height":0,
+                 "id":2,
+                 "name":"",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"texture",
+                         "type":"int",
+                         "value":4
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"miroir_fragment"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":229,
+                 "y":601
+                }, 
+                {
+                 "height":0,
+                 "id":4,
+                 "name":"",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"texture",
+                         "type":"int",
+                         "value":5
+                        }, 
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"miroir_fragment"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":303,
+                 "y":598
+                }],
          "opacity":1,
          "type":"objectgroup",
          "visible":true,
@@ -235,7 +304,7 @@
          "y":0
         }],
  "nextlayerid":7,
- "nextobjectid":1,
+ "nextobjectid":5,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

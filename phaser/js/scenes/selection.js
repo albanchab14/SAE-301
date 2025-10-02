@@ -66,6 +66,7 @@ export default class Selection extends BaseScene {
 
   update() {
     this.updatePlayerMovement();
+    this.handleAttack(this.enemies);
 
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
       if (this.physics.overlap(this.player, this.porte1)) {
@@ -74,6 +75,9 @@ export default class Selection extends BaseScene {
       }
       if (this.physics.overlap(this.player, this.porte2)) {
         this.scene.switch("niveau2");
+      }
+      if (this.physics.overlap(this.player, this.porte3)) {
+        this.scene.switch("niveau3");
       }
     }
   }

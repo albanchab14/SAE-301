@@ -43,8 +43,20 @@ export default class Niveau2 extends Basescene {
     // Caméra
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(0, 0, this.map2.widthInPixels, this.map2.heightInPixels);
+  
+    // Vies
+    this.events.on('wake', () => { // 1 appel au lancement de scène
+      fct.lifeManager.updateHearts(this);
+    });
+    this.createHearts();
     
-    // Fragments collectés
+    // --- CREATION OBJETS ---
+    
+    const collectiblesLayer = this.map2.getObjectLayer('collectibles');
+    this.collectiblesGroup = Collectible.createFromTilemap(this, collectiblesLayer);
+    this.totalFragments = this.collectiblesGroup.getLength();
+    
+    // Affichage fragments
     if (typeof this.game.config.collectedFragments !== "number") {
       this.game.config.collectedFragments = 0;
     }
@@ -53,13 +65,13 @@ export default class Niveau2 extends Basescene {
     this.events.on('wake', () => { // 1 appel au lancement de scène
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
     });
-    
-    // Vies
-    this.events.on('wake', () => { // 1 appel au lancement de scène
-      fct.lifeManager.updateHearts(this);
-    });
-    this.createHearts();
-    
+
+    // Fragment collecté
+    this.physics.add.overlap(this.player, this.collectiblesGroup, (player, collectible) => {
+      collectible.collect();
+      this.updateFragmentsText(this.game.config.collectedFragments, 9);
+    }, null, this);
+      
     /*
     // Ennemis
     this.enemies = this.add.group();
@@ -92,6 +104,7 @@ export default class Niveau2 extends Basescene {
 
   update() {
     this.updatePlayerMovement();
+    this.handleAttack(this.enemies);
 
     /*
     this.handleAttack(this.enemies);

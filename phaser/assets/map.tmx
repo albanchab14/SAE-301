@@ -453,7 +453,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="6" name="ennemis">
+ <objectgroup color="#aa0000" id="6" name="ennemis">
   <object id="2" x="758" y="624.667">
    <properties>
     <property name="type" value="bandit"/>
@@ -551,7 +551,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="8" name="ronce">
+ <objectgroup color="#005500" id="8" name="ronce">
   <object id="22" x="2964" y="1856">
    <properties>
     <property name="type" value="ronce"/>
@@ -655,7 +655,7 @@
    <point/>
   </object>
  </objectgroup>
- <objectgroup id="7" name="collectibles">
+ <objectgroup color="#ffff00" id="7" name="collectibles">
   <object id="16" x="868" y="1052">
    <properties>
     <property name="type " value="miroir"/>
