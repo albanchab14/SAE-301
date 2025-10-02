@@ -41,25 +41,36 @@ export default class Boss1 extends Enemy {
         }
         this.alert.setVisible(false);
         this.checkPlayerDetection(player);
+        this.playWalkAnimation();
         break;
 
       case "pause":
         // il ne bouge pas pendant la pause
         this.setVelocityX(0);
         this.alert.setVisible(true);
+        this.anims.stop();
         break;
 
       case "charge":
         // il continue sa charge, gérée par la vélocité
         this.checkCollisionWithWall();
         this.alert.setVisible(false);
+        this.playWalkAnimation();
         break;
 
       case "stunned":
         // il est bloqué, rien à faire ici
         this.setVelocityX(0);
         this.alert.setVisible(false);
+        this.anims.stop();
         break;
+    }
+  }
+  playWalkAnimation() {
+    if (this.direction === 1) {
+      this.anims.play('boss1_walk_right', true);
+    } else {
+      this.anims.play('boss1_walk_left', true);
     }
   }
 
