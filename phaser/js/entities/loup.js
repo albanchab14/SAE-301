@@ -19,5 +19,14 @@ export default class Loup extends Enemy {
       this.setVelocityX(-120); // rebond vers la droite
       this.direction = -1;
     }
+    this.playWalkAnimation();
+  }
+  playWalkAnimation() {
+    if (!this.body) return;
+    if (this.direction === 1) {
+      this.anims.play('loup_walk_right', true);
+    } else {
+      this.anims.play('loup_walk_left', true);
+    }
   }
 }

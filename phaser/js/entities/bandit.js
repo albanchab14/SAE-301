@@ -40,6 +40,16 @@ export default class Bandit extends Enemy {
         this.setVelocityX(this.direction*80);
       }
     }
+    this.playWalkAnimation();
+  }
+
+  playWalkAnimation() {
+    if (!this.body) return;
+    if (this.direction === 1) {
+      this.anims.play('bandit_walk_right', true);
+    } else {
+      this.anims.play('bandit_walk_left', true);
+    }
   }
 
   launchProjectile(group, player) {

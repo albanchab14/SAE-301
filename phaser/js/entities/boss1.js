@@ -122,7 +122,7 @@ export default class Boss1 extends Enemy {
       if (this.alert) {
           this.alert.destroy();
       }
-      if (this.scene.porte_retour_boss) {
+      if (this.scene.porte_retour_boss && this.scene.porte_retour_boss.body) {
         this.scene.porte_retour_boss.setVisible(true);
         this.scene.porte_retour_boss.body.enable = true;
       }

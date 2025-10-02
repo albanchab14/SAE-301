@@ -97,7 +97,37 @@ export default class Niveau1 extends Basescene {
 
     // --- ENNEMIS ---
 
-    // Animations
+    // --- Animations ---
+
+    this.anims.create({
+      key: 'loup_walk_left',
+      frames: this.anims.generateFrameNumbers('img_loup', { start: 0, end: 3 }),
+      frameRate: 6,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: 'loup_walk_right',
+      frames: this.anims.generateFrameNumbers('img_loup', { start: 4, end: 7 }),
+      frameRate: 6,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: 'bandit_walk_left',
+      frames: this.anims.generateFrameNumbers('img_bandit', { start: 0, end: 3 }),
+      frameRate: 6,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: 'bandit_walk_right',
+      frames: this.anims.generateFrameNumbers('img_bandit', { start: 4, end: 7 }),
+      frameRate: 6,
+      repeat: -1
+    });
+
+    // Boss
     this.anims.create({
       key: 'boss1_walk_left',
       frames: this.anims.generateFrameNumbers('img_boss1', { start: 0, end: 4 }),
@@ -126,8 +156,7 @@ export default class Niveau1 extends Basescene {
         this.enemies.add(new Bandit(this, obj.x, obj.y-32));
       }
       if (obj.properties?.find(p => p.name === "type")?.value === "boss1") {
-        console.log("Spawn boss1 à", obj.x, obj.y);
-        this.enemies.add(new Boss1(this, obj.x, obj.y-64));
+        this.enemies.add(new Boss1(this, obj.x, obj.y-32));
       }
     });
 
@@ -213,7 +242,7 @@ export default class Niveau1 extends Basescene {
     this.handleAttack(this.enemies);
 
     this.enemies.children.iterate(enemy => {
-      if (enemy instanceof Loup) enemy.update(this.calque_plateformes);
+      if (enemy instanceof Loup) enemy.update(this.calque_plateformes, this.player);
       if (enemy instanceof Bandit) enemy.update(this.player, this.projectiles, this.calque_plateformes);
       if (enemy instanceof Boss1) enemy.update(this.calque_plateformes, this.player);
     });
