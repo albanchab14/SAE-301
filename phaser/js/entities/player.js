@@ -8,7 +8,7 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     this.setBounce(0.2);
     
     this.speed = 160;
-    this.jumpSpeed = -320;
+    this.jumpSpeed = -350;
     
     this.lives = 5;
     this.maxLives = 5;

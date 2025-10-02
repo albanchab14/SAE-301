@@ -114,7 +114,7 @@ export default class Basescene extends Phaser.Scene {
 
     // Saut
     if (clavier.jump.isDown && player.body.blocked.down) {
-      player.setVelocityY(-320);
+      player.setVelocityY(-350);
     }
 
     // Échelles

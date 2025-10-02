@@ -1,7 +1,6 @@
 // scenes/selection.js
 import * as fct from "../fonctions.js";
 import BaseScene from "./basescene.js";
-import Collectible from '../entities/collectible.js';
 
 export default class Selection extends BaseScene {
   constructor() {

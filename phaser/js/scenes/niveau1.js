@@ -4,6 +4,7 @@ import * as fct from '../fonctions.js';
 import Basescene from "./basescene.js";
 import Loup from "../entities/loup.js";
 import Bandit from "../entities/bandit.js";
+import Boss1 from "../entities/boss1.js";
 import Collectible from '../entities/collectible.js';
 
 export default class Niveau1 extends Basescene {
@@ -18,6 +19,8 @@ export default class Niveau1 extends Basescene {
     this.load.image("img_porte_retour", "./assets/door1.png");
     this.load.image("couteau", "./assets/couteau.png");
     this.load.spritesheet("img_loup", "./assets/loup.png", { frameWidth: 96, frameHeight: 57 });
+    this.load.spritesheet("img_boss1", "./assets/boss1.png", { frameWidth: 70, frameHeight: 94 });
+
 
     this.load.image("background_fixe", "./assets/fond_map_1.png");
 
@@ -49,8 +52,8 @@ export default class Niveau1 extends Basescene {
     // Porte retour
     this.porte_retour = this.physics.add.staticSprite(100, 605, "img_porte_retour");
 
-    // Joueur
-    this.player = this.createPlayer(100, 600);
+    // Joueur, placé en (100, 600)
+    this.player = this.createPlayer(3000, 150);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
     // Caméra
@@ -85,6 +88,24 @@ export default class Niveau1 extends Basescene {
     }, null, this);
 
     // --- ENNEMIS ---
+
+    // Animations
+
+    this.anims.create({
+      key: 'boss1_walk_left',
+      frames: this.anims.generateFrameNumbers('img_boss1', { start: 0, end: 4 }),
+      frameRate: 6,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: 'boss1_walk_right',
+      frames: this.anims.generateFrameNumbers('img_boss1', { start: 5, end: 9 }),
+      frameRate: 6,
+      repeat: -1
+    });
+
+    // Création
     this.enemies = this.add.group();
     this.projectiles = this.physics.add.group();
 
@@ -96,6 +117,10 @@ export default class Niveau1 extends Basescene {
       }
       if (obj.properties?.find(p => p.name === "type")?.value === "bandit") {
         this.enemies.add(new Bandit(this, obj.x, obj.y-32));
+      }
+      if (obj.properties?.find(p => p.name === "type")?.value === "boss1") {
+        console.log("Spawn boss1 à", obj.x, obj.y);
+        this.enemies.add(new Boss1(this, obj.x, obj.y-64));
       }
     });
 
@@ -137,6 +162,43 @@ export default class Niveau1 extends Basescene {
     // Clavier
     this.createClavier();
 
+
+    // ------ CREATION TEXTE BOSS --------
+    const zones = this.map.getObjectLayer("zones");
+    const bossObject = zones.objects.find(obj => obj.name === "boss1Zone");
+
+    this.bossZone = this.add.zone(
+      bossObject.x + bossObject.width / 2, 
+      bossObject.y + bossObject.height / 2, 
+      bossObject.width, 
+      bossObject.height
+    );
+
+    this.physics.world.enable(this.bossZone);
+    this.bossZone.body.setAllowGravity(false);
+    this.bossZone.body.setImmovable(true);
+
+    // Crée le texte du boss
+    this.bossNameText = this.add.text(this.scale.width/1.25, this.scale.height/1.1, bossObject.properties?.find(p => p.name === "bossname")?.value || "BOSS", {
+        font: "64px Arial",
+        fill: "#ff0000",
+        fontStyle: "bold"
+    }).setOrigin(0.5).setScrollFactor(0).setAlpha(0);
+
+    // Détecte l’entrée du joueur
+    this.physics.add.overlap(this.player, this.bossZone, () => {
+        if (!this.bossNameShown) {
+            this.bossNameShown = true;
+            this.bossNameText.setAlpha(1);
+            this.tweens.add({
+                targets: this.bossNameText,
+                alpha: 0,
+                duration: 3000,
+                delay: 1500
+            });
+        }
+    });
+
   }
 
   update() {
@@ -146,6 +208,7 @@ export default class Niveau1 extends Basescene {
     this.enemies.children.iterate(enemy => {
       if (enemy instanceof Loup) enemy.update(this.calque_plateformes);
       if (enemy instanceof Bandit) enemy.update(this.player, this.projectiles, this.calque_plateformes);
+      if (enemy instanceof Boss1) enemy.update(this.calque_plateformes, this.player);
     });
 
     // Retour

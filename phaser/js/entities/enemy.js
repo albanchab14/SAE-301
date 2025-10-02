@@ -18,6 +18,7 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.scene.time.delayedCall(300, () => this.setTint(0xffffff));
     if (this.vie <= 0) this.destroy();
   }
+  
 
   patrol(platformLayer) {
   this.direction = this.body.velocity.x > 0 ? 1 : -1;
