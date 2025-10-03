@@ -85,12 +85,6 @@ export default class Selection extends BaseScene {
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
       if (this.physics.overlap(this.player, this.porte1)) {
         this.scene.switch("niveau1");
-        console.log("Nombre de fragments :", this.game.config.collectedFragments);
-        if (this.game.config.crystals && this.game.config.crystals.green) {
-          console.log("Cristal vert déjà collecté !");
-        } else {
-          console.log("Cristal vert pas encore collecté.");
-        }
       }
       if (this.physics.overlap(this.player, this.porte2)) {
         this.scene.switch("niveau2");

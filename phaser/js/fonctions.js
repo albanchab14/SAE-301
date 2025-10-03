@@ -54,6 +54,7 @@ export function attack(player, scene, targets = null) {
 function updateHearts(scene) {
   for (let i = 0; i < scene.coeurs.length; i++) {
     scene.coeurs[i].setFrame(i < scene.game.config.pointsDeVie ? 0 : 1);
+    console.log("Nombre de vies :", scene.game.config.pointsDeVie);
   }
 }
 

@@ -51,6 +51,8 @@ export default class Niveau3 extends Basescene {
         fct.lifeManager.updateHearts(this);
       });
       this.createHearts();
+      fct.lifeManager.init(this, this.maxVies);
+      
           
       // --- CREATION OBJETS ---
       
@@ -80,7 +82,7 @@ export default class Niveau3 extends Basescene {
 
   update() {
     this.updatePlayerMovement();
-    this.handleAttack();
+    this.handleAttack(this.enemies);
 
     // Retour
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) && this.physics.overlap(this.player, this.porte_retour)) {

@@ -73,6 +73,7 @@ export default class Niveau1 extends Basescene {
       fct.lifeManager.updateHearts(this);
     });
     this.createHearts();
+    fct.lifeManager.init(this, this.maxVies);
 
     // --- CREATION OBJETS ---
 

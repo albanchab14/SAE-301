@@ -1,11 +1,6 @@
 // scenes/niveau2.js
 import * as fct from '../fonctions.js';
-
 import Basescene from "./basescene.js";
-/*
-import Loup from "../entities/loup.js";
-import Bandit from "../entities/bandit.js";
-*/
 import Collectible from '../entities/collectible.js';
 
 
@@ -52,11 +47,11 @@ export default class Niveau2 extends Basescene {
       { fontSize: "28px", fill: "#ffffff", align: "center" }
     ).setOrigin(0.5);
 
-    // Vies
     this.events.on('wake', () => { // 1 appel au lancement de scène
       fct.lifeManager.updateHearts(this);
     });
     this.createHearts();
+    fct.lifeManager.init(this, this.maxVies);
     
     // --- CREATION OBJETS ---
     
@@ -124,6 +119,7 @@ export default class Niveau2 extends Basescene {
     */
     // Retour
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) && this.physics.overlap(this.player, this.porte_retour)) {
+      console.log("PV restants :", this.game.config.pointsDeVie);
       this.scene.switch("selection");
     }
   }
