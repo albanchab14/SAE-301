@@ -5,7 +5,7 @@ export default class Boss1 extends Enemy {
   constructor(scene, x, y) {
     super(scene, x, y, "img_boss1", 0);
 
-    this.vie = 2;
+    this.vie = 15;
     this.setGravityY(300);
     this.setCollideWorldBounds(true);
 

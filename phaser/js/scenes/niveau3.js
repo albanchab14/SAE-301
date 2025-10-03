@@ -37,7 +37,15 @@ export default class Niveau3 extends Basescene {
       // Caméra
       this.cameras.main.startFollow(this.player);
       this.cameras.main.setBounds(0, 0, this.map3.widthInPixels, this.map3.heightInPixels);
-    
+      
+      // --- TEXTE CADEAU ---
+      this.add.text(
+        this.map3.widthInPixels / 8,
+        500,
+        "Map en construction !\nEn guise de cadeau, voici les fragments de ce niveau.",
+        { fontSize: "28px", fill: "#ffffff", align: "center" }
+      ).setOrigin(0.5);
+
       // Vies
       this.events.on('wake', () => { // 1 appel au lancement de scène
         fct.lifeManager.updateHearts(this);
