@@ -18,21 +18,21 @@ export default class Basescene extends Phaser.Scene {
   preload() {
     // --- GLOBAL PRELOAD ---
     // Joueur
-    this.load.spritesheet("img_perso", "../assets/dude.png", { frameWidth: 46, frameHeight: 58 });
-    this.load.spritesheet("hero_hp", "../assets/hero_hp.png", { frameWidth: 30, frameHeight: 28 });
+    this.load.spritesheet("img_perso", "./assets/dude.png", { frameWidth: 46, frameHeight: 58 });
+    this.load.spritesheet("hero_hp", "./assets/hero_hp.png", { frameWidth: 30, frameHeight: 28 });
     this.load.spritesheet("img_perso_attack", "./assets/dude_attack.png", { frameWidth: 64, frameHeight: 57 });
-    this.load.image("img_porte1", "../assets/door1.png");
-    this.load.image("img_porte2", "../assets/door2.png");
-    this.load.image("img_porte3", "../assets/door3.png");
+    this.load.image("img_porte1", "./assets/door1.png");
+    this.load.image("img_porte2", "./assets/door2.png");
+    this.load.image("img_porte3", "./assets/door3.png");
 
-    this.load.spritesheet('miroir_fragments', '../assets/miroir_fragments.png', { frameWidth: 32, frameHeight: 32 });
+    this.load.spritesheet('miroir_fragments', './assets/miroir_fragments.png', { frameWidth: 32, frameHeight: 32 });
 
-    this.load.audio('son_attaque', '../assets/sfx/hit.mp3');
-    this.load.audio('son_cristal', '../assets/sfx/crystal_collected.mp3');
+    this.load.audio('son_attaque', './assets/sfx/hit.mp3');
+    this.load.audio('son_cristal', './assets/sfx/crystal_collected.mp3');
 
-    this.load.image("cristal_vert", "../assets/cristaux/cristal_vert.png");
-    this.load.image("cristal_bleu", "../assets/cristaux/cristal_bleu.png");
-    this.load.image("cristal_violet", "../assets/cristaux/cristal_violet.png");
+    this.load.image("cristal_vert", "./assets/cristaux/cristal_vert.png");
+    this.load.image("cristal_bleu", "./assets/cristaux/cristal_bleu.png");
+    this.load.image("cristal_violet", "./assets/cristaux/cristal_violet.png");
   }
 
   create() {

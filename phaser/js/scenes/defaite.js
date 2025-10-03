@@ -8,8 +8,8 @@ export default class defaite extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image("defaite_fond", "../assets/defaite.png");
-        this.load.audio("defaite_music", "../assets/sfx/defaite.mp3");
+        this.load.image("defaite_fond", "./assets/defaite.png");
+        this.load.audio("defaite_music", "./assets/sfx/defaite.mp3");
     }
 
     create() {

@@ -39,7 +39,7 @@ export default class menu extends Phaser.Scene {
             });
         });
 
-        bouton_play.on("pointerup", () => this.scene.start("selection"));
+        bouton_play.on("pointerup", () => this.scene.start("synopsis"));
         bouton_settings.on("pointerup", () => this.scene.start("settings"));
         bouton_credits.on("pointerup", () => this.scene.start("credits"));
 

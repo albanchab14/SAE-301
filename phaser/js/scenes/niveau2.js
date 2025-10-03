@@ -10,9 +10,9 @@ export default class Niveau2 extends Basescene {
   }
 
   preload() {
-    this.load.image("Phaser_tuilesdejeu2", "../assets/selectionJeu.png");
-    this.load.tilemapTiledJSON("carte2", "../assets/map2.json");
-    this.load.image("img_porte_retour", "../assets/door1.png");
+    this.load.image("Phaser_tuilesdejeu2", "./assets/selectionJeu.png");
+    this.load.tilemapTiledJSON("carte2", "./assets/map2.json");
+    this.load.image("img_porte_retour", "./assets/door1.png");
   }
 
   create() {

@@ -9,8 +9,8 @@ export default class Selection extends BaseScene {
 
   preload() {
     // Maps & portes du lobby
-    this.load.image("selection_tileset", "../assets/selectionJeu.png");
-    this.load.tilemapTiledJSON("map_selection", "../assets/map_selection.json");
+    this.load.image("selection_tileset", "./assets/selectionJeu.png");
+    this.load.tilemapTiledJSON("map_selection", "./assets/map_selection.json");
     }
 
 

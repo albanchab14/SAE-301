@@ -1,6 +1,7 @@
 // chargement des librairies
 import basescene from "./js/scenes/basescene.js";
 import menu from "./js/scenes/menu.js";
+import synopsis from "./js/scenes/synopsis.js";
 import settings from "./js/scenes/settings.js";
 import credits from "./js/scenes/credits.js";
 import selection from "./js/scenes/selection.js";
@@ -29,10 +30,10 @@ var config = {
       gravity: {
         y: 550 // gravité verticale : acceleration ddes corps en pixels par seconde
       },
-      debug: true // permet de voir les hitbox et les vecteurs d'acceleration quand mis à true
+      debug: false // permet de voir les hitbox et les vecteurs d'acceleration quand mis à true
     }
   },
-  scene: [basescene, menu, settings, credits, selection, Niveau1, Niveau2, Niveau3, defaite, victoire], // liste des scènes du jeu
+  scene: [basescene, menu, synopsis, settings, credits, selection, Niveau1, Niveau2, Niveau3, defaite, victoire], // liste des scènes du jeu
   baseURL: window.location.pathname.replace(/\/[^/]*$/, '')
 };
 
