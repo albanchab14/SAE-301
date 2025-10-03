@@ -5,6 +5,14 @@ export default class Basescene extends Phaser.Scene {
   constructor(config) {
     super(config);
     this.maxVies = 5;
+
+  }
+
+  init() {
+    // Initialise crystals si ça n'existe pas encore
+    if (!this.game.config.crystals) {
+      this.game.config.crystals = { green: false, blue: false, violet: false };
+    }
   }
 
   preload() {
@@ -18,9 +26,20 @@ export default class Basescene extends Phaser.Scene {
     this.load.image("img_porte3", "../assets/door3.png");
 
     this.load.spritesheet('miroir_fragments', '../assets/miroir_fragments.png', { frameWidth: 32, frameHeight: 32 });
-    this.load.audio('son_attaque', './assets/sfx/hit.mp3');
 
+    this.load.audio('son_attaque', '../assets/sfx/hit.mp3');
+    this.load.audio('son_cristal', '../assets/sfx/crystal_collected.mp3');
+
+    this.load.image("cristal_vert", "../assets/cristaux/cristal_vert.png");
+    this.load.image("cristal_bleu", "../assets/cristaux/cristal_bleu.png");
+    this.load.image("cristal_violet", "../assets/cristaux/cristal_violet.png");
   }
+
+  create() {
+    // autres créations
+    this.sonCristal = this.sound.add('son_cristal'); // défini ici pour toutes les scènes
+  }
+  
   // --- Crée le joueur et initialise ses propriétés ---
   createPlayer(x, y) {
     // Sprite

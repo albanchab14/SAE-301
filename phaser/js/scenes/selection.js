@@ -40,12 +40,28 @@ export default class Selection extends BaseScene {
     if (typeof this.game.config.collectedFragments !== "number") {
       this.game.config.collectedFragments = 0;
     }
-
+  
     this.createFragmentsText(this.game.config.collectedFragments, 9);
     this.events.on('wake', () => { // 1 appel au lancement de scène
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
     });
-    
+  
+    this.events.on('wake', () => {
+      // Met à jour le cristal
+      if (this.game.config.crystals.green) {
+          if (!this.miniCristalGreen) {
+              this.miniCristalGreen = this.add.image(
+                  this.porte1.x,
+                  this.porte1.y - this.porte1.height / 2 - 16,
+                  "cristal_vert"
+              ).setScale(0.5).setDepth(this.porte1.depth + 1);
+          }
+      }
+    });
+
+
+
+
     // Vie et UI
     this.createHearts();
     fct.lifeManager.init(this, this.maxVies);
@@ -70,6 +86,11 @@ export default class Selection extends BaseScene {
       if (this.physics.overlap(this.player, this.porte1)) {
         this.scene.switch("niveau1");
         console.log("Nombre de fragments :", this.game.config.collectedFragments);
+        if (this.game.config.crystals && this.game.config.crystals.green) {
+          console.log("Cristal vert déjà collecté !");
+        } else {
+          console.log("Cristal vert pas encore collecté.");
+        }
       }
       if (this.physics.overlap(this.player, this.porte2)) {
         this.scene.switch("niveau2");

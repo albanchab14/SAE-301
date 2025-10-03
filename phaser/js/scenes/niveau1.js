@@ -19,14 +19,18 @@ export default class Niveau1 extends Basescene {
     this.load.image("img_porte_retour", "./assets/door1.png");
     this.load.image("couteau", "./assets/couteau.png");
     this.load.spritesheet("img_loup", "./assets/loup.png", { frameWidth: 96, frameHeight: 57 });
+
     this.load.spritesheet("img_boss1", "./assets/boss1.png", { frameWidth: 70, frameHeight: 94 });
 
-
     this.load.image("background_fixe", "./assets/fond_map_1.png");
+    this.load.audio("boss1music", "./assets/sfx/boss1fight.mp3");
+    this.load.audio("son_cristal", "./assets/sfx/son_cristal.mp3");
+
 
   }
 
   create() {
+    super.create();
     //backgroung map
     const bg = this.add.image(0, 0, "background_fixe")
         .setOrigin(0, 0)
@@ -56,8 +60,8 @@ export default class Niveau1 extends Basescene {
     this.porte_retour_boss.body.enable = false;
     
 
-    // Joueur, placé en (100, 600) / (3000,250 pour boss)
-    this.player = this.createPlayer(100, 600);
+    // Joueur, placé en (100, 600) / (3000,150 pour boss)
+    this.player = this.createPlayer(3000, 150);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
 
@@ -79,6 +83,9 @@ export default class Niveau1 extends Basescene {
     // Affichage fragments
     if (typeof this.game.config.collectedFragments !== "number") {
       this.game.config.collectedFragments = 0;
+    }
+    if (typeof this.game.config.collectedCristals !== "number") {
+      this.game.config.collectedCristals = 0;
     }
 
     this.createFragmentsText(this.game.config.collectedFragments, 9);
@@ -156,8 +163,12 @@ export default class Niveau1 extends Basescene {
         this.enemies.add(new Bandit(this, obj.x, obj.y-32));
       }
       if (obj.properties?.find(p => p.name === "type")?.value === "boss1") {
-        this.enemies.add(new Boss1(this, obj.x, obj.y-32));
+        const boss = new Boss1(this, obj.x, obj.y - 32);
+        boss.sonCristal = this.sonCristal; 
+        boss.bossMusic = this.sound.add("boss1music", { loop: true, volume: 0.5 });
+        this.enemies.add(boss);
       }
+
     });
 
     this.physics.add.collider(this.enemies, this.calque_plateformes);
@@ -227,6 +238,13 @@ export default class Niveau1 extends Basescene {
     this.physics.add.overlap(this.player, this.bossZone, () => {
         if (!this.bossNameShown) {
             this.bossNameShown = true;
+
+            // Jouer la musique du boss (gestion par le boss)
+            const boss = this.enemies.getChildren().find(e => e instanceof Boss1);
+            if (boss && !boss.bossMusic.isPlaying) {
+                boss.bossMusic.play();
+            }
+
             this.bossNameText.setAlpha(1);
             this.tweens.add({
                 targets: this.bossNameText,
@@ -235,8 +253,7 @@ export default class Niveau1 extends Basescene {
                 delay: 1500
             });
         }
-    });
-
+      });
   }
 
   update() {
@@ -252,7 +269,6 @@ export default class Niveau1 extends Basescene {
     // Retour
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
     (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss))) {
-          console.log("Nombre de fragments :", this.game.config.collectedFragments);
       this.scene.switch("selection");
     }
   }

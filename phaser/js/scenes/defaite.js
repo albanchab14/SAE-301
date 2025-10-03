@@ -8,10 +8,13 @@ export default class defaite extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image("defaite_fond", "./assets/defaite.png");
+        this.load.image("defaite_fond", "../assets/defaite.png");
+        this.load.audio("defaite_music", "../assets/sfx/defaite.mp3");
     }
 
     create() {
+        this.defaiteMusic = this.sound.add("defaite_music", { loop: false, volume: 0.7 });
+        this.defaiteMusic.play();
 
         // on place les éléments de fond
         this.add.image(0, 0, "defaite_fond")
@@ -32,11 +35,17 @@ export default class defaite extends Phaser.Scene {
         });
 
         bouton_retour.on("pointerup", () => { // au clic
-            this.registry.set('pointsDeVie', this.maxVies); 
+            this.registry.set('pointsDeVie', this.maxVies);
+            if (this.defaiteMusic && this.defaiteMusic.isPlaying) {
+                this.defaiteMusic.stop();
+            }
             this.scene.start("menu");
         });
 
         this.input.keyboard.on('keydown-I', () => {
+            if (this.defaiteMusic && this.defaiteMusic.isPlaying) {
+                this.defaiteMusic.stop();
+            }
             this.registry.set('pointsDeVie', this.maxVies);
             this.scene.start("menu");
         });
