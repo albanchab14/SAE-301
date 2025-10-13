@@ -1,7 +1,7 @@
 // fonctions.js
 
 // --- Fonction d'attaque du joueur ---
-export function attack(player, scene, targets = null) {
+export function attack(player, scene, targets = null, levers = null) {
   if (!player.canAttack) return; // sécurité anti spam
 
   player.canAttack = false;
@@ -12,10 +12,10 @@ export function attack(player, scene, targets = null) {
   else player.anims.play("attack_droite");
 
   // Hitbox devant le joueur
-  const width = 32;
+  const width = 64;  // largeur réduite si immobile
   const height = player.height;
   const dir = player.direction === "gauche" ? -1 : 1;
-  let x = player.x + dir * (player.width / 2 + width / 2);
+  let x = player.x + dir * (player.width / 2);
   const y = player.y;
 
   const hitbox = scene.add.rectangle(x, y, width, height);
@@ -24,7 +24,7 @@ export function attack(player, scene, targets = null) {
   hitbox.body.setImmovable(true);
 
   if (dir === -1) hitbox.x -= width / 2;
-  else hitbox.x += width / 2;
+  else hitbox.x += width / 4;
 
   // Collision avec les cibles
   if (targets) {
@@ -40,6 +40,29 @@ export function attack(player, scene, targets = null) {
     });
   }
 
+  /*
+  // Collision avec les leviers
+  if (levers) {
+    scene.physics.add.overlap(hitbox, levers, (h, lever) => {
+      if (!lever.activated) {
+        lever.activated = true;
+        lever.flipX = true;
+        // Gestion spécifique selon la propriété actionType
+        switch (lever.number) {
+          case 1: // levier 1
+            scene.tween_mouvement.play();
+            break;
+          // Si je veux faire d'autres leviers
+          case 2: // levier 2
+            scene.tween_mouvement2.play();
+            break;
+          
+        }
+      }
+    });
+  }
+  */
+
   // Durée de l'attaque
   const attackDuration = 300; // ms
   scene.time.delayedCall(attackDuration, () => {
@@ -48,8 +71,6 @@ export function attack(player, scene, targets = null) {
     player.isAttacking = false;
   });
 }
-
-// ...existing code...
 
 function updateHearts(scene) {
   for (let i = 0; i < scene.coeurs.length; i++) {

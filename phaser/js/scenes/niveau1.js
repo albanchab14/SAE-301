@@ -61,7 +61,7 @@ export default class Niveau1 extends Basescene {
     
 
     // Joueur, placé en (100, 600) / (3000,150 pour boss)
-    this.player = this.createPlayer(100, 600);
+    this.player = this.createPlayer(3000, 150);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
 
@@ -92,7 +92,7 @@ export default class Niveau1 extends Basescene {
     this.createFragmentsText(this.game.config.collectedFragments, 9);
     this.events.on('wake', () => { // 1 appel au lancement de scène
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
-      this.player.setPosition(100, 600);
+      this.player.setPosition(3000, 150); // (3000,150) position de boss
       // Si tu veux remettre la caméra sur le joueur
       this.cameras.main.startFollow(this.player);
     });
@@ -186,12 +186,18 @@ export default class Niveau1 extends Basescene {
         if (this.game.config.pointsDeVie <= 0) {
           this.physics.pause();
           this.game.config.collectedFragments = 0;
+          this.game.config.collectedCristals = 0;
+          this.bossNameShown = false;
+          if (this.miniCristalGreen) {
+            this.miniCristalGreen.destroy();
+            this.miniCristalGreen = null;
+          }
           this.scene.start("defaite");
         }
       }
     });
 
-
+    // collision joueur projectiles
     this.physics.add.overlap(this.player, this.projectiles, (player, projectile) => {
       const now = this.time.now;
       if (!player.lastHit || now - player.lastHit > 1000) {
@@ -203,6 +209,12 @@ export default class Niveau1 extends Basescene {
         if (this.game.config.pointsDeVie <= 0) {
           this.physics.pause();
           this.game.config.collectedFragments = 0;
+          this.game.config.collectedCristals = 0;
+          this.bossNameShown = false;
+          if (this.miniCristalGreen) {
+            this.miniCristalGreen.destroy();
+            this.miniCristalGreen = null;
+          }
           this.scene.start("defaite");
         }
         projectile.destroy();

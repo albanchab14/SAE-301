@@ -1,6 +1,9 @@
 // scenes/niveau2.js
 import * as fct from '../fonctions.js';
 import Basescene from "./basescene.js";
+import EvilKnight from "../entities/evilknight.js";
+import Canon from '../entities/canon.js';
+import Gargouille from '../entities/gargouille.js';
 import Collectible from '../entities/collectible.js';
 
 
@@ -13,6 +16,14 @@ export default class Niveau2 extends Basescene {
     this.load.image("Phaser_tuilesdejeu2", "./assets/selectionJeu.png");
     this.load.tilemapTiledJSON("carte2", "./assets/map2.json");
     this.load.image("img_porte_retour", "./assets/door1.png");
+
+    this.load.image("img_canon", "./assets/canon.png");
+    this.load.image("balle_canon", "./assets/canonball.png");
+    this.load.spritesheet("img_gargouille", "./assets/gargouille.png", { frameWidth: 48, frameHeight: 48 });
+    this.load.spritesheet("img_gargouille_vole", "./assets/gargouille_vole.png", { frameWidth: 64, frameHeight: 36 });
+    this.load.spritesheet("img_chevalier_mechant", "./assets/chevalier_mechant.png", { frameWidth: 36, frameHeight: 61 });
+
+    this.load.image("img_levier", "./src/assets/levier.png");
   }
 
   create() {
@@ -47,12 +58,14 @@ export default class Niveau2 extends Basescene {
       { fontSize: "28px", fill: "#ffffff", align: "center" }
     ).setOrigin(0.5);
 
+    // vies
     this.events.on('wake', () => { // 1 appel au lancement de scène
       fct.lifeManager.updateHearts(this);
     });
     this.createHearts();
     fct.lifeManager.init(this, this.maxVies);
     
+    var levier = this.physics.add.staticSprite(30, 196, "img_levier");
     // --- CREATION OBJETS ---
     
     const collectiblesLayer = this.map2.getObjectLayer('collectibles');
@@ -75,31 +88,112 @@ export default class Niveau2 extends Basescene {
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
     }, null, this);
       
-    /*
-    // Ennemis
+    
+    // --- ENNEMIS ---
+
+    // Animations
+    this.anims.create({
+      key: 'evilknight_walk_left',
+      frames: this.anims.generateFrameNumbers('img_chevalier_mechant', { start: 0, end: 3 }),
+      frameRate: 4,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'evilknight_walk_right',
+      frames: this.anims.generateFrameNumbers('img_chevalier_mechant', { start: 4, end: 7 }),
+      frameRate: 4,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "gargouille_idle",
+      frames: [{ key: "img_gargouille", frame: 0 }],
+      frameRate: 1,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "gargouille_fly_left",
+      frames: this.anims.generateFrameNumbers("img_gargouille_vole", { start: 0, end: 3 }),
+      frameRate: 8,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "gargouille_fly_right",
+      frames: this.anims.generateFrameNumbers("img_gargouille_vole", { start: 4, end: 7 }),
+      frameRate: 8,
+      repeat: -1
+    });
+
+
+
     this.enemies = this.add.group();
     this.projectiles = this.physics.add.group();
 
-    const ennemis = this.map.getObjectLayer("ennemis")?.objects || [];
+    const ennemis = this.map2.getObjectLayer("ennemis")?.objects || [];
     ennemis.forEach(obj => {
       const dir = obj.properties?.find(p => p.name === "direction")?.value || "droite";
-      if (obj.properties?.find(p => p.name === "type")?.value === "loup") {
-        this.enemies.add(new Loup(this, obj.x, obj.y, dir));
+      if (obj.properties?.find(p => p.name === "type")?.value === "evil_knight") {
+        this.enemies.add(new EvilKnight(this, obj.x, obj.y, dir));
       }
-      if (obj.properties?.find(p => p.name === "type")?.value === "bandit") {
-        this.enemies.add(new Bandit(this, obj.x, obj.y, dir));
+      if (obj.properties?.find(p => p.name === "type")?.value === "canon") {
+        this.enemies.add(new Canon(this, obj.x, obj.y, dir));
+      }
+      if (obj.properties?.find(p => p.name === "type")?.value === "gargouille") {
+        this.enemies.add(new Gargouille(this, obj.x, obj.y, dir));
       }
     });
 
     this.physics.add.collider(this.enemies, this.calque_plateformes);
 
     // Collisions joueur ↔ ennemis
-    this.physics.add.overlap(this.player, this.enemies, () => this.player.takeDamage(1));
-    this.physics.add.overlap(this.player, this.projectiles, (p, projectile) => {
-      this.player.takeDamage(1);
-      projectile.destroy();
+    this.physics.add.overlap(this.player, this.enemies, (player, enemy) => {
+      const now = this.time.now;
+      if (!player.lastHit || now - player.lastHit > 1000) { // 1 seconde d'immunité
+        fct.lifeManager.retirerPV(this, 1);
+        player.setTint(0xff0000);
+        this.time.delayedCall(300, () => player.setTint(0xffffff));
+        player.lastHit = now;
+
+        if (this.game.config.pointsDeVie <= 0) {
+          this.physics.pause();
+          this.game.config.collectedFragments = 0;
+          this.game.config.collectedCristals = 0;
+          this.bossNameShown = false;
+          if (this.miniCristalGreen) {
+            this.miniCristalGreen.destroy();
+            this.miniCristalGreen = null;
+          }
+          this.scene.start("defaite");
+        }
+      }
     });
-    */
+    
+    // Collisions joueur ↔ projectiles
+    this.physics.add.overlap(this.player, this.projectiles, (player, projectile) => {
+          const now = this.time.now;
+          if (!player.lastHit || now - player.lastHit > 1000) {
+            fct.lifeManager.retirerPV(this, 1);
+            player.setTint(0xff0000);
+            this.time.delayedCall(300, () => player.setTint(0xffffff));
+            player.lastHit = now;
+    
+            if (this.game.config.pointsDeVie <= 0) {
+              this.physics.pause();
+              this.game.config.collectedFragments = 0;
+              this.game.config.collectedCristals = 0;
+              this.bossNameShown = false;
+              if (this.miniCristalGreen) {
+                this.miniCristalGreen.destroy();
+                this.miniCristalGreen = null;
+              }
+              this.scene.start("defaite");
+            }
+            projectile.destroy();
+          }
+        });
+    
 
     // Clavier
     this.createClavier();
@@ -109,14 +203,12 @@ export default class Niveau2 extends Basescene {
     this.updatePlayerMovement();
     this.handleAttack(this.enemies);
 
-    /*
-    this.handleAttack(this.enemies);
-
     this.enemies.children.iterate(enemy => {
-      if (enemy instanceof Loup) enemy.update(this.calque_plateformes);
-      if (enemy instanceof Bandit) enemy.update(this.player, this.projectiles, this.calque_plateformes);
+      if (enemy instanceof EvilKnight) enemy.update(this.calque_plateformes, this.player);
+      if (enemy instanceof Canon) enemy.update(this.player, this.projectiles);
+      if (enemy instanceof Gargouille) enemy.update(this.player);
     });
-    */
+
     // Retour
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) && this.physics.overlap(this.player, this.porte_retour)) {
       console.log("PV restants :", this.game.config.pointsDeVie);

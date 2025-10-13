@@ -38,6 +38,7 @@ export default class Basescene extends Phaser.Scene {
   create() {
     // autres créations
     this.sonCristal = this.sound.add('son_cristal'); // défini ici pour toutes les scènes
+    this.bossNameShown = false;
   }
   
   // --- Crée le joueur et initialise ses propriétés ---

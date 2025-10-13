@@ -49,13 +49,11 @@ export default class Selection extends BaseScene {
     this.events.on('wake', () => {
       // Met à jour le cristal
       if (this.game.config.crystals.green) {
-          if (!this.miniCristalGreen) {
               this.miniCristalGreen = this.add.image(
                   this.porte1.x,
                   this.porte1.y - this.porte1.height / 2 - 16,
                   "cristal_vert"
               ).setScale(0.5).setDepth(this.porte1.depth + 1);
-          }
       }
     });
 

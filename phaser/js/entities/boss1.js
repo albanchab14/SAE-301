@@ -5,7 +5,7 @@ export default class Boss1 extends Enemy {
   constructor(scene, x, y) {
     super(scene, x, y, "img_boss1", 0);
 
-    this.vie = 15;
+    this.vie = 1;
     this.setGravityY(300);
     this.setCollideWorldBounds(true);
 
@@ -28,6 +28,7 @@ export default class Boss1 extends Enemy {
 
     // --- TIMERS ---
     this.activeTimers = [];
+    this.hasDroppedCrystal = false;
   }
 
   update(platformLayer, player) {
@@ -121,7 +122,8 @@ export default class Boss1 extends Enemy {
 
   dropItem() {
     const scene = this.scene;
-    if (!scene || !scene.physics) return;
+    if (this.hasDroppedCrystal) return; // ne drop qu'une fois
+    this.hasDroppedCrystal = true;
     const cristal = scene.physics.add.sprite(this.x, this.y, "cristal_vert");
 
     cristal.setBounce(0.2);
@@ -132,7 +134,7 @@ export default class Boss1 extends Enemy {
     const player = scene.player;
 
     scene.physics.add.overlap(player, cristal, () => {
-        console.log("Cristal ramassé !"); // ✅ d'abord le log
+        console.log("Cristal ramassé !");
 
         // Joue le son depuis la scène
         if (scene.sonCristal) {
@@ -148,8 +150,8 @@ export default class Boss1 extends Enemy {
         }
         scene.game.config.crystals.green = true;
 
-        if (scene.showCrystalObtained) {
-            scene.showCrystalObtained("Cristal vert obtenu !");
+        if (scene.game.config.crystals.green = true) {
+            console.log("Cristal vert obtenu !");
         }
     });
   }

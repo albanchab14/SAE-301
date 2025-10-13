@@ -4,7 +4,7 @@ import Enemy from "./enemy.js";
 export default class Bandit extends Enemy {
   constructor(scene, x, y) {
     super(scene, x, y, "img_bandit");
-    this.vie = 3;
+    this.vie = 2;
     this.setGravityY(300);
     this.setVelocityX(this.direction*80);
 
