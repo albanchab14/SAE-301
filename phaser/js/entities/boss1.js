@@ -137,7 +137,6 @@ export default class Boss1 extends Enemy {
     scene.physics.add.overlap(player, cristal, () => {
         console.log("Cristal ramassé !");
         fct.lifeManager.heal(scene, scene.maxVies || 5);
-        console.log("PV soignés à fond !", scene.game.config.pointsDeVie);
 
         // Joue le son depuis la scène
         if (scene.sonCristal) {

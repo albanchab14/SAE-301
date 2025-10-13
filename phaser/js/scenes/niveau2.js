@@ -4,6 +4,7 @@ import Basescene from "./basescene.js";
 import EvilKnight from "../entities/evilknight.js";
 import Canon from '../entities/canon.js';
 import Gargouille from '../entities/gargouille.js';
+import Boss2 from "../entities/boss2.js";
 import Collectible from '../entities/collectible.js';
 
 
@@ -13,6 +14,7 @@ export default class Niveau2 extends Basescene {
   }
 
   preload() {
+    super.preload();
     this.load.image("Phaser_tuilesdejeu2", "./assets/selectionJeu.png");
     this.load.tilemapTiledJSON("carte2", "./assets/map2.json");
     this.load.image("img_porte_retour", "./assets/door1.png");
@@ -26,9 +28,16 @@ export default class Niveau2 extends Basescene {
     this.load.image("img_levier", "./assets/levier.png");
     this.load.image("pont_levis1", "./assets/pont_levis1.png");
     this.load.image("plateforme_mobile1", "./assets/plateforme_mobile1.png");
+
+    this.load.spritesheet("img_boss2", "./assets/boss2.png", { frameWidth: 104, frameHeight: 73 });
+    this.load.image("fireball", "./assets/fireball.png");
+    this.load.audio("boss2music", "./assets/sfx/boss2fight.mp3");
+    // this.load.audio("boss2_shoot", "./assets/sfx/fireball.mp3");
+
   }
 
   create() {
+    super.create();
     // Map
     this.map2 = this.add.tilemap("carte2");
     const tileset = this.map2.addTilesetImage("map2_tileset", "Phaser_tuilesdejeu2");
@@ -41,11 +50,16 @@ export default class Niveau2 extends Basescene {
     this.calque_plateformes.setCollisionByProperty({ estSolide: true });
     this.physics.world.setBounds(0, 0, this.map2.widthInPixels, this.map2.heightInPixels);
 
-    // Porte retour
+    // Porte retours
     this.porte_retour = this.physics.add.staticSprite(100, 600, "img_porte_retour");
 
-    // Joueur
-    this.player = this.createPlayer(100, 600);
+    this.porte_retour_boss = this.physics.add.staticSprite(4300, 1080, "img_porte_retour"); // ajuste x/y selon ta map
+    this.porte_retour_boss.setVisible(false);
+    this.porte_retour_boss.body.enable = false;
+
+
+    // Joueur (spawn original : (100, 600) / spawn boss : (3300, 900))
+    this.player = this.createPlayer(3300, 900);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
     // Caméra
@@ -120,6 +134,9 @@ export default class Niveau2 extends Basescene {
     this.createFragmentsText(this.game.config.collectedFragments, 9);
     this.events.on('wake', () => { // 1 appel au lancement de scène
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
+      this.player.setPosition(3400, 900); // spawn original : (100, 600) / spawn boss : (3300, 900))
+      // Si tu veux remettre la caméra sur le joueur
+      this.cameras.main.startFollow(this.player);
     });
 
     // Fragment collecté
@@ -166,10 +183,41 @@ export default class Niveau2 extends Basescene {
       repeat: -1
     });
 
+    // Boss 2
+    this.anims.create({
+      key: "boss2_idle_left",
+      frames: this.anims.generateFrameNumbers("img_boss2", { start: 0, end: 3 }),
+      frameRate: 6,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "boss2_idle_right",
+      frames: this.anims.generateFrameNumbers("img_boss2", { start: 4, end: 7 }),
+      frameRate: 6,
+      repeat: -1
+    });
+
+    this.anims.create({
+      key: "boss2_attack_left",
+      frames: this.anims.generateFrameNumbers("img_boss2", { start: 8, end: 11 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+    this.anims.create({
+      key: "boss2_attack_right",
+      frames: this.anims.generateFrameNumbers("img_boss2", { start: 12, end: 15 }),
+      frameRate: 8,
+      repeat: 0
+    });
+
+
 
 
     this.enemies = this.add.group();
-    this.projectiles = this.physics.add.group();
+    this.projectilesGroup = this.physics.add.group();
+
 
     const ennemis = this.map2.getObjectLayer("ennemis")?.objects || [];
     ennemis.forEach(obj => {
@@ -183,7 +231,15 @@ export default class Niveau2 extends Basescene {
       if (obj.properties?.find(p => p.name === "type")?.value === "gargouille") {
         this.enemies.add(new Gargouille(this, obj.x, obj.y, dir));
       }
+      if (obj.properties?.find(p => p.name === "type")?.value === "boss2") {
+        const boss = new Boss2(this, obj.x, obj.y - 32);
+        boss.sonCristal = this.sonCristal;
+        boss.bossMusic = this.sound.add("boss2music", { loop: true, volume: 0.5 });
+        this.enemies.add(boss);
+      }
+
     });
+    
 
     this.physics.add.collider(this.enemies, this.calque_plateformes);
 
@@ -211,28 +267,29 @@ export default class Niveau2 extends Basescene {
     });
     
     // Collisions joueur ↔ projectiles
-    this.physics.add.overlap(this.player, this.projectiles, (player, projectile) => {
-          const now = this.time.now;
-          if (!player.lastHit || now - player.lastHit > 1000) {
-            fct.lifeManager.retirerPV(this, 1);
-            player.setTint(0xff0000);
-            this.time.delayedCall(300, () => player.setTint(0xffffff));
-            player.lastHit = now;
-    
-            if (this.game.config.pointsDeVie <= 0) {
-              this.physics.pause();
-              this.game.config.collectedFragments = 0;
-              this.game.config.collectedCristals = 0;
-              this.bossNameShown = false;
-              if (this.miniCristalGreen) {
-                this.miniCristalGreen.destroy();
-                this.miniCristalGreen = null;
-              }
-              this.scene.start("defaite");
+    this.physics.add.overlap(this.player, this.projectilesGroup, (player, projectile) => {
+        console.log("Joueur touché par projectile");
+        const now = this.time.now;
+        if (!player.lastHit || now - player.lastHit > 1000) {
+          fct.lifeManager.retirerPV(this, 1);
+          player.setTint(0xff0000);
+          this.time.delayedCall(300, () => player.setTint(0xffffff));
+          player.lastHit = now;
+  
+          if (this.game.config.pointsDeVie <= 0) {
+            this.physics.pause();
+            this.game.config.collectedFragments = 0;
+            this.game.config.collectedCristals = 0;
+            this.bossNameShown = false;
+            if (this.miniCristalGreen) {
+              this.miniCristalGreen.destroy();
+              this.miniCristalGreen = null;
             }
-            projectile.destroy();
+            this.scene.start("defaite");
           }
-        });
+          projectile.destroy();
+        }
+    });
     
 
     // Clavier
@@ -240,16 +297,52 @@ export default class Niveau2 extends Basescene {
 
     // A ENLEVER
     this.time.addEvent({
-    delay: 10000, // 10 sec en ms
-    loop: true,
-    callback: () => {
-        // Suppose que ton sprite joueur s'appelle this.player
-        console.log(`Position joueur : x=${this.player.x}, y=${this.player.y}`);
-        // Tu peux aussi le stocker dans un tableau pour tracing ultérieur
-        // this.positionsJoueur = this.positionsJoueur || [];
-        // this.positionsJoueur.push({ x: this.player.x, y: this.player.y, t: this.time.now });
+        delay: 10000, // 10 sec en ms
+        loop: true,
+        callback: () => {
+            // Suppose que ton sprite joueur s'appelle this.player
+            console.log(`Position joueur : x=${this.player.x}, y=${this.player.y}`);
+            // Tu peux aussi le stocker dans un tableau pour tracing ultérieur
+            // this.positionsJoueur = this.positionsJoueur || [];
+            // this.positionsJoueur.push({ x: this.player.x, y: this.player.y, t: this.time.now });
+        }
+    });
+
+    const bossZoneObj = this.map2.getObjectLayer("zones")?.objects.find(o => o.name === "boss2Zone");
+    if (bossZoneObj) {
+      this.bossZone = this.add.zone(
+        bossZoneObj.x + bossZoneObj.width / 2,
+        bossZoneObj.y + bossZoneObj.height / 2,
+        bossZoneObj.width,
+        bossZoneObj.height
+      );
+      this.physics.world.enable(this.bossZone);
+      this.bossZone.body.setAllowGravity(false);
+      this.bossZone.body.setImmovable(true);
+
+      this.bossNameText = this.add.text(this.scale.width/1.25, this.scale.height/1.1,
+        bossZoneObj.properties?.find(p => p.name === "bossname")?.value || "CERBERUS", {
+          font: "64px Arial",
+          fill: "#ff0000",
+          fontStyle: "bold"
+        }).setOrigin(0.5).setScrollFactor(0).setAlpha(0);
+
+      this.physics.add.overlap(this.player, this.bossZone, () => {
+        if (!this.bossNameShown) {
+          this.bossNameShown = true;
+          const boss = this.enemies.getChildren().find(e => e instanceof Boss2);
+          if (boss && !boss.bossMusic.isPlaying) boss.bossMusic.play();
+
+          this.bossNameText.setAlpha(1);
+          this.tweens.add({
+            targets: this.bossNameText,
+            alpha: 0,
+            duration: 3000,
+            delay: 1500
+          });
+        }
+      });
     }
-});
   }
 
   update() {
@@ -259,10 +352,12 @@ export default class Niveau2 extends Basescene {
       if (enemy instanceof EvilKnight) enemy.update(this.calque_plateformes, this.player);
       if (enemy instanceof Canon) enemy.update(this.player, this.projectiles);
       if (enemy instanceof Gargouille) enemy.update(this.player);
+      if (enemy instanceof Boss2) enemy.update(this.calque_plateformes, this.player, this.projectilesGroup);
     });
 
     // Retour
-    if (Phaser.Input.Keyboard.JustDown(this.clavier.action) && this.physics.overlap(this.player, this.porte_retour)) {
+    if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
+    (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss))) {
       console.log("PV restants :", this.game.config.pointsDeVie);
       this.scene.switch("selection");
     }
