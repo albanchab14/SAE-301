@@ -6,6 +6,7 @@ export default class Canon extends Enemy {
     super(scene, x, y, "img_canon");
 
     this.vie = 2;
+    this.dropChance = 0.25;
     this.nextShot = 0;
     this.cooldown = 2000; // tire toutes les 2 secondes
     this.range = 400; // distance de détection
@@ -23,19 +24,17 @@ export default class Canon extends Enemy {
     const dy = player.y - this.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    if (distance < this.range) {
+    if (distance < this.range && this.hasLineOfSightTo(player, this.scene.calque_plateformes)) {
+      // Seulement si le joueur est visible
       const angle = Math.atan2(dy, dx);
-
-      // 🔄 correction pour un sprite orienté vers le bas (ajout de +90°)
       this.setRotation(angle + Phaser.Math.DegToRad(90));
 
-      // Tir
       if (this.scene.time.now > this.nextShot) {
         this.shoot(projectileGroup, angle);
         this.nextShot = this.scene.time.now + this.cooldown;
       }
     } else {
-      // Retour à la rotation neutre (regarde vers le bas)
+      // Retour à la rotation neutre si joueur pas visible ou trop loin
       this.scene.tweens.add({
         targets: this,
         rotation: this.defaultRotation,
@@ -44,6 +43,7 @@ export default class Canon extends Enemy {
       });
     }
   }
+
 
   shoot(group, angle) {
     const projectile = group.create(this.x, this.y, "balle_canon");

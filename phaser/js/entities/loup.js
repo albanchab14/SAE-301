@@ -6,6 +6,7 @@ export default class Loup extends Enemy {
     super(scene, x, y, "img_loup");
     
     this.vie = 3;
+    this.dropChance = 0.1;
     this.setGravityY(300);
     this.setVelocityX(this.direction*120);
   }

@@ -151,12 +151,13 @@ export default class Basescene extends Phaser.Scene {
   }
 
   // --- Attaque ---
-  handleAttack(targets = null) {
+  handleAttack(targets = null, levers = null) {
     if (Phaser.Input.Keyboard.JustDown(this.clavier.attaque) && this.player.canAttack) {
-      fct.attack(this.player, this, targets);
+      fct.attack(this.player, this, targets, levers);
       this.sonAttaque.play();
     }
   }
+
 
   // --- Fragments collectés ---
   createFragmentsText(initialCollected = 0, initialTotal = 9) {

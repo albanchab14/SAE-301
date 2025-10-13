@@ -5,6 +5,7 @@ export default class Bandit extends Enemy {
   constructor(scene, x, y) {
     super(scene, x, y, "img_bandit");
     this.vie = 2;
+    this.dropChance = 0.4;
     this.setGravityY(300);
     this.setVelocityX(this.direction*80);
 

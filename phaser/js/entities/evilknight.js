@@ -6,6 +6,7 @@ export default class EvilKnight extends Enemy {
     super(scene, x, y, "img_chevalier_mechant");
     
     this.vie = 5;
+    this.dropChance = 0.2;
     this.setGravityY(300);
     this.setVelocityX(this.direction*80);
   }

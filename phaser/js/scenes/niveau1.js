@@ -25,8 +25,6 @@ export default class Niveau1 extends Basescene {
     this.load.image("background_fixe", "./assets/fond_map_1.png");
     this.load.audio("boss1music", "./assets/sfx/boss1fight.mp3");
     this.load.audio("son_cristal", "./assets/sfx/son_cristal.mp3");
-
-
   }
 
   create() {

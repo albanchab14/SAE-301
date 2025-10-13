@@ -6,12 +6,13 @@ export default class Gargouille extends Enemy {
     super(scene, x, y, "img_gargouille");
 
     this.vie = 3;
+    this.dropChance = 0.33;
     this.body.setAllowGravity(false);
     this.setImmovable(true);
 
     this.isAwake = false;  // endormie au début
-    this.range = 300;      // rayon de détection
-    this.speed = 120;
+    this.range = 250;      // rayon de détection
+    this.speed = 100;
     this.startY = y;       // pour la replacer si besoin
     this.direction = 1;    // 1 = droite, -1 = gauche
 
@@ -24,11 +25,14 @@ export default class Gargouille extends Enemy {
 
     const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
 
-    // --- Si joueur proche, la gargouille se réveille ---
+    // --- Si joueur proche ---
     if (!this.isAwake && distance < this.range) {
-      this.isAwake = true;
-      this.body.setAllowGravity(true);
+      if (this.hasLineOfSightTo(player, this.scene.calque_plateformes)) {
+        this.isAwake = true;
+      }
     }
+
+
 
     // --- Si réveillée, elle poursuit le joueur ---
     if (this.isAwake) {

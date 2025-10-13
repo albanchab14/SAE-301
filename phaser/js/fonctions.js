@@ -35,12 +35,15 @@ export function attack(player, scene, targets = null, levers = null) {
         t.setTint(0xff0000);
         scene.time.delayedCall(500, () => t.setTint(0xffffff));
         t.justHit = scene.time.now;
-        if (t.vie <= 0) t.destroy();
+        if (t.vie <= 0) {
+          t.dropHeart();
+          t.destroy();
+        }
       }
     });
   }
 
-  /*
+  
   // Collision avec les leviers
   if (levers) {
     scene.physics.add.overlap(hitbox, levers, (h, lever) => {
@@ -52,16 +55,17 @@ export function attack(player, scene, targets = null, levers = null) {
           case 1: // levier 1
             scene.tween_mouvement.play();
             break;
+          /*
           // Si je veux faire d'autres leviers
           case 2: // levier 2
             scene.tween_mouvement2.play();
             break;
-          
+          */
         }
       }
     });
   }
-  */
+  
 
   // Durée de l'attaque
   const attackDuration = 300; // ms
@@ -87,7 +91,6 @@ export let lifeManager = {
     scene.game.config.pointsDeVie = maxVies;
   }
   updateHearts(scene);
-  console.log("Nombre de vies :", scene.game.config.pointsDeVie);
 },
 
   retirerPV(scene, amount = 1) {

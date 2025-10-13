@@ -20,10 +20,12 @@ export default class Niveau2 extends Basescene {
     this.load.image("img_canon", "./assets/canon.png");
     this.load.image("balle_canon", "./assets/canonball.png");
     this.load.spritesheet("img_gargouille", "./assets/gargouille.png", { frameWidth: 48, frameHeight: 48 });
-    this.load.spritesheet("img_gargouille_vole", "./assets/gargouille_vole.png", { frameWidth: 64, frameHeight: 36 });
+    this.load.spritesheet("img_gargouille_vole", "./assets/gargouille_vole.png", { frameWidth: 64, frameHeight: 34 });
     this.load.spritesheet("img_chevalier_mechant", "./assets/chevalier_mechant.png", { frameWidth: 36, frameHeight: 61 });
 
-    this.load.image("img_levier", "./src/assets/levier.png");
+    this.load.image("img_levier", "./assets/levier.png");
+    this.load.image("pont_levis1", "./assets/pont_levis1.png");
+    this.load.image("plateforme_mobile1", "./assets/plateforme_mobile1.png");
   }
 
   create() {
@@ -40,7 +42,7 @@ export default class Niveau2 extends Basescene {
     this.physics.world.setBounds(0, 0, this.map2.widthInPixels, this.map2.heightInPixels);
 
     // Porte retour
-    this.porte_retour = this.physics.add.staticSprite(100, 605, "img_porte_retour");
+    this.porte_retour = this.physics.add.staticSprite(100, 600, "img_porte_retour");
 
     // Joueur
     this.player = this.createPlayer(100, 600);
@@ -49,14 +51,6 @@ export default class Niveau2 extends Basescene {
     // Caméra
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(0, 0, this.map2.widthInPixels, this.map2.heightInPixels);
-    
-    // --- TEXTE CADEAU ---
-    this.add.text(
-      this.map2.widthInPixels / 8,
-      500,
-      "Map en construction !\nEn guise de cadeau, voici les fragments de ce niveau.",
-      { fontSize: "28px", fill: "#ffffff", align: "center" }
-    ).setOrigin(0.5);
 
     // vies
     this.events.on('wake', () => { // 1 appel au lancement de scène
@@ -65,7 +59,53 @@ export default class Niveau2 extends Basescene {
     this.createHearts();
     fct.lifeManager.init(this, this.maxVies);
     
-    var levier = this.physics.add.staticSprite(30, 196, "img_levier");
+    // --- PLATEFORMES MOBILES ---
+
+    var pont_levis1 = this.physics.add.sprite(782, 650, "pont_levis1");
+    this.physics.add.collider(this.player, pont_levis1);
+    pont_levis1.body.allowGravity = false;
+    pont_levis1.body.immovable = true;
+
+    var plateforme_mobile = this.physics.add.sprite(3040, 904, "plateforme_mobile1");
+    this.physics.add.collider(this.player, plateforme_mobile);
+    plateforme_mobile.body.allowGravity = false;
+    plateforme_mobile.body.immovable = true;
+    
+
+    // --- CREATION LEVIERS ---
+    this.leversGroup = this.physics.add.staticGroup();
+
+    let lever1 = this.leversGroup.create(310, 222, "img_levier");
+    lever1.number = 1;
+    lever1.activated = false;
+    
+    // --- TWEENS ---
+    
+    // Pont levis
+    this.tween_mouvement = this.tweens.add({
+      targets: [pont_levis1],
+      paused: true,
+      ease: "Linear",
+      duration: 3000,
+      yoyo: false,
+      x: "-=160",
+      delay: 0,
+    });
+
+    // Plateforme mobile
+    this.tweens.add({
+      targets: [plateforme_mobile],
+      paused: false,
+      ease: "Linear",
+      duration: 3000,
+      yoyo: true,
+      y: "-=350",
+      delay: 0,
+      hold: 1000,
+      repeatDelay: 1000,
+      repeat: -1
+    });
+
     // --- CREATION OBJETS ---
     
     const collectiblesLayer = this.map2.getObjectLayer('collectibles');
@@ -197,12 +237,24 @@ export default class Niveau2 extends Basescene {
 
     // Clavier
     this.createClavier();
+
+    // A ENLEVER
+    this.time.addEvent({
+    delay: 10000, // 10 sec en ms
+    loop: true,
+    callback: () => {
+        // Suppose que ton sprite joueur s'appelle this.player
+        console.log(`Position joueur : x=${this.player.x}, y=${this.player.y}`);
+        // Tu peux aussi le stocker dans un tableau pour tracing ultérieur
+        // this.positionsJoueur = this.positionsJoueur || [];
+        // this.positionsJoueur.push({ x: this.player.x, y: this.player.y, t: this.time.now });
+    }
+});
   }
 
   update() {
     this.updatePlayerMovement();
-    this.handleAttack(this.enemies);
-
+    this.handleAttack(this.enemies, this.leversGroup);
     this.enemies.children.iterate(enemy => {
       if (enemy instanceof EvilKnight) enemy.update(this.calque_plateformes, this.player);
       if (enemy instanceof Canon) enemy.update(this.player, this.projectiles);
