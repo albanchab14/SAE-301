@@ -78,6 +78,19 @@ export default class Niveau3 extends Basescene {
 
       // Clavier
       this.createClavier();
+
+      // A ENLEVER
+      this.time.addEvent({
+          delay: 10000, // 10 sec en ms
+          loop: true,
+          callback: () => {
+              // Suppose que ton sprite joueur s'appelle this.player
+              console.log(`Position joueur : x=${this.player.x}, y=${this.player.y}`);
+              // Tu peux aussi le stocker dans un tableau pour tracing ultérieur
+              // this.positionsJoueur = this.positionsJoueur || [];
+              // this.positionsJoueur.push({ x: this.player.x, y: this.player.y, t: this.time.now });
+          }
+      });
     }
 
   update() {

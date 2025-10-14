@@ -36,7 +36,7 @@ export default class Boss2 extends Enemy {
     this.alert.setPosition(this.x, this.y - this.height);
 
     // Passage en phase 2 (rage)
-    if (this.vie <= 3 && this.phase === 1) {
+    if (this.vie <= 5 && this.phase === 1) {
       this.enterPhase2();
     }
 
@@ -89,7 +89,6 @@ export default class Boss2 extends Enemy {
         const direction = player.x > this.x ? 1 : -1;
         this.direction = direction;
 
-        // 🔥 Position décalée devant le boss
         const offsetX = direction * 60;
         const projectile = this.scene.physics.add.sprite(this.x + offsetX, this.y - 30, "fireball");
         projectile.play("fireball_anim");
@@ -106,8 +105,8 @@ export default class Boss2 extends Enemy {
         projectile.setRotation(angle); // oriente la boule dans la direction du tir
         projectile.setFlipY(false);
 
-        const width = 48;   // largeur du sprite
-        const height = 24;  // hauteur du sprite
+        const width = 48;
+        const height = 24;
         const rotatedWidth = Math.abs(width * Math.cos(angle)) + Math.abs(height * Math.sin(angle));
         const rotatedHeight = Math.abs(width * Math.sin(angle)) + Math.abs(height * Math.cos(angle));
         projectile.body.setSize(rotatedWidth, rotatedHeight);
@@ -138,10 +137,8 @@ export default class Boss2 extends Enemy {
       if (!this.body) return;
       this.alert.setVisible(false);
 
-      // 💨 Dash beaucoup plus fort et plus long
       this.setVelocityX(400 * direction);
 
-      // Ajout d’un effet visuel possible : "poussière" ou "flamme"
       const dashEnd = this.scene.time.delayedCall(500, () => {
         if (this.body) this.setVelocityX(0);
         this.state = "idle";
