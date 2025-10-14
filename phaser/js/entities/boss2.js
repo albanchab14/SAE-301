@@ -6,17 +6,17 @@ export default class Boss2 extends Enemy {
   constructor(scene, x, y) {
     super(scene, x, y, "img_boss2", 0);
 
-    this.vie = 6; // Vie plus courte
+    this.vie = 10; // Vie plus courte
     this.setGravityY(300);
     this.setCollideWorldBounds(true);
 
     this.state = "idle";
     this.detectionRange = 600;
-    this.attackCooldown = 2200; // rythme plus lent
+    this.attackCooldown = 2800; // rythme plus lent
     this.lastAttack = 0;
     this.damage = 1; // dégâts réduits
 
-    this.projectileSpeed = 220;
+    this.projectileSpeed = 200;
     this.projectileLife = 4000;
 
     this.phase = 1;
@@ -57,13 +57,12 @@ export default class Boss2 extends Enemy {
 
   enterPhase2() {
     this.phase = 2;
-    this.attackCooldown = 1600;
-    this.projectileSpeed = 270;
+    this.attackCooldown = 2200;
+    this.projectileSpeed = 230;
     this.setTint(0xff6666);
 
     // petit effet dramatique
     this.scene.cameras.main.shake(400, 0.005);
-    this.scene.sound.play("boss2music", { volume: 0.7 });
     console.log("🔥 Cerbère entre en rage !");
   }
 
@@ -83,7 +82,7 @@ export default class Boss2 extends Enemy {
     let delay = 0;
 
     for (let i = 0; i < nbShots; i++) {
-      const attackTimer = this.scene.time.delayedCall(600 + delay, () => {
+      const attackTimer = this.scene.time.delayedCall(800 + delay, () => {
         if (!this.body) return;
         this.alert.setVisible(false);
 
@@ -93,6 +92,7 @@ export default class Boss2 extends Enemy {
         // 🔥 Position décalée devant le boss
         const offsetX = direction * 60;
         const projectile = this.scene.physics.add.sprite(this.x + offsetX, this.y - 30, "fireball");
+        projectile.play("fireball_anim");
         projectilesGroup.add(projectile);
         projectile.body.setAllowGravity(false);
 
@@ -103,6 +103,15 @@ export default class Boss2 extends Enemy {
         const dy = player.y - projectile.y;
         const angle = Math.atan2(dy, dx);
         projectile.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
+        projectile.setRotation(angle); // oriente la boule dans la direction du tir
+        projectile.setFlipY(false);
+
+        const width = 48;   // largeur du sprite
+        const height = 24;  // hauteur du sprite
+        const rotatedWidth = Math.abs(width * Math.cos(angle)) + Math.abs(height * Math.sin(angle));
+        const rotatedHeight = Math.abs(width * Math.sin(angle)) + Math.abs(height * Math.cos(angle));
+        projectile.body.setSize(rotatedWidth, rotatedHeight);
+        projectile.body.setOffset((width - rotatedWidth) / 2, (height - rotatedHeight) / 2);
 
         const projTimer = this.scene.time.delayedCall(this.projectileLife, () => {
           if (projectile.active) projectile.destroy();
@@ -125,15 +134,15 @@ export default class Boss2 extends Enemy {
     const direction = player.x > this.x ? 1 : -1;
     this.direction = direction;
 
-    const dashTimer = this.scene.time.delayedCall(500, () => {
+    const dashTimer = this.scene.time.delayedCall(900, () => {
       if (!this.body) return;
       this.alert.setVisible(false);
 
       // 💨 Dash beaucoup plus fort et plus long
-      this.setVelocityX(500 * direction);
+      this.setVelocityX(400 * direction);
 
       // Ajout d’un effet visuel possible : "poussière" ou "flamme"
-      const dashEnd = this.scene.time.delayedCall(600, () => {
+      const dashEnd = this.scene.time.delayedCall(500, () => {
         if (this.body) this.setVelocityX(0);
         this.state = "idle";
       });
@@ -147,7 +156,7 @@ export default class Boss2 extends Enemy {
     this.state = "jump";
     this.alert.setVisible(true);
 
-    const jumpTimer = this.scene.time.delayedCall(500, () => {
+    const jumpTimer = this.scene.time.delayedCall(600, () => {
       if (!this.body) return;
       this.alert.setVisible(false);
       this.setVelocityY(-500);
@@ -163,14 +172,44 @@ export default class Boss2 extends Enemy {
   }
 
   spawnFireRain(count = 6) {
+    const width = 48;   // largeur du sprite
+    const height = 24;  // hauteur du sprite
+
+    const adjustHitbox = (sprite, angle) => {
+      const rotatedWidth = Math.abs(width * Math.cos(angle)) + Math.abs(height * Math.sin(angle));
+      const rotatedHeight = Math.abs(width * Math.sin(angle)) + Math.abs(height * Math.cos(angle));
+      sprite.body.setSize(rotatedWidth, rotatedHeight);
+      sprite.body.setOffset((width - rotatedWidth) / 2, (height - rotatedHeight) / 2);
+    };
+
     for (let i = 0; i < count; i++) {
-      const x = this.x - 150 + i * 100;
+      const x = this.x - 390 + i * 150;
       const fire = this.scene.physics.add.sprite(x, this.y - 300, "fireball");
-      fire.setVelocityY(250);
+      fire.play("fireball_anim");
       fire.body.setAllowGravity(true);
+      fire.setVelocityY(250);
+
+      // 🔹 On oriente la sprite et on ajuste la hitbox
+      const angle = Math.PI / 2; // direction vers le bas
+      fire.setRotation(angle);
+      adjustHitbox(fire, angle);
+
+      // ✅ Ajout au groupe global de projectiles si disponible
+      if (this.scene.projectilesGroup) this.scene.projectilesGroup.add(fire);
+
+      // ✅ Collision avec plateformes
       this.scene.physics.add.collider(fire, this.scene.calque_plateformes, () => fire.destroy());
+
+      // ✅ Dégâts au joueur
+      this.scene.physics.add.overlap(fire, this.scene.player, () => {
+        if (!fire.active) return;
+        fire.destroy();
+        if (fct.lifeManager) fct.lifeManager.decrease(this.scene, this.damage || 1);
+      });
     }
   }
+
+
 
   dropItem() {
     if (this.hasDroppedCrystal) return;

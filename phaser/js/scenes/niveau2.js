@@ -30,7 +30,7 @@ export default class Niveau2 extends Basescene {
     this.load.image("plateforme_mobile1", "./assets/plateforme_mobile1.png");
 
     this.load.spritesheet("img_boss2", "./assets/boss2.png", { frameWidth: 104, frameHeight: 73 });
-    this.load.image("fireball", "./assets/fireball.png");
+    this.load.spritesheet("fireball", "./assets/fireball.png", { frameWidth: 48, frameHeight: 24 });
     this.load.audio("boss2music", "./assets/sfx/boss2fight.mp3");
     // this.load.audio("boss2_shoot", "./assets/sfx/fireball.mp3");
 
@@ -53,7 +53,7 @@ export default class Niveau2 extends Basescene {
     // Porte retours
     this.porte_retour = this.physics.add.staticSprite(100, 600, "img_porte_retour");
 
-    this.porte_retour_boss = this.physics.add.staticSprite(4300, 1080, "img_porte_retour"); // ajuste x/y selon ta map
+    this.porte_retour_boss = this.physics.add.staticSprite(4300, 1078, "img_porte_retour"); // ajuste x/y selon ta map
     this.porte_retour_boss.setVisible(false);
     this.porte_retour_boss.body.enable = false;
 
@@ -211,6 +211,14 @@ export default class Niveau2 extends Basescene {
       frameRate: 8,
       repeat: 0
     });
+    // Animation boule de feu
+    this.anims.create({
+      key: "fireball_anim",
+      frames: this.anims.generateFrameNumbers("fireball", { start: 0, end: 3 }),
+      frameRate: 12,
+      repeat: -1
+    });
+
 
 
 

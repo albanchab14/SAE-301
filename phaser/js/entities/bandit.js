@@ -58,9 +58,18 @@ export default class Bandit extends Enemy {
     projectile.body.allowGravity = false;
 
     const angle = Phaser.Math.Angle.Between(this.x, this.y, player.x, player.y);
-    projectile.setRotation(angle + Math.PI);
+    projectile.setRotation(angle + Math.PI); // orienté vers le joueur
     projectile.setVelocity(Math.cos(angle) * 300, Math.sin(angle) * 300);
 
+    // 🔹 Ajustement de la hitbox pour correspondre à l'angle
+    const width = 40;   // largeur du sprite couteau
+    const height = 16;  // hauteur du sprite couteau
+    const rotatedWidth = Math.abs(width * Math.cos(angle)) + Math.abs(height * Math.sin(angle));
+    const rotatedHeight = Math.abs(width * Math.sin(angle)) + Math.abs(height * Math.cos(angle));
+    projectile.body.setSize(rotatedWidth, rotatedHeight);
+    projectile.body.setOffset((width - rotatedWidth) / 2, (height - rotatedHeight) / 2);
+
+    // Collision avec plateformes
     this.scene.physics.add.collider(projectile, this.scene.calque_plateformes, () => {
       projectile.destroy();
     });
