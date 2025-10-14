@@ -6,11 +6,19 @@ export default class Boss1 extends Enemy {
   constructor(scene, x, y) {
     super(scene, x, y, "img_boss1", 0);
 
-    this.vie = 1;
+    // --- PARAMETRES VIE ---
+    this.maxVie = 5; // nombre de points de vie max
+    this.vie = this.maxVie;
+
+    // --- BARRE DE VIE ---
+    this.lifeBar = scene.add.graphics();
+    this.lifeBar.setDepth(10);
+    this.updateLifeBar();
+
     this.setGravityY(300);
     this.setCollideWorldBounds(true);
 
-    this.state = "patrol"; // patrol | pause | charge | stunned
+    this.state = "patrol";
     this.detectionRange = 250;
     this.chargeSpeed = 300;
     this.normalSpeed = 60;
@@ -20,21 +28,48 @@ export default class Boss1 extends Enemy {
 
     this.setVelocityX(this.normalSpeed);
 
-    // --- POINT D'EXCLAMATION ---
     this.alert = scene.add.text(this.x, this.y, "!", {
       fontSize: "32px",
       fill: "#ff0000",
       fontStyle: "bold"
     }).setOrigin(0.5, 1).setVisible(false);
 
-    // --- TIMERS ---
     this.activeTimers = [];
     this.hasDroppedCrystal = false;
   }
 
+  updateLifeBar() {
+    const barWidth = 60;
+    const barHeight = 8;
+    const x = this.x - barWidth / 2;
+    const y = this.y - this.height - 26;
+
+    this.lifeBar.clear();
+    this.lifeBar.fillStyle(0x333333, 1);
+    this.lifeBar.fillRect(x, y, barWidth, barHeight);
+
+    const percent = Math.max(this.vie / this.maxVie, 0);
+    const color = percent > 0.5 ? 0x06c80f : (percent > 0.2 ? 0xf8c200 : 0xdb222a);
+    this.lifeBar.fillStyle(color, 1);
+    this.lifeBar.fillRect(x, y, barWidth * percent, barHeight);
+
+    // (optionnel) Afficher le nombre de vie restant
+    // this.lifeBar.lineStyle(2, 0xffffff, 1);
+    // this.lifeBar.strokeRect(x, y, barWidth, barHeight);
+  }
+
+  takeDamage(amount = 1) {
+    this.vie = Math.max(0, this.vie - amount);
+    this.updateLifeBar();
+    if (this.vie <= 0) {
+      this.destroy();
+    }
+  }
+
   update(platformLayer, player) {
-    if (!this.body) return; // sécurité
+    if (!this.body) return;
     this.alert.setPosition(this.x, this.y - this.height);
+    this.updateLifeBar();
 
     switch (this.state) {
       case "patrol":
@@ -88,7 +123,7 @@ export default class Boss1 extends Enemy {
     this.state = "pause";
 
     const timer = this.scene.time.delayedCall(this.pauseDuration, () => {
-      if (!this.body) return; // sécurité
+      if (!this.body) return;
       this.startCharge(player);
     });
     this.activeTimers.push(timer);
@@ -123,7 +158,7 @@ export default class Boss1 extends Enemy {
 
   dropItem() {
     const scene = this.scene;
-    if (this.hasDroppedCrystal) return; // ne drop qu'une fois
+    if (this.hasDroppedCrystal) return;
     this.hasDroppedCrystal = true;
     const cristal = scene.physics.add.sprite(this.x, this.y, "cristal_vert");
 
@@ -131,63 +166,54 @@ export default class Boss1 extends Enemy {
     cristal.setCollideWorldBounds(true);
     scene.physics.add.collider(cristal, scene.calque_plateformes);
 
-    // On capture le joueur
     const player = scene.player;
 
     scene.physics.add.overlap(player, cristal, () => {
-        console.log("Cristal ramassé !");
-        fct.lifeManager.heal(scene, scene.maxVies || 5);
+      console.log("Cristal ramassé !");
+      fct.lifeManager.heal(scene, scene.maxVies || 5);
 
-        // Joue le son depuis la scène
-        if (scene.sonCristal) {
-          scene.sonCristal.play({ volume: 1 });
-        }
+      if (scene.sonCristal) {
+        scene.sonCristal.play({ volume: 1 });
+      }
+      cristal.destroy();
 
-        // On détruit le cristal
-        cristal.destroy();
+      if (!scene.game.config.crystals) {
+        scene.game.config.crystals = { green: false, blue: false, violet: false };
+      }
+      scene.game.config.crystals.green = true;
 
-        // Met à jour les cristaux
-        if (!scene.game.config.crystals) {
-            scene.game.config.crystals = { green: false, blue: false, violet: false };
-        }
-        scene.game.config.crystals.green = true;
-
-        if (scene.game.config.crystals.green = true) {
-            console.log("Cristal vert obtenu !");
-        }
+      if (scene.game.config.crystals.green = true) {
+        console.log("Cristal vert obtenu !");
+      }
     });
   }
 
-
-
-
   destroy(fromScene) {
-    // Supprime tous les timers
     if (this.activeTimers) {
       this.activeTimers.forEach(t => t.remove());
       this.activeTimers = [];
     }
-
     if (this.alert) this.alert.destroy();
+
+    // Détruit la barre de vie
+    if (this.lifeBar) this.lifeBar.destroy();
 
     if (this.scene && this.scene.porte_retour_boss?.body) {
       this.scene.porte_retour_boss.setVisible(true);
       this.scene.porte_retour_boss.body.enable = true;
     }
 
-    // STOP musique boss en toute sécurité
     if (this.bossMusic) {
-        try {
-            if (this.bossMusic.isPlaying) this.bossMusic.stop();
-            this.bossMusic.destroy(); // détruit l’objet son
-        } catch(e) {
-            console.warn("Boss music déjà détruite:", e);
-        }
-        this.bossMusic = null;
+      try {
+        if (this.bossMusic.isPlaying) this.bossMusic.stop();
+        this.bossMusic.destroy();
+      } catch(e) {
+        console.warn("Boss music déjà détruite:", e);
+      }
+      this.bossMusic = null;
     }
 
     this.dropItem();
     super.destroy(fromScene);
   }
-
 }
