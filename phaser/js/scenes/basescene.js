@@ -24,6 +24,7 @@ export default class Basescene extends Phaser.Scene {
     this.load.image("img_porte1", "./assets/door1.png");
     this.load.image("img_porte2", "./assets/door2.png");
     this.load.image("img_porte3", "./assets/door3.png");
+    this.load.spritesheet("img_porte4", "./assets/finaldoor.png", { frameWidth: 85, frameHeight: 76 });
 
     this.load.spritesheet('miroir_fragments', './assets/miroir_fragments.png', { frameWidth: 32, frameHeight: 32 });
 
@@ -77,16 +78,23 @@ export default class Basescene extends Phaser.Scene {
       // Attaques
       this.anims.create({
         key: "attack_gauche",
-        frames: this.anims.generateFrameNumbers("img_perso_attack", { start: 2, end: 0 }), // 4 → 1
+        frames: this.anims.generateFrameNumbers("img_perso_attack", { start: 2, end: 0 }), 
         frameRate: 25,
         repeat: 0
       });
       this.anims.create({
         key: "attack_droite",
-        frames: this.anims.generateFrameNumbers("img_perso_attack", { start: 5, end: 7 }), // 5 → 8
+        frames: this.anims.generateFrameNumbers("img_perso_attack", { start: 5, end: 7 }), 
         frameRate: 40,
         repeat: 0
       });
+      this.anims.create({
+        key: "open_door",
+        frames: this.anims.generateFrameNumbers("img_porte4", { start: 0, end: 4 }),
+        frameRate: 8,
+        repeat: 0
+      });
+
     }
 
     this.sonAttaque = this.sound.add('son_attaque');

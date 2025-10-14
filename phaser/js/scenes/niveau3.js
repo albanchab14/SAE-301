@@ -11,7 +11,7 @@ export default class Niveau3 extends Basescene {
   preload() {
       this.load.image("Phaser_tuilesdejeu3", "./assets/tuilesJeu3.png");
       this.load.tilemapTiledJSON("carte3", "./assets/map3.json");
-      this.load.image("img_porte_retour", "./assets/door1.png");
+      this.load.image("img_porte_retour", "./assets/door3.png");
     }
   
     create() {
@@ -28,7 +28,7 @@ export default class Niveau3 extends Basescene {
       this.physics.world.setBounds(0, 0, this.map3.widthInPixels, this.map3.heightInPixels);
   
       // Porte retour
-      this.porte_retour = this.physics.add.staticSprite(100, 605, "img_porte_retour");
+      this.porte_retour = this.physics.add.staticSprite(100, 595, "img_porte_retour");
   
       // Joueur
       this.player = this.createPlayer(100, 600);
