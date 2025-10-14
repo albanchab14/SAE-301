@@ -28,7 +28,7 @@ export default class Niveau3 extends Basescene {
       this.physics.world.setBounds(0, 0, this.map3.widthInPixels, this.map3.heightInPixels);
   
       // Porte retour
-      this.porte_retour = this.physics.add.staticSprite(100, 595, "img_porte_retour");
+      this.porte_retour = this.physics.add.staticSprite(100, 595, "img_porte3");
   
       // Joueur
       this.player = this.createPlayer(100, 600);
