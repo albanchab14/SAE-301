@@ -33,7 +33,7 @@ export function attack(player, scene, targets = null, levers = null) {
         if (typeof t.vie === "undefined") t.vie = 3; 
         t.vie -= 1;
         t.setTint(0xff0000);
-        scene.time.delayedCall(500, () => t.setTint(0xffffff));
+        scene.time.delayedCall(300, () => t.setTint(0xffffff));
         t.justHit = scene.time.now;
         if (t.vie <= 0) {
           t.dropHeart();
@@ -71,9 +71,15 @@ export function attack(player, scene, targets = null, levers = null) {
   const attackDuration = 300; // ms
   scene.time.delayedCall(attackDuration, () => {
     hitbox.destroy();
-    player.canAttack = true;
     player.isAttacking = false;
   });
+  // Temps avant prochaine attaque
+  const attackCooldown = 400; // ms
+  scene.time.delayedCall(attackCooldown, () => {
+    if (!player) return; // sécurité si le joueur a été détruit
+    player.canAttack = true;
+  });
+  
 }
 
 function updateHearts(scene) {

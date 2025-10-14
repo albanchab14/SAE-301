@@ -30,6 +30,7 @@ export default class Basescene extends Phaser.Scene {
 
     this.load.audio('son_attaque', './assets/sfx/hit.mp3');
     this.load.audio('son_cristal', './assets/sfx/crystal_collected.mp3');
+    this.load.audio('son_heal', './assets/sfx/heal.mp3');
 
     this.load.image("cristal_vert", "./assets/cristaux/cristal_vert.png");
     this.load.image("cristal_bleu", "./assets/cristaux/cristal_bleu.png");
@@ -38,7 +39,8 @@ export default class Basescene extends Phaser.Scene {
 
   create() {
     // autres créations
-    this.sonCristal = this.sound.add('son_cristal'); // défini ici pour toutes les scènes
+    this.sonCristal = this.sound.add('son_cristal'); // définis ici pour toutes les scènes
+    this.sonHeal = this.sound.add('son_heal');
     this.bossNameShown = false;
   }
   

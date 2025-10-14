@@ -14,19 +14,6 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
     this.vie = 3;
     this.dropChance = 0;
   }
-
-  takeDamage() {
-    this.vie--;
-    this.setTint(0xff0000);
-    this.scene.time.delayedCall(300, () => {
-      if (!this.scene || !this.body) return; // éviter les erreurs
-      this.clearTint();
-    });
-    if (this.vie <= 0) {
-      this.dropHeart();
-      this.destroy();
-    }
-  }
   
   // Chance de laisser tomber un coeur
   dropHeart() {
@@ -59,10 +46,9 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
           duration: 200
         });
 
-        if (scene.sonCristal) scene.sonCristal.play({ volume: 0.5 });
+        if (scene.sonHeal) scene.sonHeal.play({ volume: 0.5 });
       });
     }
-    else console.log('NOPE, pas drop de cœur...');
   }
 
   patrol(platformLayer) {

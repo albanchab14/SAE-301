@@ -1400,7 +1400,7 @@
    </properties>
    <point/>
   </object>
-  <object id="5" x="1949.36" y="68.9394">
+  <object id="5" x="1952.36" y="70.9394">
    <properties>
     <property name="texture" type="int" value="7"/>
     <property name="type" value="miroir_fragment"/>
