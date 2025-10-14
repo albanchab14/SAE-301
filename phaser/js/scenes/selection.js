@@ -100,6 +100,9 @@ export default class Selection extends BaseScene {
       }
       if (this.physics.overlap(this.player, this.portefinale)) {
         this.portefinale.play("open_door");
+        this.time.delayedCall(1000, () => {
+          this.scene.switch("NiveauFinal");
+        });
       }
     }
   }

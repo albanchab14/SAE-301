@@ -8,6 +8,7 @@ import selection from "./js/scenes/selection.js";
 import Niveau1 from "./js/scenes/niveau1.js";
 import Niveau2 from "./js/scenes/niveau2.js";
 import Niveau3 from "./js/scenes/niveau3.js";
+import NiveauFinal from "./js/scenes/niveaufinal.js";
 import defaite from "./js/scenes/defaite.js";
 import victoire from "./js/scenes/victoire.js";
 
@@ -33,7 +34,7 @@ var config = {
       debug: true // permet de voir les hitbox et les vecteurs d'acceleration quand mis à true
     }
   },
-  scene: [basescene, menu, synopsis, settings, credits, selection, Niveau1, Niveau2, Niveau3, defaite, victoire], // liste des scènes du jeu
+  scene: [basescene, menu, synopsis, settings, credits, selection, Niveau1, Niveau2, Niveau3, NiveauFinal, defaite, victoire], // liste des scènes du jeu
   baseURL: window.location.pathname.replace(/\/[^/]*$/, '')
 };
 
