@@ -81,13 +81,13 @@ export default class Basescene extends Phaser.Scene {
       this.anims.create({
         key: "attack_gauche",
         frames: this.anims.generateFrameNumbers("img_perso_attack", { start: 2, end: 0 }), 
-        frameRate: 25,
+        frameRate: 30,
         repeat: 0
       });
       this.anims.create({
         key: "attack_droite",
         frames: this.anims.generateFrameNumbers("img_perso_attack", { start: 5, end: 7 }), 
-        frameRate: 40,
+        frameRate: 30,
         repeat: 0
       });
       this.anims.create({

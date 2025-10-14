@@ -12,7 +12,7 @@ export function attack(player, scene, targets = null, levers = null) {
   else player.anims.play("attack_droite");
 
   // Hitbox devant le joueur
-  const width = 64;  // largeur réduite si immobile
+  const width = 70;  // largeur réduite si immobile
   const height = player.height;
   const dir = player.direction === "gauche" ? -1 : 1;
   let x = player.x + dir * (player.width / 2);
@@ -23,8 +23,8 @@ export function attack(player, scene, targets = null, levers = null) {
   hitbox.body.setAllowGravity(false);
   hitbox.body.setImmovable(true);
 
-  if (dir === -1) hitbox.x -= width / 2;
-  else hitbox.x += width / 4;
+  if (dir === -1) hitbox.x -= width / 4;
+  else hitbox.x += width / 16;
 
   // Collision avec les cibles
   if (targets) {
@@ -68,7 +68,7 @@ export function attack(player, scene, targets = null, levers = null) {
   
 
   // Durée de l'attaque
-  const attackDuration = 300; // ms
+  const attackDuration = 150; // ms
   scene.time.delayedCall(attackDuration, () => {
     hitbox.destroy();
     player.isAttacking = false;
