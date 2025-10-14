@@ -231,13 +231,8 @@ export default class Niveau2 extends Basescene {
       repeat: -1
     });
 
-
-
-
-
     this.enemies = this.add.group();
     this.projectilesGroup = this.physics.add.group();
-
 
     const ennemis = this.map2.getObjectLayer("ennemis")?.objects || [];
     ennemis.forEach(obj => {
