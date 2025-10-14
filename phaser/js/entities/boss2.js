@@ -6,18 +6,21 @@ export default class Boss2 extends Enemy {
   constructor(scene, x, y) {
     super(scene, x, y, "img_boss2", 0);
 
-    this.vie = 5;
+    this.vie = 6; // Vie plus courte
     this.setGravityY(300);
     this.setCollideWorldBounds(true);
 
-    this.state = "idle"; // idle | shoot | dash | stunned
+    this.state = "idle";
     this.detectionRange = 600;
-    this.attackCooldown = 2000; // ms entre attaques
+    this.attackCooldown = 2200; // rythme plus lent
     this.lastAttack = 0;
-    this.damage = 2;
+    this.damage = 1; // dégâts réduits
 
-    this.projectileSpeed = 250;
+    this.projectileSpeed = 220;
     this.projectileLife = 4000;
+
+    this.phase = 1;
+    this.hasDroppedCrystal = false;
 
     this.alert = scene.add.text(this.x, this.y, "!", {
       fontSize: "32px",
@@ -25,9 +28,6 @@ export default class Boss2 extends Enemy {
       fontStyle: "bold"
     }).setOrigin(0.5, 1).setVisible(false);
 
-    this.hasDroppedCrystal = false;
-
-    // Tableau pour stocker tous les timers actifs
     this.activeTimers = [];
   }
 
@@ -35,15 +35,19 @@ export default class Boss2 extends Enemy {
     if (!this.body) return;
     this.alert.setPosition(this.x, this.y - this.height);
 
+    // Passage en phase 2 (rage)
+    if (this.vie <= 3 && this.phase === 1) {
+      this.enterPhase2();
+    }
+
     const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
     const now = this.scene.time.now;
 
     if (distance < this.detectionRange && now - this.lastAttack > this.attackCooldown) {
-      this.attack(player, projectilesGroup);
+      this.chooseAttack(player, projectilesGroup);
       this.lastAttack = now;
     }
 
-    // animation idle par défaut
     if (this.state === "idle") {
       if (this.direction === 1)
         this.anims.play("boss2_idle_right", true);
@@ -51,50 +55,121 @@ export default class Boss2 extends Enemy {
     }
   }
 
-  attack(player, projectilesGroup) {
+  enterPhase2() {
+    this.phase = 2;
+    this.attackCooldown = 1600;
+    this.projectileSpeed = 270;
+    this.setTint(0xff6666);
+
+    // petit effet dramatique
+    this.scene.cameras.main.shake(400, 0.005);
+    this.scene.sound.play("boss2music", { volume: 0.7 });
+    console.log("🔥 Cerbère entre en rage !");
+  }
+
+  chooseAttack(player, projectilesGroup) {
+    const rand = Phaser.Math.Between(1, this.phase === 1 ? 2 : 3);
+    if (rand === 1) this.fireAttack(player, projectilesGroup);
+    else if (rand === 2) this.dashAttack(player);
+    else if (rand === 3 && this.phase === 2) this.jumpAttack();
+  }
+
+  fireAttack(player, projectilesGroup) {
     if (!this.body) return;
     this.state = "shoot";
     this.alert.setVisible(true);
 
-    const attackTimer = this.scene.time.delayedCall(600, () => {
+    const nbShots = this.phase === 2 ? 2 : 1;
+    let delay = 0;
+
+    for (let i = 0; i < nbShots; i++) {
+      const attackTimer = this.scene.time.delayedCall(600 + delay, () => {
+        if (!this.body) return;
+        this.alert.setVisible(false);
+
+        const direction = player.x > this.x ? 1 : -1;
+        this.direction = direction;
+
+        // 🔥 Position décalée devant le boss
+        const offsetX = direction * 60;
+        const projectile = this.scene.physics.add.sprite(this.x + offsetX, this.y - 30, "fireball");
+        projectilesGroup.add(projectile);
+        projectile.body.setAllowGravity(false);
+
+        // 🔥 Vitesse plus rapide selon la phase
+        const speed = this.phase === 2 ? 320 : 280;
+
+        const dx = player.x - projectile.x;
+        const dy = player.y - projectile.y;
+        const angle = Math.atan2(dy, dx);
+        projectile.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
+
+        const projTimer = this.scene.time.delayedCall(this.projectileLife, () => {
+          if (projectile.active) projectile.destroy();
+        });
+        this.activeTimers.push(projTimer);
+      });
+      this.activeTimers.push(attackTimer);
+      delay += 400;
+    }
+
+    const resetTimer = this.scene.time.delayedCall(1000 + delay, () => (this.state = "idle"));
+    this.activeTimers.push(resetTimer);
+  }
+
+  dashAttack(player) {
+    if (!this.body) return;
+    this.state = "dash";
+    this.alert.setVisible(true);
+
+    const direction = player.x > this.x ? 1 : -1;
+    this.direction = direction;
+
+    const dashTimer = this.scene.time.delayedCall(500, () => {
       if (!this.body) return;
       this.alert.setVisible(false);
 
-      const direction = player.x > this.x ? 1 : -1;
-      this.direction = direction;
+      // 💨 Dash beaucoup plus fort et plus long
+      this.setVelocityX(500 * direction);
 
-      // Crée le projectile et ajoute au groupe
-      const projectile = this.scene.physics.add.sprite(this.x, this.y - 20, "fireball");
-      projectilesGroup.add(projectile);
-      projectile.body.setAllowGravity(false);
-      projectile.body.setCollideWorldBounds(false);
-
-      const dx = player.x - this.x;
-      const dy = player.y - (this.y - 20);
-      const angle = Math.atan2(dy, dx);
-
-      const vx = Math.cos(angle) * this.projectileSpeed;
-      const vy = Math.sin(angle) * this.projectileSpeed;
-      projectile.setVelocity(vx, vy);
-
-      // Auto-destruction du projectile
-      const projTimer = this.scene.time.delayedCall(this.projectileLife, () => {
-        if (projectile && projectile.active) projectile.destroy();
+      // Ajout d’un effet visuel possible : "poussière" ou "flamme"
+      const dashEnd = this.scene.time.delayedCall(600, () => {
+        if (this.body) this.setVelocityX(0);
+        this.state = "idle";
       });
-      this.activeTimers.push(projTimer);
-
-      // Animation attaque
-      if (direction === 1) this.anims.play("boss2_attack_right", true);
-      else this.anims.play("boss2_attack_left", true);
-
-      // Retour à idle
-      const idleTimer = this.scene.time.delayedCall(800, () => {
-        if (this.body) this.state = "idle";
-      });
-      this.activeTimers.push(idleTimer);
-
+      this.activeTimers.push(dashEnd);
     });
-    this.activeTimers.push(attackTimer);
+    this.activeTimers.push(dashTimer);
+  }
+
+  jumpAttack() {
+    if (!this.body) return;
+    this.state = "jump";
+    this.alert.setVisible(true);
+
+    const jumpTimer = this.scene.time.delayedCall(500, () => {
+      if (!this.body) return;
+      this.alert.setVisible(false);
+      this.setVelocityY(-500);
+
+      const impactTimer = this.scene.time.delayedCall(900, () => {
+        if (!this.body) return;
+        this.spawnFireRain(6); // 6 projectiles max
+        this.state = "idle";
+      });
+      this.activeTimers.push(impactTimer);
+    });
+    this.activeTimers.push(jumpTimer);
+  }
+
+  spawnFireRain(count = 6) {
+    for (let i = 0; i < count; i++) {
+      const x = this.x - 150 + i * 100;
+      const fire = this.scene.physics.add.sprite(x, this.y - 300, "fireball");
+      fire.setVelocityY(250);
+      fire.body.setAllowGravity(true);
+      this.scene.physics.add.collider(fire, this.scene.calque_plateformes, () => fire.destroy());
+    }
   }
 
   dropItem() {
@@ -109,19 +184,15 @@ export default class Boss2 extends Enemy {
 
     scene.physics.add.overlap(scene.player, cristal, () => {
       fct.lifeManager.heal(scene, scene.maxVies);
-
       if (!scene.game.config.crystals)
         scene.game.config.crystals = { green: false, blue: false, violet: false };
       scene.game.config.crystals.blue = true;
-
       if (scene.sonCristal) scene.sonCristal.play({ volume: 1 });
-      console.log("💎 Cristal bleu obtenu !");
       cristal.destroy();
     });
   }
 
   destroy(fromScene) {
-    // Supprime tous les timers actifs
     if (this.activeTimers) {
       this.activeTimers.forEach(t => t.remove(false));
       this.activeTimers = [];
@@ -135,7 +206,6 @@ export default class Boss2 extends Enemy {
       this.scene.porte_retour_boss.body.enable = true;
     }
 
-    // Stop musique boss
     if (this.bossMusic && this.bossMusic.isPlaying) this.bossMusic.stop();
     this.bossMusic = null;
 
