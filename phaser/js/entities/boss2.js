@@ -53,6 +53,21 @@ export default class Boss2 extends Enemy {
         this.anims.play("boss2_idle_right", true);
       else this.anims.play("boss2_idle_left", true);
     }
+    else if (this.state === "dash") {
+      if (this.direction === 1)
+        this.anims.play("boss2_idle_right", true);
+      else this.anims.play("boss2_idle_left", true);
+    }
+    else if (this.state === "shoot") {
+      if (this.direction === 1)
+        this.anims.play("boss2_attack_right", true);
+      else this.anims.play("boss2_attack_left", true);
+    }
+    else if (this.state === "jump") {
+      if (this.direction === 1)
+        this.anims.play("boss2_jump_right", true);
+      else this.anims.play("boss2_jump_left", true);
+    }
   }
 
   enterPhase2() {

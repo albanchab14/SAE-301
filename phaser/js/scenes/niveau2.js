@@ -29,7 +29,7 @@ export default class Niveau2 extends Basescene {
     this.load.image("pont_levis1", "./assets/pont_levis1.png");
     this.load.image("plateforme_mobile1", "./assets/plateforme_mobile1.png");
 
-    this.load.spritesheet("img_boss2", "./assets/boss2.png", { frameWidth: 104, frameHeight: 73 });
+    this.load.spritesheet("img_boss2", "./assets/boss2.png", { frameWidth: 111, frameHeight: 73 });
     this.load.spritesheet("fireball", "./assets/fireball.png", { frameWidth: 48, frameHeight: 24 });
     this.load.audio("boss2music", "./assets/sfx/boss2fight.mp3");
     // this.load.audio("boss2_shoot", "./assets/sfx/fireball.mp3");
@@ -186,29 +186,41 @@ export default class Niveau2 extends Basescene {
     // Boss 2
     this.anims.create({
       key: "boss2_idle_left",
-      frames: this.anims.generateFrameNumbers("img_boss2", { start: 0, end: 3 }),
-      frameRate: 6,
+      frames: [{ key: "img_boss2", frame: 0 }],
+      frameRate: 1,
       repeat: -1
     });
 
     this.anims.create({
       key: "boss2_idle_right",
-      frames: this.anims.generateFrameNumbers("img_boss2", { start: 4, end: 7 }),
-      frameRate: 6,
+      frames: [{ key: "img_boss2", frame: 1 }],
+      frameRate: 1,
       repeat: -1
     });
 
     this.anims.create({
       key: "boss2_attack_left",
-      frames: this.anims.generateFrameNumbers("img_boss2", { start: 8, end: 11 }),
-      frameRate: 8,
+      frames: this.anims.generateFrameNumbers("img_boss2", { start: 2, end: 5 }),
+      frameRate: 4,
       repeat: 0
     });
 
     this.anims.create({
       key: "boss2_attack_right",
-      frames: this.anims.generateFrameNumbers("img_boss2", { start: 12, end: 15 }),
-      frameRate: 8,
+      frames: this.anims.generateFrameNumbers("img_boss2", { start: 6, end: 9 }),
+      frameRate: 4,
+      repeat: 0
+    });
+    this.anims.create({
+      key: "boss2_jump_left",
+      frames: this.anims.generateFrameNumbers("img_boss2", { start: 10, end: 13 }),
+      frameRate: 2,
+      repeat: 0
+    });
+    this.anims.create({
+      key: "boss2_jump_right",
+      frames: this.anims.generateFrameNumbers("img_boss2", { start: 14, end: 17 }),
+      frameRate: 2,
       repeat: 0
     });
     // Animation boule de feu

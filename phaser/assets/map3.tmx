@@ -1393,21 +1393,21 @@
 </data>
  </layer>
  <objectgroup id="5" name="collectibles">
-  <object id="1" x="1582" y="1093">
+  <object id="1" x="1582" y="1103.67">
    <properties>
     <property name="texture" type="int" value="6"/>
     <property name="type" value="miroir_fragment"/>
    </properties>
    <point/>
   </object>
-  <object id="5" x="1952.36" y="70.9394">
+  <object id="5" x="1951.7" y="91.6061">
    <properties>
     <property name="texture" type="int" value="7"/>
     <property name="type" value="miroir_fragment"/>
    </properties>
    <point/>
   </object>
-  <object id="6" x="3392.33" y="207.667">
+  <object id="6" x="3392.33" y="216.167">
    <properties>
     <property name="texture" type="int" value="8"/>
     <property name="type" value="miroir_fragment"/>
