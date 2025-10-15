@@ -55,7 +55,12 @@ export default class Selection extends BaseScene {
     this.events.on('wake', () => { // 1 appel au lancement de scène
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
     });
-  
+    
+    // Cristaux
+    this.game.config.crystals.green = false;
+    this.game.config.crystals.blue = false;
+    this.game.config.crystals.violet = false;
+
     this.events.on('wake', () => {
       // Met à jour le cristal
       if (this.game.config.crystals.green) {

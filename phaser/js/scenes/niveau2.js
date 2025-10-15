@@ -256,6 +256,7 @@ export default class Niveau2 extends Basescene {
 
     this.enemies = this.add.group();
     this.projectilesGroup = this.physics.add.group();
+    this.boss2Alive = true;
 
     const ennemis = this.map2.getObjectLayer("ennemis")?.objects || [];
     ennemis.forEach(obj => {
@@ -270,12 +271,13 @@ export default class Niveau2 extends Basescene {
         this.enemies.add(new Gargouille(this, obj.x, obj.y, dir));
       }
       if (obj.properties?.find(p => p.name === "type")?.value === "boss2") {
-        const boss = new Boss2(this, obj.x, obj.y - 32);
-        boss.sonCristal = this.sonCristal;
-        boss.bossMusic = this.sound.add("boss2music", { loop: true, volume: 0.5 });
-        this.enemies.add(boss);
+        if (this.boss2Alive) {
+          const boss = new Boss2(this, obj.x, obj.y - 32);
+          boss.sonCristal = this.sonCristal;
+          boss.bossMusic = this.sound.add("boss2music", { loop: true, volume: 0.5 });
+          this.enemies.add(boss);
+        }
       }
-
     });
     
 
@@ -299,6 +301,7 @@ export default class Niveau2 extends Basescene {
             this.miniCristalGreen.destroy();
             this.miniCristalGreen = null;
           }
+          this.mapMusic.stop();
           this.scene.start("defaite");
         }
       }
@@ -323,6 +326,7 @@ export default class Niveau2 extends Basescene {
               this.miniCristalGreen.destroy();
               this.miniCristalGreen = null;
             }
+            this.mapMusic.stop();
             this.scene.start("defaite");
           }
           projectile.destroy();

@@ -181,6 +181,7 @@ export default class Niveau3 extends Basescene {
       
       this.enemies = this.add.group();
       this.projectilesGroup = this.physics.add.group();
+      this.boss3Alive = true;
   
       const ennemis = this.map3.getObjectLayer("ennemis")?.objects || [];
       ennemis.forEach(obj => {
@@ -192,10 +193,12 @@ export default class Niveau3 extends Basescene {
           this.enemies.add(new Squelette(this, obj.x, obj.y));
         }
         if (obj.properties?.find(p => p.name === "type")?.value === "boss3") {
-          const boss = new Boss3(this, obj.x, obj.y - 32);
-          boss.sonCristal = this.sonCristal;
-          boss.bossMusic = this.sound.add("boss3music", { loop: true, volume: 0.15 });
-          this.enemies.add(boss);
+          if (this.boss3Alive) {
+            const boss = new Boss3(this, obj.x, obj.y - 32);
+            boss.sonCristal = this.sonCristal;
+            boss.bossMusic = this.sound.add("boss3music", { loop: true, volume: 0.15 });
+            this.enemies.add(boss);
+          }
         }
       });
 
@@ -219,6 +222,7 @@ export default class Niveau3 extends Basescene {
               this.miniCristalGreen.destroy();
               this.miniCristalGreen = null;
             }
+            this.mapMusic.stop();
             this.scene.start("defaite");
           }
         }
@@ -243,6 +247,7 @@ export default class Niveau3 extends Basescene {
                 this.miniCristalGreen.destroy();
                 this.miniCristalGreen = null;
               }
+              this.mapMusic.stop();
               this.scene.start("defaite");
             }
             projectile.destroy();

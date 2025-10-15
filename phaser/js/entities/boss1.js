@@ -204,18 +204,14 @@ export default class Boss1 extends Enemy {
     }
 
     if (this.bossMusic) {
-      try {
-        if (this.bossMusic.isPlaying) this.bossMusic.stop();
-        this.bossMusic.destroy();
-      } catch(e) {
-        console.warn("Boss music déjà détruite:", e);
-      }
+      if (this.bossMusic.isPlaying) this.bossMusic.stop();
+      this.bossMusic.destroy();
       this.bossMusic = null;
     }
     if (this.scene && this.scene.mapMusic) {
       this.scene.mapMusic.resume();
     }
-
+    this.boss1Alive = false;
     this.dropItem();
     super.destroy(fromScene);
   }

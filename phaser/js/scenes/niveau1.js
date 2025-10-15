@@ -177,6 +177,7 @@ export default class Niveau1 extends Basescene {
     // Création
     this.enemies = this.add.group();
     this.projectiles = this.physics.add.group();
+    this.boss1Alive = true;
 
     const ennemis = this.map.getObjectLayer("ennemis")?.objects || [];
     ennemis.forEach(obj => {
@@ -188,10 +189,12 @@ export default class Niveau1 extends Basescene {
         this.enemies.add(new Bandit(this, obj.x, obj.y-32));
       }
       if (obj.properties?.find(p => p.name === "type")?.value === "boss1") {
-        const boss = new Boss1(this, obj.x, obj.y - 32);
-        boss.sonCristal = this.sonCristal; 
-        boss.bossMusic = this.sound.add("boss1music", { loop: true, volume: 0.5 });
-        this.enemies.add(boss);
+        if (this.boss1Alive) {
+          const boss = new Boss1(this, obj.x, obj.y - 32);
+          boss.sonCristal = this.sonCristal; 
+          boss.bossMusic = this.sound.add("boss1music", { loop: true, volume: 0.5 });
+          this.enemies.add(boss);
+        }
       }
 
     });
@@ -211,11 +214,13 @@ export default class Niveau1 extends Basescene {
           this.physics.pause();
           this.game.config.collectedFragments = 0;
           this.game.config.collectedCristals = 0;
+          this.boss1Alive = true;
           this.bossNameShown = false;
           if (this.miniCristalGreen) {
             this.miniCristalGreen.destroy();
             this.miniCristalGreen = null;
           }
+          this.mapMusic.stop();
           this.scene.start("defaite");
         }
       }
@@ -234,11 +239,13 @@ export default class Niveau1 extends Basescene {
           this.physics.pause();
           this.game.config.collectedFragments = 0;
           this.game.config.collectedCristals = 0;
+          this.boss1Alive = true;
           this.bossNameShown = false;
           if (this.miniCristalGreen) {
             this.miniCristalGreen.destroy();
             this.miniCristalGreen = null;
           }
+          this.mapMusic.stop();
           this.scene.start("defaite");
         }
         projectile.destroy();

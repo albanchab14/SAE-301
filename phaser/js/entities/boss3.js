@@ -229,12 +229,16 @@ export default class Boss3 extends Enemy {
       this.scene.porte_retour_boss.body.enable = true;
     }
 
-    if (this.bossMusic && this.bossMusic.isPlaying) this.bossMusic.stop();
-    this.bossMusic = null;
-    if (this.scene.mapMusic) {
+    if (this.bossMusic) {
+      if (this.bossMusic.isPlaying) this.bossMusic.stop();
+      this.bossMusic.destroy();
+      this.bossMusic = null;
+    }
+    if (this.scene && this.scene.mapMusic) {
       this.scene.mapMusic.resume();
     }
-
+    this.boss2Alive = false;
+    this.dropItem();
     super.destroy(fromScene);
   }
 }
