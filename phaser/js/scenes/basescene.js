@@ -151,12 +151,14 @@ export default class Basescene extends Phaser.Scene {
     }
 
     // Échelles
-    const tile = this.calque_echelles?.getTileAtWorldXY(player.x, player.y, true);
-    if (tile && tile.properties.estEchelle) {
-      player.setGravityY(0);
-      if (clavier.up.isDown) player.setVelocityY(-160);
-      else if (clavier.down.isDown) player.setVelocityY(160);
-      else player.setVelocityY(0);
+    if (this.echellesActives === undefined || this.echellesActives) {
+      const tile = this.calque_echelles?.getTileAtWorldXY(player.x, player.y, true);
+      if (tile && tile.properties.estEchelle) {
+        player.setGravityY(0);
+        if (clavier.up.isDown) player.setVelocityY(-160);
+        else if (clavier.down.isDown) player.setVelocityY(160);
+        else player.setVelocityY(0);
+      }
     }
   }
 

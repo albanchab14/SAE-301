@@ -27,6 +27,12 @@ export default class Selection extends BaseScene {
     this.calque_echelles = this.map.createLayer("calque_echelles", tileset);
     this.calque_plateformes.setCollisionByProperty({ estSolide: true });
 
+
+    // 🔹 Le calque des échelles est désactivé au départ
+    this.calque_echelles.visible = false;
+    this.calque_echelles.active = false;
+    this.echellesActives = false;
+
     // Portes vers niveaux
     this.porte1 = this.physics.add.staticSprite(100, 601, "img_porte1");
     this.porte2 = this.physics.add.staticSprite(640, 597, "img_porte2");
@@ -94,6 +100,20 @@ export default class Selection extends BaseScene {
   update() {
     this.updatePlayerMovement();
     this.handleAttack(this.enemies);
+
+    // Active le calque des échelles uniquement si les 3 cristaux sont récupérés
+    if (
+      this.game.config.crystals.green &&
+      this.game.config.crystals.blue &&
+      this.game.config.crystals.violet
+    ) {
+      if (!this.calque_echelles.visible) {
+        this.calque_echelles.visible = true;
+        this.calque_echelles.active = true;
+        this.echellesActives = true;
+        console.log("💎 Tous les cristaux obtenus ! Les échelles apparaissent !");
+      }
+    }
 
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
       if (this.physics.overlap(this.player, this.porte1)) {
