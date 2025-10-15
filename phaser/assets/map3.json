@@ -319,6 +319,24 @@
                  "width":0,
                  "x":3392.33,
                  "y":216.167
+                }, 
+                {
+                 "height":0,
+                 "id":9,
+                 "name":"",
+                 "point":true,
+                 "properties":[
+                        {
+                         "name":"type",
+                         "type":"string",
+                         "value":"parchemin"
+                        }],
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":0,
+                 "x":1222.67,
+                 "y":626
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -332,7 +350,7 @@
          "name":"zones",
          "objects":[
                 {
-                 "height":585.333333333333,
+                 "height":585.333,
                  "id":9,
                  "name":"boss3Zone",
                  "rotation":0,
@@ -340,7 +358,7 @@
                  "visible":true,
                  "width":1534,
                  "x":2914,
-                 "y":982.666666666667
+                 "y":982.667
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -404,8 +422,8 @@
                  "type":"",
                  "visible":true,
                  "width":0,
-                 "x":3696.66666666667,
-                 "y":1202
+                 "x":3697.17,
+                 "y":1242.5
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -413,8 +431,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":8,
- "nextobjectid":13,
+ "nextlayerid":7,
+ "nextobjectid":9,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

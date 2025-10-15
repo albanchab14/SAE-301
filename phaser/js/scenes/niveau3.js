@@ -42,11 +42,11 @@ export default class Niveau3 extends Basescene {
       // Porte retour
       this.porte_retour = this.physics.add.staticSprite(100, 595, "img_porte3");
       
-      this.porte_retour_boss = this.physics.add.staticSprite(4300, 1400, "img_porte3"); // ajuste x/y selon ta map
+      this.porte_retour_boss = this.physics.add.staticSprite(4400, 1524, "img_porte3"); // ajuste x/y selon ta map
       this.porte_retour_boss.setVisible(false);
       this.porte_retour_boss.body.enable = false;
-      // Joueur (départ : (100, 600), boss : (4000, 900))
-      this.player = this.createPlayer(4200, 800);
+      // Joueur (départ : (100, 600), boss : (4250, 800))
+      this.player = this.createPlayer(4250, 800);
       this.physics.add.collider(this.player, this.calque_plateformes);
   
       // Caméra
@@ -165,9 +165,14 @@ export default class Niveau3 extends Basescene {
         if (obj.properties?.find(p => p.name === "type")?.value === "skeleton") {
           this.enemies.add(new Squelette(this, obj.x, obj.y));
         }
+        if (obj.properties?.find(p => p.name === "type")?.value === "boss3") {
+          const boss = new Boss3(this, obj.x, obj.y - 32);
+          boss.sonCristal = this.sonCristal;
+          boss.bossMusic = this.sound.add("boss3music", { loop: true, volume: 0.5 });
+          this.enemies.add(boss);
+        }
       });
-          
-      
+
       this.physics.add.collider(this.enemies, this.calque_plateformes);
   
       // Collisions joueur ↔ ennemis
@@ -196,19 +201,6 @@ export default class Niveau3 extends Basescene {
       // Clavier
       this.createClavier();
 
-      // A ENLEVER
-      this.time.addEvent({
-          delay: 10000, // 10 sec en ms
-          loop: true,
-          callback: () => {
-              // Suppose que ton sprite joueur s'appelle this.player
-              console.log(`Position joueur : x=${this.player.x}, y=${this.player.y}`);
-              // Tu peux aussi le stocker dans un tableau pour tracing ultérieur
-              // this.positionsJoueur = this.positionsJoueur || [];
-              // this.positionsJoueur.push({ x: this.player.x, y: this.player.y, t: this.time.now });
-          }
-      });
-
       const bossZoneObj = this.map3.getObjectLayer("zones")?.objects.find(o => o.name === "boss3Zone");
       if (bossZoneObj) {
           this.bossZone = this.add.zone(
@@ -232,11 +224,7 @@ export default class Niveau3 extends Basescene {
               if (!this.bossNameShown) {
                   this.bossNameShown = true;
                 
-                  // Instanciation du boss au moment où le joueur entre
-                  const boss = new Boss3(this, bossZoneObj.x + bossZoneObj.width / 2, bossZoneObj.y + bossZoneObj.height / 2);
-                  boss.sonCristal = this.sonCristal;
-                  boss.bossMusic = this.sound.add("boss3music", { loop: true, volume: 0.5 });
-                  this.enemies.add(boss);
+                  const boss = this.enemies.getChildren().find(e => e instanceof Boss3);
                   if (boss && !boss.bossMusic.isPlaying) boss.bossMusic.play();
 
                   this.bossNameText.setAlpha(1);

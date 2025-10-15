@@ -7,7 +7,7 @@ export default class Boss3 extends Enemy {
   constructor(scene, x, y) {
     super(scene, x, y, "img_boss3");
 
-    this.vie = 10;
+    this.vie = 1;
     this.setCollideWorldBounds(true);
     this.body.allowGravity = false;
 
@@ -17,7 +17,7 @@ export default class Boss3 extends Enemy {
 
     // Spots fixes pour téléportation
     this.spots = [
-      { x: 3700, y: 1219 },
+      { x: 3700, y: 1209 },
       { x: 4239, y: 1337 },
       { x: 3156, y: 1337 }
     ];
