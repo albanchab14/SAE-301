@@ -21,6 +21,7 @@ export default class Parchemin extends Phaser.Physics.Arcade.Sprite {
             this.isReading = false;
             this.scene.player.isReadingParchemin = false; // ✅ réactive les interactions du joueur
         } else {
+            this.scene.sound.play('son_parchemin'); // ✅ joue le son
             // Afficher le fond noir transparent
             this.bgRect = this.scene.add.rectangle(
                 this.scene.cameras.main.centerX,

@@ -23,14 +23,29 @@ export default class Niveau1 extends Basescene {
     this.load.spritesheet("img_loup", "./assets/loup.png", { frameWidth: 96, frameHeight: 57 });
     this.load.spritesheet("img_boss1", "./assets/boss1.png", { frameWidth: 70, frameHeight: 94 });
     this.load.image("background_fixe", "./assets/fond_map_1.png");
+
     this.load.audio("boss1music", "./assets/sfx/boss1fight.mp3");
+    this.load.audio("map1_fond", "./assets/sfx/map1_fond.mp3");
     this.load.image("parchemin1", "assets/parchemin1.png");
 
   }
 
   create() {
     super.create();
-    //backgroung map
+
+    // --- Musique de fond ---
+    if (!this.mapMusic) {
+      // Première fois qu'on lance la scène
+      this.mapMusic = this.sound.add("map1_fond", { loop: true, volume: 0.3 });
+      this.mapMusic.play();
+    }
+    this.events.on('wake', () => {
+      if (this.mapMusic && !this.mapMusic.isPlaying) {
+        this.mapMusic.play();
+      }
+    });
+
+    // backgroung map
     const bg = this.add.image(0, 0, "background_fixe")
         .setOrigin(0, 0)
         .setScrollFactor(0);
@@ -60,7 +75,7 @@ export default class Niveau1 extends Basescene {
     
 
     // Joueur, placé en (100, 600) / (3000,150 pour boss)
-    this.player = this.createPlayer(100, 600);
+    this.player = this.createPlayer(3000, 150);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
 
@@ -89,7 +104,8 @@ export default class Niveau1 extends Basescene {
     }
 
     this.createFragmentsText(this.game.config.collectedFragments, 9);
-    this.events.on('wake', () => { // 1 appel au lancement de scène
+    
+    this.events.on('wake', () => {
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
       this.player.setPosition(3000, 150); // (3000,150) position de boss
       // Si tu veux remettre la caméra sur le joueur
@@ -250,17 +266,20 @@ export default class Niveau1 extends Basescene {
         fontStyle: "bold"
     }).setOrigin(0.5).setScrollFactor(0).setAlpha(0);
 
-    // Détecte l’entrée du joueur
+    // Détecte l’entrée du joueur dans la zone du boss
     this.physics.add.overlap(this.player, this.bossZone, () => {
         if (!this.bossNameShown) {
             this.bossNameShown = true;
 
-            // Jouer la musique du boss (gestion par le boss)
+            // Jouer la musique du boss
             const boss = this.enemies.getChildren().find(e => e instanceof Boss1);
             if (boss && !boss.bossMusic.isPlaying) {
-                boss.bossMusic.play();
-            }
-
+                boss.bossMusic.play({ loop: true });
+                // Mettre la musique de fond en pause
+                if (this.mapMusic && this.mapMusic.isPlaying) {
+                    this.mapMusic.pause();
+                }
+            } 
             this.bossNameText.setAlpha(1);
             this.tweens.add({
                 targets: this.bossNameText,
@@ -269,16 +288,24 @@ export default class Niveau1 extends Basescene {
                 delay: 1500
             });
         }
-      });
-      // Affiche la position du joueur toutes les 5 secondes
-      this.time.addEvent({
-        delay: 5000,
-        callback: () => {
+    });
+
+    // Arrêter la musique si la scène change
+    this.events.on('sleep', () => {
+      if (this.mapMusic && this.mapMusic.isPlaying) {
+        this.mapMusic.stop();
+      }
+    });
+
+    // Affiche la position du joueur toutes les 5 secondes
+    this.time.addEvent({
+      delay: 5000,
+      callback: () => {
         console.log(`Position du joueur: x=${this.player.x}, y=${this.player.y}`);
-        },
-        callbackScope: this,
-        loop: true
-      });
+      },
+      callbackScope: this,
+      loop: true
+    });
   }
 
   update() {
@@ -304,6 +331,7 @@ export default class Niveau1 extends Basescene {
     // Retour
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
     (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss))) {
+      this.mapMusic.stop();
       this.scene.switch("selection");
     }
   }

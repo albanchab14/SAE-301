@@ -26,6 +26,7 @@ export default class Basescene extends Phaser.Scene {
     this.load.image("img_porte3", "./assets/door3.png");
     this.load.spritesheet("img_porte4", "./assets/finaldoor.png", { frameWidth: 85, frameHeight: 76 });
 
+    this.load.audio('son_fragments', './assets/sfx/fragment.mp3');
     this.load.spritesheet('miroir_fragments', './assets/miroir_fragments.png', { frameWidth: 32, frameHeight: 32 });
 
     this.load.audio('son_attaque', './assets/sfx/hit.mp3');
