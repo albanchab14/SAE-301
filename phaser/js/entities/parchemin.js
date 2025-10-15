@@ -43,11 +43,7 @@ export default class Parchemin extends Phaser.Physics.Arcade.Sprite {
             .setDepth(100)
             .setOrigin(0.5)
             .setScale(1.3);
-            console.log(
-                `Parchemin image created:`,
-                this.loreImage ? 'YES' : 'NO',
-                `at x=${this.loreImage?.x}, y=${this.loreImage?.y}`
-            );
+            
             // Met la vitesse du joueur à 0 pour éviter qu'il continue à courir
             if (this.scene.player && this.scene.player.body) {
                 this.scene.player.body.setVelocity(0, 0);

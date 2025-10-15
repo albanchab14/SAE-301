@@ -62,7 +62,7 @@ export default class Niveau1 extends Basescene {
     
 
     // Joueur, placé en (100, 600) / (3000,150 pour boss)
-    this.player = this.createPlayer(3000, 150);
+    this.player = this.createPlayer(100, 600);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
 
@@ -105,7 +105,7 @@ export default class Niveau1 extends Basescene {
     }, null, this);
 
     // Parchemin
-    this.p1 = new Parchemin(this, 3100, 150, "parchemin1");
+    this.p1 = new Parchemin(this, 1585, 1020, "parchemin1");
     this.parchemins.push(this.p1);
 
     // --- ENNEMIS ---
@@ -271,6 +271,15 @@ export default class Niveau1 extends Basescene {
                 delay: 1500
             });
         }
+      });
+      // Affiche la position du joueur toutes les 5 secondes
+      this.time.addEvent({
+        delay: 5000,
+        callback: () => {
+        console.log(`Position du joueur: x=${this.player.x}, y=${this.player.y}`);
+        },
+        callbackScope: this,
+        loop: true
       });
   }
 
