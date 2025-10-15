@@ -28,7 +28,6 @@ export default class Squelette extends Enemy {
 
     // Animation de départ
     this.play(this.direction === 1 ? "skeleton_idle_right" : "skeleton_idle_left");
-    console.log(`🦴 Squelette créé à x=${x}, direction=${this.direction === 1 ? "droite" : "gauche"}`);
   }
 
   setHitbox(state) {
@@ -51,9 +50,8 @@ export default class Squelette extends Enemy {
 
         // Regarde vers le joueur
         this.direction = player.x > this.x ? 1 : -1;
-        console.log(`🗡️ Attaque ! direction=${this.direction === 1 ? "droite" : "gauche"} (distance=${Math.round(distance)})`);
 
-        // ⚡️ Hitbox attaque décalée vers l’avant
+        // Hitbox attaque décalée vers l’avant
         if (this.direction === 1) {
             this.body.setSize(58, 47);
             this.body.setOffset(1, 0);
@@ -66,7 +64,6 @@ export default class Squelette extends Enemy {
 
         // Quand l’animation d’attaque est finie → retour idle
         this.once("animationcomplete", () => {
-            console.log("💀 Fin d’attaque → retour idle");
             this.state = "idle";
 
             // Hitbox normale centrée
@@ -83,11 +80,9 @@ export default class Squelette extends Enemy {
         if (this.body.blocked.left) {
             this.direction = 1;
             this.setVelocityX(this.speed);
-            console.log("↩️ Collision gauche → tourne à droite");
         } else if (this.body.blocked.right) {
             this.direction = -1;
             this.setVelocityX(-this.speed);
-            console.log("↪️ Collision droite → tourne à gauche");
         } else {
             this.setVelocityX(this.speed * this.direction);
         }

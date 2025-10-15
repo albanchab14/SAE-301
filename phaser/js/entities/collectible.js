@@ -29,13 +29,7 @@ export default class Collectible extends Phaser.Physics.Arcade.Sprite {
             if (!this.scene.game.config.crystals) {
                 this.scene.game.config.crystals = {};
             }
-
             this.scene.game.config.crystals[this.crystalColor] = true;
-
-            if (this.type === "cristal") {
-            this.scene.game.config.crystals[this.crystalColor] = true;
-            
-            }
         }
     }
 

@@ -216,7 +216,7 @@ export default class Boss2 extends Enemy {
       this.scene.physics.add.overlap(fire, this.scene.player, () => {
         if (!fire.active) return;
         fire.destroy();
-        if (fct.lifeManager) fct.lifeManager.decrease(this.scene, this.damage || 1);
+        fct.lifeManager.retirerPV(this.scene, this.damage || 1);
       });
     }
   }

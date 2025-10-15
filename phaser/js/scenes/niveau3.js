@@ -2,6 +2,7 @@
 import * as fct from '../fonctions.js';
 import Basescene from "./basescene.js";
 import Bat from "../entities/bat.js";
+import Boss3 from "../entities/boss3.js";
 import Squelette from '../entities/squelette.js';
 import Collectible from '../entities/collectible.js';
 
@@ -13,12 +14,14 @@ export default class Niveau3 extends Basescene {
   preload() {
       this.load.image("Phaser_tuilesdejeu3", "./assets/tuilesJeu3.png");
       this.load.tilemapTiledJSON("carte3", "./assets/map3.json");
-      this.load.image("img_porte_retour", "./assets/door3.png");
       this.load.spritesheet("img_bat", "./assets/bat.png", { frameWidth: 32, frameHeight: 18 });
-      // adapter les tailles
       this.load.spritesheet("skeleton_idle", "./assets/skeleton_idle.png", { frameWidth: 34, frameHeight: 46 });
       this.load.spritesheet("skeleton_walk", "./assets/skeleton_walk.png", { frameWidth: 39, frameHeight: 48 });
       this.load.spritesheet("skeleton_attack", "./assets/skeleton_attack.png", { frameWidth: 58, frameHeight: 47 });
+
+      this.load.spritesheet("img_boss3", "./assets/boss3.png", { frameWidth: 50, frameHeight: 72 });
+      this.load.image("dark_projectile", "./assets/dark_projectile.png");
+      this.load.audio("boss3music", "./assets/sfx/boss3fight.mp3");
 
     }
   
@@ -38,9 +41,12 @@ export default class Niveau3 extends Basescene {
   
       // Porte retour
       this.porte_retour = this.physics.add.staticSprite(100, 595, "img_porte3");
-  
-      // Joueur
-      this.player = this.createPlayer(100, 600);
+      
+      this.porte_retour_boss = this.physics.add.staticSprite(4300, 1400, "img_porte3"); // ajuste x/y selon ta map
+      this.porte_retour_boss.setVisible(false);
+      this.porte_retour_boss.body.enable = false;
+      // Joueur (départ : (100, 600), boss : (4000, 900))
+      this.player = this.createPlayer(4200, 800);
       this.physics.add.collider(this.player, this.calque_plateformes);
   
       // Caméra
@@ -132,6 +138,20 @@ export default class Niveau3 extends Basescene {
         repeat: 0
       });
 
+      // Boss3
+      this.anims.create({
+        key: "boss3_idle_left",
+        frames: [{ key: "img_boss3", frame: 0 }],
+        frameRate: 1,
+        repeat: -1
+      });
+      this.anims.create({
+        key: "boss3_idle_right",
+        frames: [{ key: "img_boss3", frame: 1 }],
+        frameRate: 1,
+        repeat: -1
+      });
+
       
       this.enemies = this.add.group();
       this.projectilesGroup = this.physics.add.group();
@@ -145,7 +165,6 @@ export default class Niveau3 extends Basescene {
         if (obj.properties?.find(p => p.name === "type")?.value === "skeleton") {
           this.enemies.add(new Squelette(this, obj.x, obj.y));
         }
-
       });
           
       
@@ -189,6 +208,47 @@ export default class Niveau3 extends Basescene {
               // this.positionsJoueur.push({ x: this.player.x, y: this.player.y, t: this.time.now });
           }
       });
+
+      const bossZoneObj = this.map3.getObjectLayer("zones")?.objects.find(o => o.name === "boss3Zone");
+      if (bossZoneObj) {
+          this.bossZone = this.add.zone(
+              bossZoneObj.x + bossZoneObj.width / 2,
+              bossZoneObj.y + bossZoneObj.height / 2,
+              bossZoneObj.width,
+              bossZoneObj.height
+          );
+          this.physics.world.enable(this.bossZone);
+          this.bossZone.body.setAllowGravity(false);
+          this.bossZone.body.setImmovable(true);
+
+          this.bossNameText = this.add.text(this.scale.width / 1.25, this.scale.height / 1.1,
+              bossZoneObj.properties?.find(p => p.name === "bossname")?.value || "VAMPIRE", {
+                  font: "64px Arial",
+                  fill: "#ff00ff",
+                  fontStyle: "bold"
+              }).setOrigin(0.5).setScrollFactor(0).setAlpha(0);
+
+          this.physics.add.overlap(this.player, this.bossZone, () => {
+              if (!this.bossNameShown) {
+                  this.bossNameShown = true;
+                
+                  // Instanciation du boss au moment où le joueur entre
+                  const boss = new Boss3(this, bossZoneObj.x + bossZoneObj.width / 2, bossZoneObj.y + bossZoneObj.height / 2);
+                  boss.sonCristal = this.sonCristal;
+                  boss.bossMusic = this.sound.add("boss3music", { loop: true, volume: 0.5 });
+                  this.enemies.add(boss);
+                  if (boss && !boss.bossMusic.isPlaying) boss.bossMusic.play();
+
+                  this.bossNameText.setAlpha(1);
+                  this.tweens.add({
+                      targets: this.bossNameText,
+                      alpha: 0,
+                      duration: 3000,
+                      delay: 1500
+                  });
+              }
+          });
+      }
     }
 
   update() {
@@ -198,11 +258,13 @@ export default class Niveau3 extends Basescene {
     this.enemies.children.iterate(enemy => {
       if (enemy instanceof Bat) enemy.update(this.player);
       if (enemy instanceof Squelette) enemy.update(this.player);
+      if (enemy instanceof Boss3) enemy.update(this.player);
     });
 
-
     // Retour
-    if (Phaser.Input.Keyboard.JustDown(this.clavier.action) && this.physics.overlap(this.player, this.porte_retour)) {
+    if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
+    (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss))) {
+      console.log("PV restants :", this.game.config.pointsDeVie);
       this.scene.switch("selection");
     }
   }

@@ -61,7 +61,14 @@ export default class Selection extends BaseScene {
             this.porte2.x,
             this.porte2.y - this.porte2.height / 2 - 16,
             "cristal_bleu"
-        ).setScale(0.5).setDepth(this.porte1.depth + 1);
+        ).setScale(0.5).setDepth(this.porte2.depth + 1);
+      }
+      if (this.game.config.crystals.violet) {
+        this.miniCristalViolet = this.add.image(
+            this.porte3.x,
+            this.porte3.y - this.porte3.height / 2 - 16,
+            "cristal_violet"
+        ).setScale(0.5).setDepth(this.porte3.depth + 1);
       }
     });
 
