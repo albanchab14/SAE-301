@@ -37,7 +37,8 @@ export default class Selection extends BaseScene {
     this.porte1 = this.physics.add.staticSprite(100, 601, "img_porte1");
     this.porte2 = this.physics.add.staticSprite(640, 597, "img_porte2");
     this.porte3 = this.physics.add.staticSprite(1150, 595, "img_porte3");
-    this.portefinale = this.physics.add.staticSprite(640, 217, "img_porte4");
+    this.portefinale = this.physics.add.staticSprite(640, 208, "img_porte4");
+    this.portefinale.setScale(1.25);
     
     // Joueur
     this.player = this.createPlayer(100, 600);
