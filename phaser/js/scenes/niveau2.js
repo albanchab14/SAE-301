@@ -220,29 +220,40 @@ export default class Niveau2 extends Basescene {
       frameRate: 1,
       repeat: -1
     });
-
+    this.anims.create({
+      key: "boss2_dash_left",
+      frames: [{ key: "img_boss2", frame: 2 }],
+      frameRate: 4,
+      repeat: 0
+    });
+    this.anims.create({
+      key: "boss2_dash_right",
+      frames: [{ key: "img_boss2", frame: 3 }],
+      frameRate: 4,
+      repeat: 0
+    });
     this.anims.create({
       key: "boss2_attack_left",
-      frames: this.anims.generateFrameNumbers("img_boss2", { start: 2, end: 5 }),
+      frames: this.anims.generateFrameNumbers("img_boss2", { start: 4, end: 7 }),
       frameRate: 4,
       repeat: 0
     });
 
     this.anims.create({
       key: "boss2_attack_right",
-      frames: this.anims.generateFrameNumbers("img_boss2", { start: 6, end: 9 }),
+      frames: this.anims.generateFrameNumbers("img_boss2", { start: 8, end: 11 }),
       frameRate: 4,
       repeat: 0
     });
     this.anims.create({
       key: "boss2_jump_left",
-      frames: this.anims.generateFrameNumbers("img_boss2", { start: 10, end: 13 }),
+      frames: this.anims.generateFrameNumbers("img_boss2", { start: 12, end: 15 }),
       frameRate: 2,
       repeat: 0
     });
     this.anims.create({
       key: "boss2_jump_right",
-      frames: this.anims.generateFrameNumbers("img_boss2", { start: 14, end: 17 }),
+      frames: this.anims.generateFrameNumbers("img_boss2", { start: 16, end: 19 }),
       frameRate: 2,
       repeat: 0
     });

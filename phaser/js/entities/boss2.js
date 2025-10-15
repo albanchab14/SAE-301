@@ -55,8 +55,8 @@ export default class Boss2 extends Enemy {
     }
     else if (this.state === "dash") {
       if (this.direction === 1)
-        this.anims.play("boss2_idle_right", true);
-      else this.anims.play("boss2_idle_left", true);
+        this.anims.play("boss2_dash_right", true);
+      else this.anims.play("boss2_dash_left", true);
     }
     else if (this.state === "shoot") {
       if (this.direction === 1)
