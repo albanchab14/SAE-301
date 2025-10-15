@@ -38,7 +38,8 @@ export default class Boss3 extends Enemy {
     this.play("boss3_idle_right");
   }
 
-  update(player) {
+  update(player, projectilesGroup) {
+    this.projectilesGroup = projectilesGroup;
     if (!this.body || !player || this.vie <= 0) return;
     this.alert.setPosition(this.x, this.y - this.height);
 
@@ -47,7 +48,6 @@ export default class Boss3 extends Enemy {
     if (!this.combatStarted && distance < 400) {
       this.combatStarted = true;
       this.state = "active";
-      console.log("🧛 Combat contre le vampire commencé !");
     }
 
     if (!this.combatStarted) {
@@ -131,8 +131,6 @@ export default class Boss3 extends Enemy {
       alpha: { from: 0, to: 1 },
       duration: 300,
     });
-
-    console.log("🌀 Téléportation !");
   }
 
   spawnBats(player, count = 1) {
@@ -157,14 +155,13 @@ export default class Boss3 extends Enemy {
         duration: 300
       });
     }
-
-    console.log(`🦇 ${count} chauves-souris invoquées.`);
   }
 
   shootProjectile(player) {
     if (!player || !this.scene) return;
 
     const projectile = this.scene.physics.add.sprite(this.x, this.y, "dark_projectile");
+    this.projectilesGroup.add(projectile);
     projectile.body.setAllowGravity(false);
     projectile.setCollideWorldBounds(false);
 

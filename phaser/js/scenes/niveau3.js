@@ -199,6 +199,31 @@ export default class Niveau3 extends Basescene {
         }
       });
 
+      // Collisions joueur ↔ projectiles
+      this.physics.add.overlap(this.player, this.projectilesGroup, (player, projectile) => {
+          console.log("Joueur touché par projectile");
+          const now = this.time.now;
+          if (!player.lastHit || now - player.lastHit > 1000) {
+            fct.lifeManager.retirerPV(this, 1);
+            player.setTint(0xff0000);
+            this.time.delayedCall(300, () => player.setTint(0xffffff));
+            player.lastHit = now;
+    
+            if (this.game.config.pointsDeVie <= 0) {
+              this.physics.pause();
+              this.game.config.collectedFragments = 0;
+              this.game.config.collectedCristals = 0;
+              this.bossNameShown = false;
+              if (this.miniCristalGreen) {
+                this.miniCristalGreen.destroy();
+                this.miniCristalGreen = null;
+              }
+              this.scene.start("defaite");
+            }
+            projectile.destroy();
+          }
+      });
+      
       // Clavier
       this.createClavier();
 
@@ -247,7 +272,7 @@ export default class Niveau3 extends Basescene {
     this.enemies.children.iterate(enemy => {
       if (enemy instanceof Bat) enemy.update(this.player);
       if (enemy instanceof Squelette) enemy.update(this.player);
-      if (enemy instanceof Boss3) enemy.update(this.player);
+      if (enemy instanceof Boss3) enemy.update(this.player, this.projectilesGroup);
     });
 
     // Retour
