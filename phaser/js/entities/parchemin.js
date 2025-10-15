@@ -55,7 +55,7 @@ export default class Parchemin extends Phaser.Physics.Arcade.Sprite {
             this.infoText = this.scene.add.text(
                 this.scene.cameras.main.centerX,
                 this.scene.cameras.main.centerY + 300, // 150 px sous le parchemin
-                "Appuyez sur [I] pour refermer le parchemin",
+                "Appuyez sur [A] pour refermer le parchemin",
                 { fontSize: "24px", fill: "#ffffff", fontStyle: "italic" }
             )
             .setScrollFactor(0)

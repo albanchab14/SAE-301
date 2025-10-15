@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="200" height="60" tilewidth="32" tileheight="32" infinite="0" nextlayerid="12" nextobjectid="61">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="200" height="60" tilewidth="32" tileheight="32" infinite="0" nextlayerid="12" nextobjectid="68">
  <editorsettings>
   <export target="map.json" format="json"/>
  </editorsettings>
@@ -454,7 +454,7 @@
 </data>
  </layer>
  <objectgroup id="10" name="zones">
-  <object id="56" name="boss1Zone" x="1984" y="62.6667" width="900" height="385">
+  <object id="56" name="boss1Zone" x="1984" y="62.6667" width="862.667" height="385">
    <properties>
     <property name="bossname" value="MINOTAURE"/>
    </properties>
@@ -594,31 +594,19 @@
    </properties>
    <point/>
   </object>
-  <object id="5" x="5300" y="1788">
-   <properties>
-    <property name="type" value="bandit"/>
-   </properties>
-   <point/>
-  </object>
   <object id="6" x="5740" y="732">
    <properties>
     <property name="type" value="bandit"/>
    </properties>
    <point/>
   </object>
-  <object id="7" x="5800" y="1372">
+  <object id="7" x="5668" y="1075.33">
    <properties>
     <property name="type " value="bandit"/>
    </properties>
    <point/>
   </object>
   <object id="8" x="3944" y="1840">
-   <properties>
-    <property name="type" value="bandit"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="10" x="1864" y="1888">
    <properties>
     <property name="type" value="bandit"/>
    </properties>
@@ -648,7 +636,7 @@
    </properties>
    <point/>
   </object>
-  <object id="20" x="4888" y="1224">
+  <object id="20" x="4889" y="1205">
    <properties>
     <property name="type" value="loup"/>
    </properties>
@@ -666,15 +654,39 @@
    </properties>
    <point/>
   </object>
-  <object id="50" x="4328" y="1271">
-   <properties>
-    <property name="type" value="bandit"/>
-   </properties>
-   <point/>
-  </object>
   <object id="58" x="951.515" y="618.182">
    <properties>
     <property name="type" value="loup"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="61" x="5315.15" y="1790.91">
+   <properties>
+    <property name="type" value="loup"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="63" x="1724.24" y="1887.88">
+   <properties>
+    <property name="type" value="loup"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="64" x="2093.94" y="1881.82">
+   <properties>
+    <property name="type" value="loup"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="66" x="4323.76" y="1274.42">
+   <properties>
+    <property name="type" value="loup"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="67" x="4656" y="568">
+   <properties>
+    <property name="type" value="bandit"/>
    </properties>
    <point/>
   </object>

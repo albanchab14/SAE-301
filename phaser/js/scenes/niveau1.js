@@ -80,7 +80,7 @@ export default class Niveau1 extends Basescene {
     
 
     // Joueur, placé en (100, 600) / (3000,150 pour boss)
-    this.player = this.createPlayer(2138, 995);
+    this.player = this.createPlayer(100, 600);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
 
