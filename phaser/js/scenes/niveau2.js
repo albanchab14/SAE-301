@@ -61,7 +61,7 @@ export default class Niveau2 extends Basescene {
 
 
     // Joueur (spawn original : (100, 600) / spawn boss : (3300, 900))
-    this.player = this.createPlayer(3300, 900);
+    this.player = this.createPlayer(100, 600);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
     // Caméra
@@ -147,7 +147,7 @@ export default class Niveau2 extends Basescene {
     }, null, this);
     
     // Parchemin
-    this.p2 = new Parchemin(this, 3450, 1100, "parchemin2");
+    this.p2 = new Parchemin(this, 1473, 525, "parchemin2");
     this.parchemins.push(this.p2);
 
     // --- ENNEMIS ---
@@ -349,6 +349,15 @@ export default class Niveau2 extends Basescene {
         }
       });
     }
+    // Affiche la position du joueur toutes les 5 secondes
+      this.time.addEvent({
+        delay: 5000,
+        callback: () => {
+        console.log(`Position du joueur: x=${this.player.x}, y=${this.player.y}`);
+        },
+        callbackScope: this,
+        loop: true
+      });
   }
 
   update() {
@@ -356,7 +365,7 @@ export default class Niveau2 extends Basescene {
     this.handleAttack(this.enemies, this.leversGroup);
     this.enemies.children.iterate(enemy => {
       if (enemy instanceof EvilKnight) enemy.update(this.calque_plateformes, this.player);
-      if (enemy instanceof Canon) enemy.update(this.player, this.projectiles);
+      if (enemy instanceof Canon) enemy.update(this.player, this.projectilesGroup);
       if (enemy instanceof Gargouille) enemy.update(this.player);
       if (enemy instanceof Boss2) enemy.update(this.calque_plateformes, this.player, this.projectilesGroup);
     });

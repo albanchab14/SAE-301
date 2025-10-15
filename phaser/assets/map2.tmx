@@ -1352,7 +1352,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <objectgroup id="5" name="ennemis">
+ <objectgroup color="#aa0000" id="5" name="ennemis">
   <object id="5" x="916" y="213.333">
    <properties>
     <property name="type" value="evil_knight"/>
@@ -1433,15 +1433,15 @@
    </properties>
   </object>
  </objectgroup>
- <objectgroup id="6" name="collectibles">
-  <object id="1" x="309" y="607">
+ <objectgroup color="#ffff00" id="6" name="collectibles">
+  <object id="1" x="2695" y="119">
    <properties>
     <property name="texture" type="int" value="3"/>
     <property name="type" value="miroir_fragment"/>
    </properties>
    <point/>
   </object>
-  <object id="2" x="364" y="606">
+  <object id="2" x="320" y="848">
    <properties>
     <property name="texture" type="int" value="4"/>
     <property name="type" value="miroir_fragment"/>
@@ -1455,7 +1455,7 @@
    </properties>
    <point/>
   </object>
-  <object id="19" x="1517" y="534">
+  <object id="19" x="1471" y="540">
    <properties>
     <property name="type" value="parchemin"/>
    </properties>
