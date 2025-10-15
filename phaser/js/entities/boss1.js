@@ -212,7 +212,7 @@ export default class Boss1 extends Enemy {
       }
       this.bossMusic = null;
     }
-    if (this.scene.mapMusic) {
+    if (this.scene && this.scene.mapMusic) {
       this.scene.mapMusic.resume();
     }
 

@@ -31,11 +31,16 @@ export default class synopsis extends Phaser.Scene {
             bouton_start.setScale(1); 
         });
 
+        const menuMusic = this.sound.get("menu_fond");
+        
         bouton_start.on("pointerup", () => { // au clic
+            if (menuMusic && menuMusic.isPlaying) menuMusic.stop();
             this.scene.start("selection");
+            
         });
 
         this.input.keyboard.on('keydown-I', () => {
+            if (menuMusic && menuMusic.isPlaying) menuMusic.stop();
             this.scene.start("selection");
         });
     }

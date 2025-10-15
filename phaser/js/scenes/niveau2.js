@@ -33,6 +33,7 @@ export default class Niveau2 extends Basescene {
 
     this.load.spritesheet("img_boss2", "./assets/boss2.png", { frameWidth: 111, frameHeight: 73 });
     this.load.spritesheet("fireball", "./assets/fireball.png", { frameWidth: 48, frameHeight: 24 });
+    this.load.audio("map2_fond", "./assets/sfx/map2_fond.mp3");
     this.load.audio("boss2music", "./assets/sfx/boss2fight.mp3");
     // this.load.audio("boss2_shoot", "./assets/sfx/fireball.mp3");
 
@@ -40,6 +41,24 @@ export default class Niveau2 extends Basescene {
 
   create() {
     super.create();
+
+    // --- Musique de fond ---
+    if (!this.mapMusic) {
+      // Première fois qu'on lance la scène
+      this.mapMusic = this.sound.add("map2_fond", { loop: true, volume: 0.3 });
+      this.mapMusic.play();
+    }
+    this.events.on('wake', () => {
+      if (this.mapMusic && !this.mapMusic.isPlaying) {
+        this.mapMusic.play();
+      }
+    });
+    this.events.on('sleep', () => {
+      if (this.mapMusic && this.mapMusic.isPlaying) {
+        this.mapMusic.stop();
+      }
+    });
+
     // Map
     this.map2 = this.add.tilemap("carte2");
     const tileset = this.map2.addTilesetImage("map2_tileset", "Phaser_tuilesdejeu2");
@@ -61,7 +80,7 @@ export default class Niveau2 extends Basescene {
 
 
     // Joueur (spawn original : (100, 600) / spawn boss : (3300, 900))
-    this.player = this.createPlayer(100, 600);
+    this.player = this.createPlayer(3300, 900);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
     // Caméra
@@ -337,7 +356,12 @@ export default class Niveau2 extends Basescene {
         if (!this.bossNameShown) {
           this.bossNameShown = true;
           const boss = this.enemies.getChildren().find(e => e instanceof Boss2);
-          if (boss && !boss.bossMusic.isPlaying) boss.bossMusic.play();
+          if (boss && !boss.bossMusic.isPlaying) {
+            boss.bossMusic.play({ loop: true });
+            if (this.mapMusic && this.mapMusic.isPlaying) {
+              this.mapMusic.pause();
+            }
+          } 
 
           this.bossNameText.setAlpha(1);
           this.tweens.add({

@@ -23,12 +23,31 @@ export default class Niveau3 extends Basescene {
 
       this.load.spritesheet("img_boss3", "./assets/boss3.png", { frameWidth: 50, frameHeight: 72 });
       this.load.image("dark_projectile", "./assets/dark_projectile.png");
+      this.load.audio("map3_fond", "./assets/sfx/map3_fond.mp3");
       this.load.audio("boss3music", "./assets/sfx/boss3fight.mp3");
 
     }
   
     create() {
       super.create();
+
+      // --- Musique de fond ---
+      if (!this.mapMusic) {
+        // Première fois qu'on lance la scène
+        this.mapMusic = this.sound.add("map3_fond", { loop: true, volume: 0.1 });
+        this.mapMusic.play();
+      }
+      this.events.on('wake', () => {
+        if (this.mapMusic && !this.mapMusic.isPlaying) {
+          this.mapMusic.play();
+        }
+      });
+      this.events.on('sleep', () => {
+        if (this.mapMusic && this.mapMusic.isPlaying) {
+          this.mapMusic.stop();
+        }
+      });
+
       // Map
       this.map3 = this.add.tilemap("carte3");
       const tileset = this.map3.addTilesetImage("map3_tileset", "Phaser_tuilesdejeu3");
@@ -48,7 +67,7 @@ export default class Niveau3 extends Basescene {
       this.porte_retour_boss.setVisible(false);
       this.porte_retour_boss.body.enable = false;
       // Joueur (départ : (100, 600), boss : (4250, 800))
-      this.player = this.createPlayer(100, 600);
+      this.player = this.createPlayer(4250, 800);
       this.physics.add.collider(this.player, this.calque_plateformes);
   
       // Caméra
@@ -175,7 +194,7 @@ export default class Niveau3 extends Basescene {
         if (obj.properties?.find(p => p.name === "type")?.value === "boss3") {
           const boss = new Boss3(this, obj.x, obj.y - 32);
           boss.sonCristal = this.sonCristal;
-          boss.bossMusic = this.sound.add("boss3music", { loop: true, volume: 0.5 });
+          boss.bossMusic = this.sound.add("boss3music", { loop: true, volume: 0.15 });
           this.enemies.add(boss);
         }
       });
@@ -257,7 +276,12 @@ export default class Niveau3 extends Basescene {
                   this.bossNameShown = true;
                 
                   const boss = this.enemies.getChildren().find(e => e instanceof Boss3);
-                  if (boss && !boss.bossMusic.isPlaying) boss.bossMusic.play();
+                  if (boss && !boss.bossMusic.isPlaying) {
+                    boss.bossMusic.play();
+                    if (this.mapMusic && this.mapMusic.isPlaying) {
+                      this.mapMusic.pause();
+                    }
+                  }
 
                   this.bossNameText.setAlpha(1);
                   this.tweens.add({

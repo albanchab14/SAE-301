@@ -44,6 +44,11 @@ export default class Niveau1 extends Basescene {
         this.mapMusic.play();
       }
     });
+    this.events.on('sleep', () => {
+      if (this.mapMusic && this.mapMusic.isPlaying) {
+        this.mapMusic.stop();
+      }
+    });
 
     // backgroung map
     const bg = this.add.image(0, 0, "background_fixe")
@@ -290,12 +295,7 @@ export default class Niveau1 extends Basescene {
         }
     });
 
-    // Arrêter la musique si la scène change
-    this.events.on('sleep', () => {
-      if (this.mapMusic && this.mapMusic.isPlaying) {
-        this.mapMusic.stop();
-      }
-    });
+    
 
     // Affiche la position du joueur toutes les 5 secondes
     this.time.addEvent({

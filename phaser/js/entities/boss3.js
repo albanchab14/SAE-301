@@ -231,6 +231,9 @@ export default class Boss3 extends Enemy {
 
     if (this.bossMusic && this.bossMusic.isPlaying) this.bossMusic.stop();
     this.bossMusic = null;
+    if (this.scene.mapMusic) {
+      this.scene.mapMusic.resume();
+    }
 
     super.destroy(fromScene);
   }
