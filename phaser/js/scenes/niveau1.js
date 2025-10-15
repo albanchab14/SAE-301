@@ -6,6 +6,7 @@ import Loup from "../entities/loup.js";
 import Bandit from "../entities/bandit.js";
 import Boss1 from "../entities/boss1.js";
 import Collectible from '../entities/collectible.js';
+import Parchemin from "../entities/parchemin.js";
 
 export default class Niveau1 extends Basescene {
   constructor() {
@@ -25,6 +26,8 @@ export default class Niveau1 extends Basescene {
 
     this.load.image("background_fixe", "./assets/fond_map_1.png");
     this.load.audio("boss1music", "./assets/sfx/boss1fight.mp3");
+    this.load.image("parchemin1", "assets/parchemin1.png");
+
   }
 
   create() {
@@ -100,6 +103,10 @@ export default class Niveau1 extends Basescene {
       collectible.collect();
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
     }, null, this);
+
+    // Parchemin
+    this.p1 = new Parchemin(this, 3100, 150, "parchemin1");
+    this.parchemins.push(this.p1);
 
     // --- ENNEMIS ---
 
@@ -270,13 +277,23 @@ export default class Niveau1 extends Basescene {
   update() {
     this.updatePlayerMovement();
     this.handleAttack(this.enemies);
-
+    super.update();
     this.enemies.children.iterate(enemy => {
       if (enemy instanceof Loup) enemy.update(this.calque_plateformes, this.player);
       if (enemy instanceof Bandit) enemy.update(this.player, this.projectiles, this.calque_plateformes);
       if (enemy instanceof Boss1) enemy.update(this.calque_plateformes, this.player);
     });
 
+    // Interaction porte
+    if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
+      if (this.physics.overlap(this.player, this.p1)) {
+        this.p1.interact();
+        return; // si on lit le parchemin, on bloque le reste
+      }
+      if (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss)) {
+        this.scene.switch("selection");
+      }
+    }
     // Retour
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
     (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss))) {

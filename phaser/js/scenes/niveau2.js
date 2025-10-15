@@ -6,6 +6,8 @@ import Canon from '../entities/canon.js';
 import Gargouille from '../entities/gargouille.js';
 import Boss2 from "../entities/boss2.js";
 import Collectible from '../entities/collectible.js';
+import Parchemin from "../entities/parchemin.js";
+
 
 
 export default class Niveau2 extends Basescene {
@@ -143,8 +145,11 @@ export default class Niveau2 extends Basescene {
       collectible.collect();
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
     }, null, this);
-      
     
+    // Parchemin
+    this.p2 = new Parchemin(this, 3450, 1100, "parchemin2");
+    this.parchemins.push(this.p2);
+
     // --- ENNEMIS ---
 
     // Animations
@@ -356,10 +361,19 @@ export default class Niveau2 extends Basescene {
       if (enemy instanceof Boss2) enemy.update(this.calque_plateformes, this.player, this.projectilesGroup);
     });
 
+    // Interactions
+    if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
+      if (this.physics.overlap(this.player, this.p2)) {
+        this.p2.interact();
+        return; // si on lit le parchemin, on bloque le reste
+      }
+      if (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss)) {
+        this.scene.switch("selection");
+      }
+    }
     // Retour
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
     (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss))) {
-      console.log("PV restants :", this.game.config.pointsDeVie);
       this.scene.switch("selection");
     }
   }

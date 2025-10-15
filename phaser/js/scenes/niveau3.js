@@ -5,6 +5,8 @@ import Bat from "../entities/bat.js";
 import Boss3 from "../entities/boss3.js";
 import Squelette from '../entities/squelette.js';
 import Collectible from '../entities/collectible.js';
+import Parchemin from "../entities/parchemin.js";
+
 
 export default class Niveau3 extends Basescene {
   constructor() {
@@ -83,6 +85,10 @@ export default class Niveau3 extends Basescene {
         collectible.collect();
         this.updateFragmentsText(this.game.config.collectedFragments, 9);
       }, null, this);
+
+      // Parchemin
+      this.p3 = new Parchemin(this, 4350, 900, "parchemin3");
+      this.parchemins.push(this.p3);
 
       // --- ENNEMIS ---
 
@@ -275,10 +281,19 @@ export default class Niveau3 extends Basescene {
       if (enemy instanceof Boss3) enemy.update(this.player, this.projectilesGroup);
     });
 
+    // Interactions
+    if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
+      if (this.physics.overlap(this.player, this.p3)) {
+        this.p3.interact();
+        return; // si on lit le parchemin, on bloque le reste
+      }
+      if (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss)) {
+        this.scene.switch("selection");
+      }
+    }
     // Retour
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
     (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss))) {
-      console.log("PV restants :", this.game.config.pointsDeVie);
       this.scene.switch("selection");
     }
   }

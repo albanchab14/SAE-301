@@ -1,6 +1,7 @@
 // scenes/selection.js
 import * as fct from "../fonctions.js";
 import BaseScene from "./basescene.js";
+import Parchemin from "../entities/parchemin.js";
 
 export default class Selection extends BaseScene {
   constructor() {
@@ -15,6 +16,7 @@ export default class Selection extends BaseScene {
 
 
   create() {
+    super.create();
     // Map
     this.map = this.add.tilemap("map_selection");
     const tileset = this.map.addTilesetImage("selection_tileset", "selection_tileset");
@@ -28,7 +30,7 @@ export default class Selection extends BaseScene {
     this.calque_plateformes.setCollisionByProperty({ estSolide: true });
 
 
-    // 🔹 Le calque des échelles est désactivé au départ
+    // Calque des échelles est désactivé au départ
     this.calque_echelles.visible = false;
     this.calque_echelles.active = false;
     this.echellesActives = false;
@@ -79,7 +81,9 @@ export default class Selection extends BaseScene {
       }
     });
 
-
+    // Parchemin
+    this.p0 = new Parchemin(this, 400, 600, "parchemin0");
+    this.parchemins.push(this.p0);
 
 
     // Vie et UI
@@ -102,6 +106,8 @@ export default class Selection extends BaseScene {
     this.updatePlayerMovement();
     this.handleAttack(this.enemies);
 
+    super.update();
+    
     // Active le calque des échelles uniquement si les 3 cristaux sont récupérés
     if (
       this.game.config.crystals.green &&
@@ -117,6 +123,10 @@ export default class Selection extends BaseScene {
     }
 
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
+      if (this.physics.overlap(this.player, this.p0)) {
+        this.p0.interact();
+        return; // si on lit le parchemin, on bloque le reste
+      }
       if (this.physics.overlap(this.player, this.porte1)) {
         this.scene.switch("niveau1");
       }

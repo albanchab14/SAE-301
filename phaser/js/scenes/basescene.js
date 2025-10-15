@@ -35,6 +35,14 @@ export default class Basescene extends Phaser.Scene {
     this.load.image("cristal_vert", "./assets/cristaux/cristal_vert.png");
     this.load.image("cristal_bleu", "./assets/cristaux/cristal_bleu.png");
     this.load.image("cristal_violet", "./assets/cristaux/cristal_violet.png");
+
+    // Parchemins interactifs
+    this.load.image("parchemin", "./assets/parchemin.png"); // parchemin plié
+    this.load.image("parchemin0", "./assets/parchemin0.png"); // contenu lore Selection
+    this.load.image("parchemin1", "./assets/parchemin1.png"); // contenu lore Niveau1
+    this.load.image("parchemin2", "./assets/parchemin2.png"); // contenu lore Niveau2
+    this.load.image("parchemin3", "./assets/parchemin3.png"); // contenu lore Niveau3
+
   }
 
   create() {
@@ -42,8 +50,9 @@ export default class Basescene extends Phaser.Scene {
     this.sonCristal = this.sound.add('son_cristal'); // définis ici pour toutes les scènes
     this.sonHeal = this.sound.add('son_heal');
     this.bossNameShown = false;
+    this.parchemins = [];
   }
-  
+
   // --- Crée le joueur et initialise ses propriétés ---
   createPlayer(x, y) {
     // Sprite
@@ -130,7 +139,7 @@ export default class Basescene extends Phaser.Scene {
   updatePlayerMovement() {
     const player = this.player;
     const clavier = this.clavier;
-
+    if (player.isReadingParchemin) return; //  si verrouillé
     // Horizontal
     if (clavier.left.isDown) {
       player.setVelocityX(-160);
