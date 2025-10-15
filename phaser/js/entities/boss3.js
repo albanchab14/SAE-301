@@ -47,7 +47,6 @@ export default class Boss3 extends Enemy {
     if (!this.combatStarted && distance < 400) {
       this.combatStarted = true;
       this.state = "active";
-      this.scene.sound.play("boss3music", { loop: true, volume: 0.5 });
       console.log("🧛 Combat contre le vampire commencé !");
     }
 
