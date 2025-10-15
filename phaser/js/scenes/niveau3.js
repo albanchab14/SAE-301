@@ -71,10 +71,11 @@ export default class Niveau3 extends Basescene {
       if (typeof this.game.config.collectedFragments !== "number") {
         this.game.config.collectedFragments = 0;
       }
-      
       this.createFragmentsText(this.game.config.collectedFragments, 9);
       this.events.on('wake', () => { // 1 appel au lancement de scène
         this.updateFragmentsText(this.game.config.collectedFragments, 9);
+        this.player.setPosition(4250, 800); // spawn original : (100, 600) / spawn boss : (4250, 800))
+        this.cameras.main.startFollow(this.player);
       });
       
       // Fragment collecté
