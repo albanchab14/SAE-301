@@ -80,7 +80,7 @@ export default class Niveau1 extends Basescene {
     
 
     // Joueur, placé en (100, 600) / (3000,150 pour boss)
-    this.player = this.createPlayer(3000, 150);
+    this.player = this.createPlayer(100, 600);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
 
@@ -123,9 +123,21 @@ export default class Niveau1 extends Basescene {
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
     }, null, this);
 
-    // Parchemin
+    // --- PACHEMIN ---
     this.p1 = new Parchemin(this, 1585, 1020, "parchemin1");
     this.parchemins.push(this.p1);
+    this.parcheminHelpText = this.add.text(
+      this.p1.x, this.p1.y - 30, "A", // 70 pixels au-dessus
+      { font: "14px Arial", fill: "#fff", fontStyle: "bold", stroke: "#000", strokeThickness: 4 }
+    ).setOrigin(0.5).setDepth(10).setVisible(false);
+
+    // Crée le cercle autour
+    this.parcheminCircle = this.add.graphics();
+    this.parcheminCircle.lineStyle(2, 0xffffff); // bordure blanche
+    this.parcheminCircle.strokeCircle(0, 0, 12); // cercle de rayon 20
+    this.parcheminCircle.setDepth(9); // derrière le texte
+    this.parcheminCircle.setVisible(false);
+    this.parcheminCircle.setPosition(this.p1.x, this.p1.y - 30); // Même position que le texte
 
     // --- ENNEMIS ---
 
@@ -335,6 +347,17 @@ export default class Niveau1 extends Basescene {
         this.scene.switch("selection");
       }
     }
+
+    // Test de proximité ou d'overlap
+    const isNearParchemin = Phaser.Math.Distance.Between(
+        this.player.x, this.player.y, this.p1.x, this.p1.y
+    ) < 64 || this.physics.overlap(this.player, this.p1);
+
+    this.parcheminHelpText.setVisible(isNearParchemin);
+    this.parcheminHelpText.setPosition(this.p1.x, this.p1.y - 30);
+    this.parcheminCircle.setVisible(isNearParchemin);
+    this.parcheminCircle.setPosition(this.p1.x, this.p1.y - 30);
+
     // Retour
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
     (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss))) {

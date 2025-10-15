@@ -29,7 +29,6 @@ export default class Niveau2 extends Basescene {
 
     this.load.image("img_levier", "./assets/levier.png");
     this.load.image("pont_levis1", "./assets/pont_levis1.png");
-    this.load.image("plateforme_mobile1", "./assets/plateforme_mobile1.png");
 
     this.load.spritesheet("img_boss2", "./assets/boss2.png", { frameWidth: 111, frameHeight: 73 });
     this.load.spritesheet("fireball", "./assets/fireball.png", { frameWidth: 48, frameHeight: 24 });
@@ -80,7 +79,7 @@ export default class Niveau2 extends Basescene {
 
 
     // Joueur (spawn original : (100, 600) / spawn boss : (3300, 900))
-    this.player = this.createPlayer(3300, 900);
+    this.player = this.createPlayer(100, 600);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
     // Caméra
@@ -168,6 +167,18 @@ export default class Niveau2 extends Basescene {
     // Parchemin
     this.p2 = new Parchemin(this, 1473, 503, "parchemin2");
     this.parchemins.push(this.p2);
+    this.parcheminHelpText = this.add.text(
+      this.p2.x, this.p2.y - 30, "A", // 70 pixels au-dessus
+      { font: "14px Arial", fill: "#fff", fontStyle: "bold", stroke: "#000", strokeThickness: 4 }
+    ).setOrigin(0.5).setDepth(10).setVisible(false);
+
+    // Crée le cercle autour
+    this.parcheminCircle = this.add.graphics();
+    this.parcheminCircle.lineStyle(2, 0xffffff); // bordure blanche
+    this.parcheminCircle.strokeCircle(0, 0, 12); // cercle de rayon 20
+    this.parcheminCircle.setDepth(9); // derrière le texte
+    this.parcheminCircle.setVisible(false);
+    this.parcheminCircle.setPosition(this.p2.x, this.p2.y - 30); // Même position que le texte
 
     // --- ENNEMIS ---
 
@@ -419,6 +430,16 @@ export default class Niveau2 extends Basescene {
         this.scene.switch("selection");
       }
     }
+
+    // Test de proximité ou d'overlap
+    const isNearParchemin = Phaser.Math.Distance.Between(
+        this.player.x, this.player.y, this.p2.x, this.p2.y
+    ) < 64 || this.physics.overlap(this.player, this.p2);
+
+    this.parcheminHelpText.setVisible(isNearParchemin);
+    this.parcheminHelpText.setPosition(this.p2.x, this.p2.y - 30);
+    this.parcheminCircle.setVisible(isNearParchemin);
+    this.parcheminCircle.setPosition(this.p2.x, this.p2.y - 30);
     // Retour
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
     (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss))) {

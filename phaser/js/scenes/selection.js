@@ -87,9 +87,21 @@ export default class Selection extends BaseScene {
     });
 
     // Parchemin
-    this.p0 = new Parchemin(this, 400, 600, "parchemin0");
+    this.p0 = new Parchemin(this, 400, 632, "parchemin0");
     this.parchemins.push(this.p0);
 
+    this.parcheminHelpText = this.add.text(
+      this.p0.x, this.p0.y - 30, "A", // 70 pixels au-dessus
+      { font: "14px Arial", fill: "#fff", fontStyle: "bold", stroke: "#000", strokeThickness: 4 }
+    ).setOrigin(0.5).setDepth(10).setVisible(false);
+
+    // Crée le cercle autour
+    this.parcheminCircle = this.add.graphics();
+    this.parcheminCircle.lineStyle(2, 0xffffff); // bordure blanche
+    this.parcheminCircle.strokeCircle(0, 0, 12); // cercle de rayon 20
+    this.parcheminCircle.setDepth(9); // derrière le texte
+    this.parcheminCircle.setVisible(false);
+    this.parcheminCircle.setPosition(this.p0.x, this.p0.y - 30); // Même position que le texte
 
     // Vie et UI
     this.createHearts();
@@ -126,6 +138,16 @@ export default class Selection extends BaseScene {
         console.log("💎 Tous les cristaux obtenus ! Les échelles apparaissent !");
       }
     }
+
+    // Test de proximité ou d'overlap
+    const isNearParchemin = Phaser.Math.Distance.Between(
+        this.player.x, this.player.y, this.p0.x, this.p0.y
+    ) < 64 || this.physics.overlap(this.player, this.p0);
+
+    this.parcheminHelpText.setVisible(isNearParchemin);
+    this.parcheminHelpText.setPosition(this.p0.x, this.p0.y - 30);
+    this.parcheminCircle.setVisible(isNearParchemin);
+    this.parcheminCircle.setPosition(this.p0.x, this.p0.y - 30);
 
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
       if (this.physics.overlap(this.player, this.p0)) {

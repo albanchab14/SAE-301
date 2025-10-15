@@ -67,7 +67,7 @@ export default class Niveau3 extends Basescene {
       this.porte_retour_boss.setVisible(false);
       this.porte_retour_boss.body.enable = false;
       // Joueur (départ : (100, 600), boss : (4250, 800))
-      this.player = this.createPlayer(4250, 800);
+      this.player = this.createPlayer(721, 1251);
       this.physics.add.collider(this.player, this.calque_plateformes);
   
       // Caméra
@@ -81,6 +81,61 @@ export default class Niveau3 extends Basescene {
       this.createHearts();
       fct.lifeManager.init(this, this.maxVies);
       
+      // --- PLATEFORME MOBILE ---
+      var plateforme_mobile = this.physics.add.sprite(4379, 390, "plateforme_mobile1");
+      this.physics.add.collider(this.player, plateforme_mobile);
+      plateforme_mobile.body.allowGravity = false;
+      plateforme_mobile.body.immovable = true;
+
+      var plateforme_mobile2 = this.physics.add.sprite(1102, 968, "plateforme_mobile1");
+      this.physics.add.collider(this.player, plateforme_mobile2);
+      plateforme_mobile2.body.allowGravity = false;
+      plateforme_mobile2.body.immovable = true;
+
+      var plateforme_mobile3 = this.physics.add.sprite(721, 1200, "plateforme_mobile1");
+      this.physics.add.collider(this.player, plateforme_mobile3);
+      plateforme_mobile3.body.allowGravity = false;
+      plateforme_mobile3.body.immovable = true;
+
+      // Tweens plateformes mobile 
+      this.tweens.add({
+        targets: [plateforme_mobile],
+        paused: false,
+        ease: "Linear",
+        duration: 3000,
+        yoyo: true,
+        y: "-=256",
+        delay: 0,
+        hold: 1000,
+        repeatDelay: 1000,
+        repeat: -1
+      });
+
+      this.tweens.add({
+        targets: [plateforme_mobile2],
+        paused: false,
+        ease: "Linear",
+        duration: 5000,
+        yoyo: true,
+        y: "-=576",
+        delay: 0,
+        hold: 1000,
+        repeatDelay: 1000,
+        repeat: -1
+      });
+
+      this.tweens.add({
+        targets: [plateforme_mobile3],
+        paused: false,
+        ease: "Linear",
+        duration: 5000,
+        yoyo: true,
+        x: "+=600",
+        delay: 0,
+        hold: 1000,
+        repeatDelay: 1000,
+        repeat: -1
+      });
           
       // --- CREATION OBJETS ---
       
@@ -108,6 +163,19 @@ export default class Niveau3 extends Basescene {
       // Parchemin
       this.p3 = new Parchemin(this, 191, 1466, "parchemin3");
       this.parchemins.push(this.p3);
+
+      this.parcheminHelpText = this.add.text(
+        this.p3.x, this.p3.y - 30, "A", // 70 pixels au-dessus
+        { font: "14px Arial", fill: "#fff", fontStyle: "bold", stroke: "#000", strokeThickness: 4 }
+      ).setOrigin(0.5).setDepth(10).setVisible(false);
+
+      // Crée le cercle autour
+      this.parcheminCircle = this.add.graphics();
+      this.parcheminCircle.lineStyle(2, 0xffffff); // bordure blanche
+      this.parcheminCircle.strokeCircle(0, 0, 12); // cercle de rayon 20
+      this.parcheminCircle.setDepth(9); // derrière le texte
+      this.parcheminCircle.setVisible(false);
+      this.parcheminCircle.setPosition(this.p3.x, this.p3.y - 30); // Même position que le texte
 
       // --- ENNEMIS ---
 
@@ -329,6 +397,17 @@ export default class Niveau3 extends Basescene {
         this.scene.switch("selection");
       }
     }
+
+    // Test de proximité ou d'overlap
+    const isNearParchemin = Phaser.Math.Distance.Between(
+        this.player.x, this.player.y, this.p3.x, this.p3.y
+    ) < 64 || this.physics.overlap(this.player, this.p3);
+
+    this.parcheminHelpText.setVisible(isNearParchemin);
+    this.parcheminHelpText.setPosition(this.p3.x, this.p3.y - 30);
+    this.parcheminCircle.setVisible(isNearParchemin);
+    this.parcheminCircle.setPosition(this.p3.x, this.p3.y - 30);
+
     // Retour
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
     (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss))) {
