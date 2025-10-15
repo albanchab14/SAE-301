@@ -45,7 +45,7 @@ export default class Boss3 extends Enemy {
 
     const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
 
-    if (!this.combatStarted && distance < 400) {
+    if (!this.combatStarted && distance < 400 && this.hasLineOfSightTo(player, this.scene.calque_plateformes)) {
       this.combatStarted = true;
       this.state = "active";
     }

@@ -21,9 +21,7 @@ export default class Niveau1 extends Basescene {
     this.load.image("img_porte_retour", "./assets/door1.png");
     this.load.image("couteau", "./assets/couteau.png");
     this.load.spritesheet("img_loup", "./assets/loup.png", { frameWidth: 96, frameHeight: 57 });
-
     this.load.spritesheet("img_boss1", "./assets/boss1.png", { frameWidth: 70, frameHeight: 94 });
-
     this.load.image("background_fixe", "./assets/fond_map_1.png");
     this.load.audio("boss1music", "./assets/sfx/boss1fight.mp3");
     this.load.image("parchemin1", "assets/parchemin1.png");

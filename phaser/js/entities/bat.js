@@ -37,10 +37,7 @@ export default class Bat extends Enemy {
     const now = this.scene.time.now;
 
     // 🧠 Détection du joueur
-    if (
-      this.state === "patrol" &&
-      distance < this.detectionRange &&
-      now - this.lastAttackTime > this.attackCooldown
+    if (this.state === "patrol" && distance < this.detectionRange && now - this.lastAttackTime > this.attackCooldown && this.hasLineOfSightTo(player, this.scene.calque_plateformes)
     ) {
       this.prepareAttack(player);
       this.lastAttackTime = now;
