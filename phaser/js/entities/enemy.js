@@ -52,17 +52,21 @@ export default class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   patrol(platformLayer) {
-    this.direction = this.body.velocity.x > 0 ? 1 : -1;
-    const nextX = this.x + this.direction * (this.width / 2 + 1);
-    const nextY = this.y + this.height / 2 + 1;
+  // Vérifie le bord de la plateforme selon la direction
+  const feetY = this.y + this.height / 2 + 1; // juste sous les pieds
+  const checkX = this.direction === 1 
+                 ? this.x + this.width / 2 + 1 // bord droit
+                 : this.x - this.width / 2 - 1; // bord gauche
 
-    const tile = platformLayer.getTileAtWorldXY(nextX, nextY);
+  const tile = platformLayer.getTileAtWorldXY(checkX, feetY, true);
 
-    if (!tile) {
-      // Bord de plateforme, obligé d'inverser la vitesse
-      this.setVelocityX(-this.direction * this.body.velocity.x);
-    }
+  if (!tile || tile.properties.estSolide !== true) {
+    // pas de sol => demi-tour
+    this.setVelocityX(-this.body.velocity.x);
+    this.direction *= -1;
   }
+}
+
 
   // Détection du joueur
   hasLineOfSightTo(target, layer, precision = 10) {

@@ -7,19 +7,19 @@ export default class Bandit extends Enemy {
     this.vie = 2;
     this.dropChance = 0.4;
     this.setGravityY(300);
-    this.setVelocityX(this.direction*80);
+    this.setVelocityX(this.direction * 80);
 
     this.nextShot = 0;
   }
 
   update(player, projectileGroup, platformLayer) {
     this.patrol(platformLayer);
-    
+
     if (this.body.blocked.left) {
-      this.setVelocityX(80); // rebond vers la droite
+      this.setVelocityX(80);
       this.direction = 1;
     } else if (this.body.blocked.right) {
-      this.setVelocityX(-80); // rebond vers la droite
+      this.setVelocityX(-80);
       this.direction = -1;
     }
 
@@ -28,20 +28,22 @@ export default class Bandit extends Enemy {
     const dy = player.y - this.y;
     const distance = Math.sqrt(dx * dx + dy * dy);
 
-    if (distance < 300) {
+    if (distance < 300 && this.hasLineOfSightTo(player, this.scene.calque_plateformes)) {
+      // Arrête le bandit pour tirer
       this.setVelocityX(0);
+      this.playIdleAnimation();
+
       if (this.scene.time.now > this.nextShot) {
         this.launchProjectile(projectileGroup, player);
         this.nextShot = this.scene.time.now + 2000;
       }
-    }
-    else {
-      // si joueur pas proche, reprend sa patrouille avec vitesse stockée
+    } else {
+      // Si joueur pas proche, reprend sa patrouille
       if (this.body.velocity.x === 0) {
-        this.setVelocityX(this.direction*80);
+        this.setVelocityX(this.direction * 80);
       }
+      this.playWalkAnimation();
     }
-    this.playWalkAnimation();
   }
 
   playWalkAnimation() {
@@ -53,6 +55,15 @@ export default class Bandit extends Enemy {
     }
   }
 
+  playIdleAnimation() {
+    if (!this.body) return;
+    if (this.direction === 1) {
+      this.anims.play('bandit_idle_right', true);
+    } else {
+      this.anims.play('bandit_idle_left', true);
+    }
+  }
+
   launchProjectile(group, player) {
     const projectile = group.create(this.x, this.y, "couteau");
     projectile.body.allowGravity = false;
@@ -61,7 +72,7 @@ export default class Bandit extends Enemy {
     projectile.setRotation(angle + Math.PI); // orienté vers le joueur
     projectile.setVelocity(Math.cos(angle) * 300, Math.sin(angle) * 300);
 
-    // 🔹 Ajustement de la hitbox pour correspondre à l'angle
+    // Ajustement de la hitbox pour correspondre à l'angle
     const width = 40;   // largeur du sprite couteau
     const height = 16;  // hauteur du sprite couteau
     const rotatedWidth = Math.abs(width * Math.cos(angle)) + Math.abs(height * Math.sin(angle));

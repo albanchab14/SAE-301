@@ -67,7 +67,7 @@ export default class Niveau3 extends Basescene {
       this.porte_retour_boss.setVisible(false);
       this.porte_retour_boss.body.enable = false;
       // Joueur (départ : (100, 600), boss : (4250, 800))
-      this.player = this.createPlayer(721, 1251);
+      this.player = this.createPlayer(4250, 800);
       this.physics.add.collider(this.player, this.calque_plateformes);
   
       // Caméra
@@ -244,6 +244,18 @@ export default class Niveau3 extends Basescene {
         frames: [{ key: "img_boss3", frame: 1 }],
         frameRate: 1,
         repeat: -1
+      });
+      this.anims.create({
+        key: "boss3_attack_left",
+        frames: this.anims.generateFrameNumbers("img_boss3", { start: 2, end: 4 }),
+        frameRate: 8,
+        repeat: 0
+      });
+      this.anims.create({
+        key: "boss3_attack_right",
+        frames: this.anims.generateFrameNumbers("img_boss3", { start: 5, end: 7 }),
+        frameRate: 8,
+        repeat: 0
       });
 
       

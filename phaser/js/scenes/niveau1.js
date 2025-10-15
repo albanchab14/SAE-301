@@ -80,7 +80,7 @@ export default class Niveau1 extends Basescene {
     
 
     // Joueur, placé en (100, 600) / (3000,150 pour boss)
-    this.player = this.createPlayer(100, 600);
+    this.player = this.createPlayer(2138, 995);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
 
@@ -157,6 +157,18 @@ export default class Niveau1 extends Basescene {
       repeat: -1
     });
 
+    this.anims.create({
+      key: 'bandit_idle_left',
+      frames: [{ key: 'img_bandit', frame: 1 }],
+      frameRate: 1,
+      repeat: -1
+    });
+    this.anims.create({
+      key: 'bandit_idle_right',
+      frames: [{ key: 'img_bandit', frame: 4 }],
+      frameRate: 1,
+      repeat: -1
+    });
     this.anims.create({
       key: 'bandit_walk_left',
       frames: this.anims.generateFrameNumbers('img_bandit', { start: 0, end: 3 }),

@@ -51,7 +51,7 @@ export default class Boss3 extends Enemy {
     }
 
     if (!this.combatStarted) {
-      this.play("boss3_idle_right", true);
+      this.playIdle();
       return;
     }
 
@@ -60,32 +60,59 @@ export default class Boss3 extends Enemy {
     const now = this.scene.time.now;
 
     // ⚡ Garde-fou : si une alerte est active, on ne fait rien
-    if (this.state === "alert") return;
-
-    // Attente entre actions
-    if (now - this.lastAction < this.actionCooldown) return;
-
-    this.lastAction = now;
-
-    // Choix de l'action selon la phase
-    let actions = [];
-    if (this.phase === 1) {
-      actions = ["teleport", "shoot"];
-    } else if (this.phase === 2) {
-      actions = ["teleport", "shoot", "spawnBat"];
-    } else if (this.phase === 3) {
-      actions = ["teleport", "shoot", "spawnBats"];
+    if (this.state === "alert") {
+      this.playIdle();
+      return;
     }
 
-    // Choisit une action au hasard
-    const choice = Phaser.Utils.Array.GetRandom(actions);
+    // Attente entre actions
+    if (now - this.lastAction >= this.actionCooldown) {
+      this.lastAction = now;
 
-    // Lance l’action avec "!"
-    if (choice === "teleport") this.preAction(() => this.teleportToNextSpot());
-    else if (choice === "shoot") this.preAction(() => this.shootProjectile(player));
-    else if (choice === "spawnBat") this.preAction(() => this.spawnBats(player, 1));
-    else if (choice === "spawnBats") this.preAction(() => this.spawnBats(player, 2));
+      // Choix de l'action selon la phase
+      let actions = [];
+      if (this.phase === 1) actions = ["teleport", "shoot"];
+      else if (this.phase === 2) actions = ["teleport", "shoot", "spawnBat"];
+      else actions = ["teleport", "shoot", "spawnBats"];
+
+      const choice = Phaser.Utils.Array.GetRandom(actions);
+
+      if (choice === "teleport") this.preAction(() => this.teleportToNextSpot());
+      else if (choice === "shoot") this.preAction(() => {
+        this.state = "shoot"; // ⚡ Indique que le boss attaque
+        this.shootProjectile(player);
+      });
+      else if (choice === "spawnBat") this.preAction(() => {
+        this.state = "shoot"; // ⚡ Indique que le boss attaque
+        this.spawnBats(player, 1);
+      });
+      else if (choice === "spawnBats") this.preAction(() => {
+        this.state = "shoot"; // ⚡ Indique que le boss attaque
+        this.spawnBats(player, 2);
+      });
+
+      else if (choice === "spawnBat") this.preAction(() => this.spawnBats(player, 1));
+      else if (choice === "spawnBats") this.preAction(() => this.spawnBats(player, 2));
+    }
+
+    // ⚡ Animations selon l’état
+    if (this.state === "idle" || this.state === "alert") this.playIdle();
+    else if (this.state === "shoot") this.playAttack();
+    else this.playIdle();
   }
+
+  // Méthodes pour simplifier les animations
+  playIdle() {
+    if (this.direction === 1) this.anims.play("boss3_idle_right", true);
+    else this.anims.play("boss3_idle_left", true);
+    this.state = "idle"; // assure que l'état idle est appliqué
+  }
+
+  playAttack() {
+    if (this.direction === 1) this.anims.play("boss3_attack_right", true);
+    else this.anims.play("boss3_attack_left", true);
+  }
+
 
   updatePhase() {
     const hpPercent = this.vie / 10;
@@ -154,6 +181,9 @@ export default class Boss3 extends Enemy {
         alpha: { from: 0, to: 1 },
         duration: 300
       });
+      this.scene.time.delayedCall(500, () => {
+        this.state = "idle"; // revient à idle après 500ms
+      });
     }
   }
 
@@ -187,11 +217,13 @@ export default class Boss3 extends Enemy {
       fct.lifeManager.retirerPV(this.scene, 1);
       console.log("💥 Le joueur est touché par un projectile !");
     });
-
+    this.scene.time.delayedCall(500, () => {
+      this.state = "idle"; // revient à idle après 500ms
+    });
     this.scene.time.delayedCall(5000, () => {
       if (projectile.active) projectile.destroy();
     });
-
+    
     console.log("🔮 Projectile tiré !");
   }
 
@@ -223,7 +255,6 @@ export default class Boss3 extends Enemy {
 
     if (this.alert) this.alert.destroy();
     this.dropItem();
-
     if (this.scene && this.scene.porte_retour_boss?.body) {
       this.scene.porte_retour_boss.setVisible(true);
       this.scene.porte_retour_boss.body.enable = true;
