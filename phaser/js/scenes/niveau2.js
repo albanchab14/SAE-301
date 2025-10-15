@@ -147,7 +147,7 @@ export default class Niveau2 extends Basescene {
     }, null, this);
     
     // Parchemin
-    this.p2 = new Parchemin(this, 1473, 525, "parchemin2");
+    this.p2 = new Parchemin(this, 1473, 503, "parchemin2");
     this.parchemins.push(this.p2);
 
     // --- ENNEMIS ---

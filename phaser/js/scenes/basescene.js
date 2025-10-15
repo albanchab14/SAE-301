@@ -37,6 +37,7 @@ export default class Basescene extends Phaser.Scene {
     this.load.image("cristal_violet", "./assets/cristaux/cristal_violet.png");
 
     // Parchemins interactifs
+    this.load.audio('son_parchemin', './assets/sfx/parchemin.mp3');
     this.load.image("parchemin", "./assets/parchemin.png"); // parchemin plié
     this.load.image("parchemin0", "./assets/parchemin0.png"); // contenu lore Selection
     this.load.image("parchemin1", "./assets/parchemin1.png"); // contenu lore Niveau1
