@@ -34,22 +34,22 @@ export default class Niveau1 extends Basescene {
     super.create();
 
     // --- Musique de fond ---
-    if (!this.mapMusic) {
-      // Première fois qu'on lance la scène
-      this.mapMusic = this.sound.add("map1_fond", { loop: true, volume: 0.3 });
-      this.mapMusic.play();
+    if (!this.sound.get('map1_fond')) {  // Vérifie si la musique existe déjà
+        this.mapMusic = this.sound.add('map1_fond', {
+            loop: true,
+            volume: 0.3
+        });
+    } else {
+        this.mapMusic = this.sound.get('map1_fond');
     }
-    this.events.on('wake', () => {
-      if (this.mapMusic && !this.mapMusic.isPlaying) {
+    
+    // Démarrer la musique si elle n'est pas déjà en cours
+    if (!this.mapMusic.isPlaying) {
         this.mapMusic.play();
-      }
-    });
-    this.events.on('sleep', () => {
-      if (this.mapMusic && this.mapMusic.isPlaying) {
-        this.mapMusic.stop();
-      }
-    });
+    }
 
+    // Retirer les événements wake/sleep qui ne sont plus nécessaires
+    
     // backgroung map
     const bg = this.add.image(0, 0, "background_fixe")
         .setOrigin(0, 0)
@@ -244,7 +244,10 @@ export default class Niveau1 extends Basescene {
             this.miniCristalGreen.destroy();
             this.miniCristalGreen = null;
           }
-          this.mapMusic.stop();
+          // Arrêter la musique de fond
+          if (this.mapMusic && this.mapMusic.isPlaying) {
+            this.mapMusic.stop();
+          }
           this.scene.start("defaite");
         }
       }
