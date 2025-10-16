@@ -90,7 +90,7 @@ export default class Selection extends BaseScene {
     });
 
     // Parchemin
-    this.p0 = new Parchemin(this, 400, 632, "parchemin0");
+    this.p0 = new Parchemin(this, 550, 250, "parchemin0");
     this.parchemins.push(this.p0);
 
     this.parcheminHelpText = this.add.text(
