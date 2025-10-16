@@ -122,7 +122,7 @@ export default class Niveau1 extends Basescene {
       collectible.collect();
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
     }, null, this);
-
+    
     // --- PACHEMIN ---
     this.p1 = new Parchemin(this, 1585, 1020, "parchemin1");
     this.parchemins.push(this.p1);

@@ -43,7 +43,7 @@ export default class Selection extends BaseScene {
     this.portefinale.setScale(1.25);
     
     // Joueur (100, 600)
-    this.player = this.createPlayer(640, 100);
+    this.player = this.createPlayer(640, 200);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
     // Fragments collectés
@@ -69,6 +69,7 @@ export default class Selection extends BaseScene {
           this.porte1.y - this.porte1.height / 2 - 16,
           "cristal_vert"
         ).setScale(0.5).setDepth(this.porte1.depth + 1);
+        this.objectifText.setVisible(false);
       }
       if (this.game.config.crystals.blue) {
         this.miniCristalBlue = this.add.image(
@@ -76,6 +77,7 @@ export default class Selection extends BaseScene {
             this.porte2.y - this.porte2.height / 2 - 16,
             "cristal_bleu"
         ).setScale(0.5).setDepth(this.porte2.depth + 1);
+        this.objectifText.setVisible(false);
       }
       if (this.game.config.crystals.violet) {
         this.miniCristalViolet = this.add.image(
@@ -83,6 +85,7 @@ export default class Selection extends BaseScene {
             this.porte3.y - this.porte3.height / 2 - 16,
             "cristal_violet"
         ).setScale(0.5).setDepth(this.porte3.depth + 1);
+        this.objectifText.setVisible(false);
       }
     });
 
@@ -114,6 +117,23 @@ export default class Selection extends BaseScene {
 
     // Caméra
     this.cameras.main.startFollow(this.player);
+
+    // Texte objectif
+    this.objectifText = this.add.text(
+      this.map.widthInPixels / 2,
+      this.map.heightInPixels / 2 -50,
+      "Chaque niveau renferme un cristal puissant.\nRécupérez-les pour finir votre quête !",
+      {
+        align: "center",
+        font: "18px Arial",
+        fill: "#ffffff",
+        stroke: "#000000",
+        strokeThickness: 4,
+        fontStyle: "bold"
+      }
+    )
+    .setOrigin(0.5)
+    .setDepth(10);
 
     // Clavier
     this.createClavier();    

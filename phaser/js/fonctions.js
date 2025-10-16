@@ -54,6 +54,7 @@ export function attack(player, scene, targets = null, levers = null) {
         switch (lever.number) {
           case 1: // levier 1
             scene.tween_mouvement.play();
+            scene.pont_levis1.setVisible(true);
             break;
           /*
           // Si je veux faire d'autres leviers

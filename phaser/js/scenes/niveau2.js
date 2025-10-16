@@ -86,6 +86,19 @@ export default class Niveau2 extends Basescene {
     this.cameras.main.startFollow(this.player);
     this.cameras.main.setBounds(0, 0, this.map2.widthInPixels, this.map2.heightInPixels);
 
+    this.add.text(
+      150, 550,
+      "↑",
+      {
+        font: "28px Arial",
+        fill: "#ffffff",
+        stroke: "#000000",
+        strokeThickness: 4,
+        fontStyle: "bold"
+      }
+    )
+    .setOrigin(0.5)
+    .setDepth(10);
     // vies
     this.events.on('wake', () => { // 1 appel au lancement de scène
       fct.lifeManager.updateHearts(this);
@@ -95,10 +108,11 @@ export default class Niveau2 extends Basescene {
     
     // --- PLATEFORMES MOBILES ---
 
-    var pont_levis1 = this.physics.add.sprite(782, 650, "pont_levis1");
-    this.physics.add.collider(this.player, pont_levis1);
-    pont_levis1.body.allowGravity = false;
-    pont_levis1.body.immovable = true;
+    this.pont_levis1 = this.physics.add.sprite(782, 650, "pont_levis1");
+    this.physics.add.collider(this.player, this.pont_levis1);
+    this.pont_levis1.body.allowGravity = false;
+    this.pont_levis1.body.immovable = true;
+    this.pont_levis1.setVisible(false);
 
     var plateforme_mobile = this.physics.add.sprite(3040, 904, "plateforme_mobile1");
     this.physics.add.collider(this.player, plateforme_mobile);
@@ -117,7 +131,7 @@ export default class Niveau2 extends Basescene {
     
     // Pont levis
     this.tween_mouvement = this.tweens.add({
-      targets: [pont_levis1],
+      targets: [this.pont_levis1],
       paused: true,
       ease: "Linear",
       duration: 3000,
