@@ -68,20 +68,6 @@ export default class NiveauFinal extends BaseScene {
     this.enemies.add(boss);
     this.physics.add.collider(this.enemies, this.calque_plateformes); 
 
-    // === BARRE DE VIE DU BOSS (cachée au départ) ===
-    const bossBarWidth = 800;
-
-    this.bossHealthBarBg = this.add.rectangle(this.scale.width / 2, 100, bossBarWidth, 25, 0x000000)
-      .setScrollFactor(0)
-      .setOrigin(0.5, 0.5)
-      .setAlpha(0);
-
-    this.bossHealthBar = this.add.rectangle(this.scale.width / 2, 100, bossBarWidth, 20, 0xff0000)
-      .setScrollFactor(0)
-      .setOrigin(0.5, 0.5)
-      .setAlpha(0);
-
-
 
     // === NOM DU BOSS ===
     this.bossNameText = this.add.text(this.scale.width / 2, 50, "LA GARDIENNE CORROMPUE", {

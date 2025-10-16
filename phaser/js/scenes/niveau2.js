@@ -437,27 +437,6 @@ export default class Niveau2 extends Basescene {
     this.updatePlayerMovement();
     this.handleAttack(this.enemies);
 
-    // Ajouter la gestion des leviers avec la touche I
-    if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
-        // Vérifier la proximité avec les leviers
-        this.leversGroup.getChildren().forEach(lever => {
-            const distance = Phaser.Math.Distance.Between(
-                this.player.x, this.player.y,
-                lever.x, lever.y
-            );
-            
-            if (distance < 100 && !lever.activated) { // Distance d'activation de 100 pixels
-                lever.activated = true;
-                lever.flipX = true;
-                
-                // Activation du pont-levis selon le numéro du levier
-                if (lever.number === 1) {
-                    this.tween_mouvement.play();
-                    this.pont_levis1.setVisible(true);
-                }
-            }
-        });
-    }
 
     this.enemies.children.iterate(enemy => {
       if (enemy instanceof EvilKnight) enemy.update(this.calque_plateformes, this.player);
@@ -471,7 +450,24 @@ export default class Niveau2 extends Basescene {
       if (this.physics.overlap(this.player, this.p2)) {
         this.p2.interact();
         return; // si on lit le parchemin, on bloque le reste
- experiences }
+      }
+      this.leversGroup.getChildren().forEach(lever => {
+        const distance = Phaser.Math.Distance.Between(
+          this.player.x, this.player.y,
+          lever.x, lever.y
+        );
+            
+        if (distance < 100 && !lever.activated) { // Distance d'activation de 100 pixels
+          lever.activated = true;
+          lever.flipX = true;
+                
+          // Activation du pont-levis selon le numéro du levier
+          if (lever.number === 1) {
+            this.tween_mouvement.play();
+            this.pont_levis1.setVisible(true);
+          }
+        }
+      });
       if (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss)) {
         this.scene.switch("selection");
       }
@@ -486,10 +482,5 @@ export default class Niveau2 extends Basescene {
     this.parcheminHelpText.setPosition(this.p2.x, this.p2.y - 30);
     this.parcheminCircle.setVisible(isNearParchemin);
     this.parcheminCircle.setPosition(this.p2.x, this.p2.y - 30);
-    // Retour
-    if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
-    (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss))) {
-      this.scene.switch("selection");
-    }
   }
 }
