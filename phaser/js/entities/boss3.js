@@ -1,13 +1,14 @@
-// entities/bossFinal.js
+// entities/boss3.js
 import Enemy from "./enemy.js";
+import Bat from "./bat.js";
 import * as fct from "../fonctions.js";
 
-export default class BossFinal extends Enemy {
+export default class Boss3 extends Enemy {
   constructor(scene, x, y) {
-    super(scene, x, y, "img_boss_final");
+    super(scene, x, y, "img_boss3");
 
     // --- VIE ---
-    this.maxVie = 15;
+    this.maxVie = 5;
     this.vie = this.maxVie;
 
     this.setCollideWorldBounds(true);
@@ -16,15 +17,18 @@ export default class BossFinal extends Enemy {
     this.state = "idle"; 
     this.phase = 1;
     this.combatStarted = false;
+    this.hasDroppedCrystal = false;
 
     this.spots = [
-      { x: 1000, y: 500 },
-      { x: 1200, y: 500 },
-      { x: 1400, y: 500 }
+      { x: 3700, y: 1209 },
+      { x: 4239, y: 1337 },
+      { x: 3156, y: 1337 }
     ];
 
     this.lastAction = 0;
     this.actionCooldown = 2500;
+
+    this.batsGroup = scene.add.group();
 
     this.alert = scene.add.text(this.x, this.y, "!", {
       fontSize: "32px",
@@ -37,12 +41,12 @@ export default class BossFinal extends Enemy {
     this.lifeBar.setDepth(10);
     this.updateLifeBar();
 
-    this.play("boss_final_idle_right");
+    this.play("boss3_idle_right");
   }
 
   updateLifeBar() {
     if (!this.lifeBar) return;
-    const barWidth = 100;
+    const barWidth = 80;
     const barHeight = 10;
     const x = this.x - barWidth / 2;
     const y = this.y - this.height - 30;
@@ -72,6 +76,7 @@ export default class BossFinal extends Enemy {
 
     const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
 
+    // 🔹 Début du combat
     if (!this.combatStarted && distance < 400 && this.hasLineOfSightTo(player, this.scene.calque_plateformes)) {
       this.combatStarted = true;
       this.state = "active";
@@ -90,41 +95,53 @@ export default class BossFinal extends Enemy {
       return;
     }
 
+    // Attente entre actions
     if (now - this.lastAction >= this.actionCooldown) {
       this.lastAction = now;
 
       let actions = [];
-      if (this.phase === 1) actions = ["teleport", "attackProjectiles"];
-      else if (this.phase === 2) actions = ["teleport", "attackProjectiles", "attackJumpSmash"];
-      else actions = ["teleport", "attackProjectiles", "attackJumpSmash", "attackFireRain"];
+      if (this.phase === 1) actions = ["teleport", "shoot"];
+      else if (this.phase === 2) actions = ["teleport", "shoot", "spawnBat"];
+      else actions = ["teleport", "shoot", "spawnBats"];
 
       const choice = Phaser.Utils.Array.GetRandom(actions);
 
-      if ((choice === "attackProjectiles" || choice === "attackJumpSmash" || choice === "attackFireRain") &&
+      // Vérification de ligne de vue avant toute action offensive
+      if ((choice === "shoot" || choice === "spawnBat" || choice === "spawnBats") &&
           !this.hasLineOfSightTo(player, this.scene.calque_plateformes)) {
         this.state = "idle";
         return;
       }
 
       if (choice === "teleport") this.preAction(() => this.teleportToNextSpot());
-      else if (choice === "attackProjectiles") this.preAction(() => this.attackProjectiles(player));
-      else if (choice === "attackJumpSmash") this.preAction(() => this.attackJumpSmash(player));
-      else if (choice === "attackFireRain") this.preAction(() => this.attackFireRain(player));
+      else if (choice === "shoot") this.preAction(() => {
+        this.state = "shoot";
+        this.shootProjectile(player);
+      });
+      else if (choice === "spawnBat") this.preAction(() => {
+        this.state = "shoot";
+        this.spawnBats(player, 1);
+      });
+      else if (choice === "spawnBats") this.preAction(() => {
+        this.state = "shoot";
+        this.spawnBats(player, 2);
+      });
     }
 
+    // Animations selon l'état
     if (this.state === "idle" || this.state === "alert") this.playIdle();
-    else if (this.state === "attack") this.playAttack();
+    else if (this.state === "shoot") this.playAttack();
   }
 
   playIdle() {
-    if (this.direction === 1) this.anims.play("boss_final_idle_right", true);
-    else this.anims.play("boss_final_idle_left", true);
+    if (this.direction === 1) this.anims.play("boss3_idle_right", true);
+    else this.anims.play("boss3_idle_left", true);
     this.state = "idle";
   }
 
   playAttack() {
-    if (this.direction === 1) this.anims.play("boss_final_attack_right", true);
-    else this.anims.play("boss_final_attack_left", true);
+    if (this.direction === 1) this.anims.play("boss3_attack_right", true);
+    else this.anims.play("boss3_attack_left", true);
   }
 
   updatePhase() {
@@ -156,19 +173,40 @@ export default class BossFinal extends Enemy {
     const nextSpot = this.spots[nextIndex];
     this.setPosition(nextSpot.x, nextSpot.y);
 
-    const puff = this.scene.add.particles(this.x, this.y, "img_boss_final", {
+    const puff = this.scene.add.particles(this.x, this.y, "img_bat", {
       speed: { min: -20, max: 20 },
       scale: { start: 0.8, end: 0 },
       lifespan: 400,
       quantity: 8
     });
     this.scene.time.delayedCall(400, () => puff.destroy());
+
     this.scene.tweens.add({ targets: this, alpha: { from: 0, to: 1 }, duration: 300 });
   }
 
-  attackProjectiles(player) {
-    if (!player) return;
-    this.state = "attack";
+  spawnBats(player, count = 1) {
+    const activeBats = this.scene.enemies.getChildren().filter(e => e instanceof Bat).length;
+    if (activeBats >= 6) return;
+
+    const spacing = 40;
+
+    for (let i = 0; i < count; i++) {
+      const offsetX = (i - (count - 1) / 2) * spacing;
+      const batX = this.x + offsetX;
+      const batY = this.y - 60;
+
+      const bat = new Bat(this.scene, batX, batY);
+      this.scene.enemies.add(bat);
+      bat.state = "patrol";
+
+      bat.setAlpha(0);
+      this.scene.tweens.add({ targets: bat, alpha: { from: 0, to: 1 }, duration: 300 });
+      this.scene.time.delayedCall(500, () => this.state = "idle");
+    }
+  }
+
+  shootProjectile(player) {
+    if (!player || !this.scene) return;
 
     const projectile = this.scene.physics.add.sprite(this.x, this.y, "dark_projectile");
     this.projectilesGroup.add(projectile);
@@ -181,35 +219,71 @@ export default class BossFinal extends Enemy {
     projectile.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
     projectile.setRotation(angle);
 
+    const width = 43, height = 14;
+    const rotatedWidth = Math.abs(width * Math.cos(angle)) + Math.abs(height * Math.sin(angle));
+    const rotatedHeight = Math.abs(width * Math.sin(angle)) + Math.abs(height * Math.cos(angle));
+    projectile.body.setSize(rotatedWidth, rotatedHeight);
+    projectile.body.setOffset((width - rotatedWidth)/2, (height - rotatedHeight)/2);
+
     this.scene.physics.add.overlap(projectile, player, () => {
       if (!projectile.active) return;
       projectile.destroy();
       fct.lifeManager.retirerPV(this.scene, 1);
+      console.log("💥 Le joueur est touché par un projectile !");
     });
 
     this.scene.time.delayedCall(500, () => this.state = "idle");
     this.scene.time.delayedCall(5000, () => { if (projectile.active) projectile.destroy(); });
+
+    console.log("🔮 Projectile tiré !");
   }
 
-  attackJumpSmash(player) {
-    this.state = "attack";
-    // Implémente ici l'attaque "saut + smash" comme dans ton ancien code
-    this.scene.time.delayedCall(800, () => this.state = "idle");
-  }
+  dropItem() {
+    if (this.hasDroppedCrystal) return;
+    this.hasDroppedCrystal = true;
 
-  attackFireRain(player) {
-    this.state = "attack";
-    // Implémente ici l'attaque "pluie de projectiles" comme dans ton ancien code
-    this.scene.time.delayedCall(1000, () => this.state = "idle");
+    const scene = this.scene;
+    const cristal = scene.physics.add.sprite(this.x, this.y, "cristal_violet");
+    cristal.setBounce(0.2);
+    cristal.setCollideWorldBounds(true);
+    scene.physics.add.collider(cristal, scene.calque_plateformes);
+
+    scene.physics.add.overlap(scene.player, cristal, () => {
+      fct.lifeManager.heal(scene, scene.maxVies);
+      if (!scene.game.config.crystals) scene.game.config.crystals = {};
+      scene.game.config.crystals.violet = true;
+      console.log("💎 Cristal violet récupéré !");
+      if (scene.sonCristal) scene.sonCristal.play({ volume: 1 });
+      cristal.destroy();
+    });
   }
 
   destroy(fromScene) {
     if (this.activeTimers) this.activeTimers.forEach(t => t.remove(false));
     if (this.alert) this.alert.destroy();
-    if (this.lifeBar) {
-      this.lifeBar.destroy();
-      this.lifeBar = null;
+    
+     if (this.lifeBar) {
+        this.lifeBar.destroy();
+        this.lifeBar = null;
     }
+
+    this.dropItem();
+
+    if (this.scene && this.scene.porte_retour_boss?.body) {
+      this.scene.porte_retour_boss.setVisible(true);
+      this.scene.porte_retour_boss.body.enable = true;
+    }
+
+    if (this.bossMusic) {
+      if (this.bossMusic.isPlaying) this.bossMusic.stop();
+      this.bossMusic.destroy();
+      this.bossMusic = null;
+    }
+
+    if (this.scene && this.scene.mapMusic) this.scene.mapMusic.resume();
+
+    this.boss3Alive = false;
+    this.dropItem();
     super.destroy(fromScene);
   }
 }
