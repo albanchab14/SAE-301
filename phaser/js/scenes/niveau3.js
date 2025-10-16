@@ -410,6 +410,7 @@ export default class Niveau3 extends Basescene {
         return; // si on lit le parchemin, on bloque le reste
       }
       if (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss)) {
+        this.mapMusic.stop();
         this.scene.switch("selection");
       }
     }

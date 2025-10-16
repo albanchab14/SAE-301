@@ -469,6 +469,7 @@ export default class Niveau2 extends Basescene {
         }
       });
       if (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss)) {
+        this.mapMusic.stop();
         this.scene.switch("selection");
       }
     }

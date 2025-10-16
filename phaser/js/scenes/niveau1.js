@@ -359,6 +359,7 @@ export default class Niveau1 extends Basescene {
         return; // si on lit le parchemin, on bloque le reste
       }
       if (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss)) {
+        this.mapMusic.stop();
         this.scene.switch("selection");
       }
     }
@@ -373,11 +374,5 @@ export default class Niveau1 extends Basescene {
     this.parcheminCircle.setVisible(isNearParchemin);
     this.parcheminCircle.setPosition(this.p1.x, this.p1.y - 30);
 
-    // Retour
-    if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
-    (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss))) {
-      this.mapMusic.stop();
-      this.scene.switch("selection");
-    }
   }
 }
