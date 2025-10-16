@@ -166,7 +166,7 @@ export default class Boss3 extends Enemy {
       if (!this.body) return;
       this.alert.setVisible(false);
       this.state = "active";
-      callback.call(this); // 🔥 corrige le "this" du callback
+      callback.call(this); // corrige le "this" du callback
     });
   }
 
@@ -196,7 +196,7 @@ export default class Boss3 extends Enemy {
 
     // Vérification des arguments
     if (!player || typeof count !== "number" || count <= 0) {
-      console.warn("⚠️ spawnBats appelé avec des paramètres invalides :", { player, count });
+      console.warn("spawnBats appelé avec des paramètres invalides :", { player, count });
       return;
     }
 
@@ -214,7 +214,7 @@ export default class Boss3 extends Enemy {
       // Ajout au groupe d'ennemis du niveau
       this.scene.enemies.add(bat);
 
-      // 🧱 Ajout de la collision physique avec les plateformes
+      // Ajout de la collision physique avec les plateformes
       this.scene.physics.add.collider(bat, this.scene.calque_plateformes);
 
       // Activation du comportement et effet d'apparition
@@ -263,13 +263,13 @@ export default class Boss3 extends Enemy {
       if (!projectile.active) return;
       projectile.destroy();
       fct.lifeManager.retirerPV(this.scene, 1);
-      console.log("💥 Le joueur est touché par un projectile !");
+      console.log("Le joueur est touché par un projectile !");
     });
 
     this.scene.time.delayedCall(500, () => this.state = "idle");
     this.scene.time.delayedCall(5000, () => { if (projectile.active) projectile.destroy(); });
 
-    console.log("🔮 Projectile tiré !");
+    console.log("Projectile tiré !");
   }
 
   dropItem() {
@@ -286,7 +286,7 @@ export default class Boss3 extends Enemy {
       fct.lifeManager.heal(scene, scene.maxVies);
       if (!scene.game.config.crystals) scene.game.config.crystals = {};
       scene.game.config.crystals.violet = true;
-      console.log("💎 Cristal violet récupéré !");
+      console.log("Cristal violet récupéré !");
       if (scene.sonCristal) scene.sonCristal.play({ volume: 1 });
       cristal.destroy();
     });

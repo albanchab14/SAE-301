@@ -293,7 +293,7 @@ export default class BossFinal extends Enemy {
     if (this.scene?.bossNameText) {
       this.scene.bossNameText.destroy();
     }
-    // ✅ Détruire ou cacher la barre de vie longue
+    // Détruire ou cacher la barre de vie longue
     if (this.scene?.bossHealthBar) {
         this.scene.bossHealthBar.destroy();
         this.scene.bossHealthBar = null;

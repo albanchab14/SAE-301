@@ -20,7 +20,7 @@ export default class Collectible extends Phaser.Physics.Arcade.Sprite {
             if (typeof this.scene.game.config.collectedFragments !== "number") {
                 this.scene.game.config.collectedFragments = 0;
             }
-            this.scene.sound.play('son_fragments', { volume: 0.5 }); // ✅ joue le son
+            this.scene.sound.play('son_fragments', { volume: 0.5 }); // joue le son
             this.scene.game.config.collectedFragments++;
             this.scene.updateFragmentsText(this.scene.game.config.collectedFragments, 9);
         }
@@ -57,7 +57,7 @@ export default class Collectible extends Phaser.Physics.Arcade.Sprite {
             // --- CRISTAUX ---
             if (typeProp && typeProp.value.startsWith("cristal_")) {
                 const colorMap = { vert: "green", bleu: "blue", violet: "violet" };
-                const color = typeProp.value.replace("cristal_", ""); // ex: "cristal_vert" → "vert"
+                const color = typeProp.value.replace("cristal_", "");
 
                 const collectible = new Collectible(scene, obj.x, obj.y - 32, 0, `cristal_${color}`);
                 collectible.type = "cristal";

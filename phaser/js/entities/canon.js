@@ -14,7 +14,7 @@ export default class Canon extends Enemy {
     this.setImmovable(true);
     this.setOrigin(0.5, 0.5);
 
-    this.defaultRotation = Phaser.Math.DegToRad(180); // 🔽 par défaut : vers le bas
+    this.defaultRotation = Phaser.Math.DegToRad(180); // par défaut : vers le bas
   }
 
   update(player, projectileGroup) {

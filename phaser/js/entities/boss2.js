@@ -116,7 +116,7 @@ export default class Boss2 extends Enemy {
 
     // petit effet dramatique
     this.scene.cameras.main.shake(400, 0.005);
-    console.log("🔥 Cerbère entre en rage !");
+    console.log("Cerbère entre en rage !");
   }
 
   chooseAttack(player, projectilesGroup) {
@@ -151,7 +151,7 @@ export default class Boss2 extends Enemy {
           if (projectile.active) projectile.destroy();
         });
 
-        // 🔥 Vitesse plus rapide selon la phase
+        // Vitesse plus rapide selon la phase
         const speed = this.phase === 2 ? 320 : 280;
 
         const dx = player.x - projectile.x;
@@ -285,7 +285,7 @@ export default class Boss2 extends Enemy {
     }
 
     if (this.alert) this.alert.destroy();
-    if (this.lifeBar) this.lifeBar.destroy(); // 💥 destruction barre de vie
+    if (this.lifeBar) this.lifeBar.destroy(); // destruction barre de vie
     this.dropItem();
 
     if (this.scene && this.scene.porte_retour_boss?.body) {
