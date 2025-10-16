@@ -177,7 +177,7 @@ export default class Niveau2 extends Basescene {
     this.createFragmentsText(this.game.config.collectedFragments, 9);
     this.events.on('wake', () => { // 1 appel au lancement de scène
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
-      this.player.setPosition(3400, 900); // spawn original : (100, 600) / spawn boss : (3300, 900))
+      this.player.setPosition(100, 600); // spawn original : (100, 600) / spawn boss : (3300, 900))
       this.cameras.main.startFollow(this.player);
     });
 
