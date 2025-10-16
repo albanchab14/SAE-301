@@ -431,6 +431,13 @@ export default class Niveau2 extends Basescene {
         callbackScope: this,
         loop: true
       });
+
+
+    // Après la création des autres calques
+    this.calque_pics = this.map2.createLayer("pic", tileset);
+
+    // Variable pour gérer le timer des dégâts
+    this.lastPicDamage = 0;
   }
 
   update() {
@@ -483,5 +490,32 @@ export default class Niveau2 extends Basescene {
     this.parcheminHelpText.setPosition(this.p2.x, this.p2.y - 30);
     this.parcheminCircle.setVisible(isNearParchemin);
     this.parcheminCircle.setPosition(this.p2.x, this.p2.y - 30);
+
+    // Gestion des dégâts des pics
+    const playerTile = this.calque_pics.getTileAtWorldXY(this.player.x, this.player.y + this.player.height / 2);
+    
+    if (playerTile) {
+        const now = this.time.now;
+        if (now - this.lastPicDamage >= 1000) { // 1000ms = 1 seconde
+            fct.lifeManager.retirerPV(this, 1);
+            this.player.setTint(0xff0000);
+            this.time.delayedCall(300, () => this.player.setTint(0xffffff));
+            this.lastPicDamage = now;
+
+            // Vérification de la mort
+            if (this.game.config.pointsDeVie <= 0) {
+                this.physics.pause();
+                this.game.config.collectedFragments = 0;
+                this.game.config.collectedCristals = 0;
+                this.bossNameShown = false;
+                if (this.miniCristalGreen) {
+                    this.miniCristalGreen.destroy();
+                    this.miniCristalGreen = null;
+                }
+                this.mapMusic.stop();
+                this.scene.start("defaite");
+            }
+        }
+    }
   }
 }
