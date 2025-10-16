@@ -424,10 +424,5 @@ export default class Niveau3 extends Basescene {
     this.parcheminCircle.setVisible(isNearParchemin);
     this.parcheminCircle.setPosition(this.p3.x, this.p3.y - 30);
 
-    // Retour
-    if (Phaser.Input.Keyboard.JustDown(this.clavier.action) &&
-    (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss))) {
-      this.scene.switch("selection");
-    }
   }
 }
