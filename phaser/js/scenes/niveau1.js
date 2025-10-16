@@ -112,7 +112,7 @@ export default class Niveau1 extends Basescene {
     
     this.events.on('wake', () => {
       this.updateFragmentsText(this.game.config.collectedFragments, 9);
-      this.player.setPosition(3000, 150); // (3000,150) position de boss
+      this.player.setPosition(100, 600); // placé en (100, 600) / (3000,150) position de boss
       // Si tu veux remettre la caméra sur le joueur
       this.cameras.main.startFollow(this.player);
     });
