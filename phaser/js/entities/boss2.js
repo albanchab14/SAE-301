@@ -6,7 +6,9 @@ export default class Boss2 extends Enemy {
   constructor(scene, x, y) {
     super(scene, x, y, "img_boss2", 0);
 
-    this.vie = 10; // Vie plus courte
+    // --- VIE ---
+    this.maxVie = 10;
+    this.vie = this.maxVie; // Vie plus courte
     this.setGravityY(300);
     this.setCollideWorldBounds(true);
 
@@ -29,11 +31,47 @@ export default class Boss2 extends Enemy {
     }).setOrigin(0.5, 1).setVisible(false);
 
     this.activeTimers = [];
+
+    // --- BARRE DE VIE ---
+    this.lifeBar = scene.add.graphics();
+    this.lifeBar.setDepth(10);
+    this.updateLifeBar();
+  }
+
+  // --- MISE À JOUR DE LA BARRE DE VIE ---
+  updateLifeBar() {
+    if (!this.lifeBar) return;
+    const barWidth = 80;
+    const barHeight = 10;
+    const x = this.x - barWidth / 2;
+    const y = this.y - this.height - 30;
+
+    this.lifeBar.clear();
+    this.lifeBar.fillStyle(0x333333, 1);
+    this.lifeBar.fillRect(x, y, barWidth, barHeight);
+
+    const percent = Math.max(this.vie / this.maxVie, 0);
+    const color = percent > 0.5 ? 0x06c80f : (percent > 0.2 ? 0xf8c200 : 0xdb222a);
+    this.lifeBar.fillStyle(color, 1);
+    this.lifeBar.fillRect(x, y, barWidth * percent, barHeight);
+  }
+
+  // --- GESTION DES DÉGÂTS ---
+  takeDamage(amount = 1) {
+    this.vie = Math.max(0, this.vie - amount);
+    this.updateLifeBar();
+
+    if (this.vie <= 0) {
+      this.destroy();
+    }
   }
 
   update(platformLayer, player, projectilesGroup) {
     if (!this.body) return;
     this.alert.setPosition(this.x, this.y - this.height);
+
+    // --- SUIVI DE LA BARRE DE VIE ---
+    this.updateLifeBar();
 
     // Passage en phase 2 (rage)
     if (this.vie <= 5 && this.phase === 1) {
@@ -43,7 +81,7 @@ export default class Boss2 extends Enemy {
     const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
     const now = this.scene.time.now;
 
-    if (distance < this.detectionRange && now - this.lastAttack > this.attackCooldown) {
+    if (distance < this.detectionRange && now - this.lastAttack > this.attackCooldown && this.hasLineOfSightTo(player, platformLayer)) {
       this.chooseAttack(player, projectilesGroup);
       this.lastAttack = now;
     }
@@ -109,6 +147,9 @@ export default class Boss2 extends Enemy {
         projectile.play("fireball_anim");
         projectilesGroup.add(projectile);
         projectile.body.setAllowGravity(false);
+        this.scene.physics.add.collider(projectile, this.scene.calque_plateformes, () => {
+          if (projectile.active) projectile.destroy();
+        });
 
         // 🔥 Vitesse plus rapide selon la phase
         const speed = this.phase === 2 ? 320 : 280;
@@ -117,7 +158,7 @@ export default class Boss2 extends Enemy {
         const dy = player.y - projectile.y;
         const angle = Math.atan2(dy, dx);
         projectile.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
-        projectile.setRotation(angle); // oriente la boule dans la direction du tir
+        projectile.setRotation(angle);
         projectile.setFlipY(false);
 
         const width = 48;
@@ -175,7 +216,7 @@ export default class Boss2 extends Enemy {
 
       const impactTimer = this.scene.time.delayedCall(900, () => {
         if (!this.body) return;
-        this.spawnFireRain(6); // 6 projectiles max
+        this.spawnFireRain(6);
         this.state = "idle";
       });
       this.activeTimers.push(impactTimer);
@@ -184,8 +225,8 @@ export default class Boss2 extends Enemy {
   }
 
   spawnFireRain(count = 6) {
-    const width = 48;   // largeur du sprite
-    const height = 24;  // hauteur du sprite
+    const width = 48;
+    const height = 24;
 
     const adjustHitbox = (sprite, angle) => {
       const rotatedWidth = Math.abs(width * Math.cos(angle)) + Math.abs(height * Math.sin(angle));
@@ -201,18 +242,14 @@ export default class Boss2 extends Enemy {
       fire.body.setAllowGravity(true);
       fire.setVelocityY(250);
 
-      // 🔹 On oriente la sprite et on ajuste la hitbox
-      const angle = Math.PI / 2; // direction vers le bas
+      const angle = Math.PI / 2;
       fire.setRotation(angle);
       adjustHitbox(fire, angle);
 
-      // ✅ Ajout au groupe global de projectiles si disponible
       if (this.scene.projectilesGroup) this.scene.projectilesGroup.add(fire);
 
-      // ✅ Collision avec plateformes
       this.scene.physics.add.collider(fire, this.scene.calque_plateformes, () => fire.destroy());
 
-      // ✅ Dégâts au joueur
       this.scene.physics.add.overlap(fire, this.scene.player, () => {
         if (!fire.active) return;
         fire.destroy();
@@ -220,8 +257,6 @@ export default class Boss2 extends Enemy {
       });
     }
   }
-
-
 
   dropItem() {
     if (this.hasDroppedCrystal) return;
@@ -250,6 +285,7 @@ export default class Boss2 extends Enemy {
     }
 
     if (this.alert) this.alert.destroy();
+    if (this.lifeBar) this.lifeBar.destroy(); // 💥 destruction barre de vie
     this.dropItem();
 
     if (this.scene && this.scene.porte_retour_boss?.body) {
