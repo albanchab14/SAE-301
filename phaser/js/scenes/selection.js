@@ -61,8 +61,8 @@ export default class Selection extends BaseScene {
     this.portefinale = this.physics.add.staticSprite(640, 208, "img_porte4");
     this.portefinale.setScale(1.25);
     
-    // Joueur (100, 600) ou (300,150)
-    this.player = this.createPlayer(300, 150);
+    // Joueur (100, 600) ou (400,150) pour devant salle boss
+    this.player = this.createPlayer(100, 600);
     this.physics.add.collider(this.player, this.calque_plateformes);
 
     // Fragments collectés
