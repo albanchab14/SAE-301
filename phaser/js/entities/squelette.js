@@ -6,6 +6,7 @@ export default class Squelette extends Enemy {
     super(scene, x, y, "skeleton_idle");
     this.setScale(1.2);
     this.vie = 3;
+    this.dropChance = 0.25;
     this.setCollideWorldBounds(true);
     this.body.allowGravity = true;
 
