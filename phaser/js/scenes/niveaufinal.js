@@ -48,7 +48,7 @@ export default class NiveauFinal extends BaseScene {
     this.createClavier();
 
     // === PORTE SORTIE (cachée au début) ===
-    this.porte_retour_boss = this.physics.add.staticSprite(200, 700, "img_porte4");
+    this.porte_retour_boss = this.physics.add.staticSprite(200, 727, "img_porte4");
     this.porte_retour_boss.setVisible(false);
     this.porte_retour_boss.body.enable = false;
 

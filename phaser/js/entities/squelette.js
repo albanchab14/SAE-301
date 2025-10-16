@@ -24,7 +24,6 @@ export default class Squelette extends Enemy {
       attack: { width: 58 * 1.2, height: 47 * 1.2, offsetX: 0, offsetY: 0 }
     };
 
-
     this.setHitbox("idle");
 
     // Animation de départ
@@ -52,7 +51,7 @@ export default class Squelette extends Enemy {
         // Regarde vers le joueur
         this.direction = player.x > this.x ? 1 : -1;
 
-        // Hitbox attaque décalée vers l’avant
+        // Hitbox attaque décalée vers l'avant
         if (this.direction === 1) {
             this.body.setSize(58, 47);
             this.body.setOffset(1, 0);
@@ -63,7 +62,7 @@ export default class Squelette extends Enemy {
             this.play("skeleton_attack_left", true);
         }
 
-        // Quand l’animation d’attaque est finie → retour idle
+        // Quand l'animation d'attaque est finie → retour idle
         this.once("animationcomplete", () => {
             this.state = "idle";
 
@@ -76,21 +75,37 @@ export default class Squelette extends Enemy {
         return; // stop update pour cette frame
     }
 
-    // --- Patrouille basique (type "loup") ---
+    // --- Patrouille basique avec détection de bord ---
     if (this.state !== "attack") {
+        // Change de direction si collision avec un mur
         if (this.body.blocked.left) {
             this.direction = 1;
-            this.setVelocityX(this.speed);
         } else if (this.body.blocked.right) {
             this.direction = -1;
-            this.setVelocityX(-this.speed);
-        } else {
-            this.setVelocityX(this.speed * this.direction);
         }
+
+        // Détection du vide devant (au niveau des pieds)
+        if (this.body.blocked.down) {
+            const checkDistance = 15;
+            const feetX = this.direction === 1 
+                ? this.x + this.body.width / 2 + checkDistance
+                : this.x - this.body.width / 2 - checkDistance;
+            const feetY = this.y + this.body.height / 2 + 5;
+
+            // Vérifie s'il y a une tile de plateforme devant
+            const tile = this.scene.calque_plateformes?.getTileAtWorldXY(feetX, feetY, true);
+
+            // Si pas de tile OU tile non solide = bord → demi-tour
+            if (!tile || !tile.properties.estSolide) {
+                this.direction *= -1;
+            }
+        }
+
+        // Applique le mouvement
+        this.setVelocityX(this.speed * this.direction);
 
         // Hitbox marche centrée sur le corps
         this.body.setSize(39, 48);
-
 
         // Animation marche selon direction
         const animName = this.direction === 1 ? "skeleton_walk_right" : "skeleton_walk_left";
@@ -98,6 +113,5 @@ export default class Squelette extends Enemy {
             this.play(animName, true);
         }
     }
-}
-
+  }
 }

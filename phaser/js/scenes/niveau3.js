@@ -109,7 +109,7 @@ export default class Niveau3 extends Basescene {
       this.porte_retour_boss.setVisible(false);
       this.porte_retour_boss.body.enable = false;
       // Joueur (départ : (100, 600), boss : (4250, 800))
-      this.player = this.createPlayer(4250, 800);
+      this.player = this.createPlayer(100, 600);
       this.physics.add.collider(this.player, this.calque_plateformes);
   
       // Caméra
