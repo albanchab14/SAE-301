@@ -1,6 +1,7 @@
 export default class PauseScene extends Phaser.Scene {
     constructor() {
         super('pause');
+        this.selectedButton = 0; // Pour suivre quel bouton est sélectionné
     }
 
     init(data) {
@@ -21,20 +22,19 @@ export default class PauseScene extends Phaser.Scene {
         }).setOrigin(0.5);
 
         // Bouton Reprendre
-        const buttonResume = this.add.text(this.sys.game.config.width / 2, 300, 'Reprendre (F)', {
+        this.buttonResume = this.add.text(this.sys.game.config.width / 2, 300, 'Reprendre', {
             fontSize: '32px',
-            fill: '#ffffff',
+            fill: '#ff0',
             stroke: '#000000',
             strokeThickness: 2
         })
         .setOrigin(0.5)
         .setInteractive()
-        .on('pointerover', () => buttonResume.setStyle({ fill: '#ff0' }))
-        .on('pointerout', () => buttonResume.setStyle({ fill: '#ffffff' }))
+        .on('pointerover', () => this.selectButton(0))
         .on('pointerdown', () => this.handleResume());
 
         // Bouton Quitter
-        const buttonQuit = this.add.text(this.sys.game.config.width / 2, 375, 'Quitter', {
+        this.buttonQuit = this.add.text(this.sys.game.config.width / 2, 375, 'Quitter', {
             fontSize: '32px',
             fill: '#ffffff',
             stroke: '#000000',
@@ -42,14 +42,43 @@ export default class PauseScene extends Phaser.Scene {
         })
         .setOrigin(0.5)
         .setInteractive()
-        .on('pointerover', () => buttonQuit.setStyle({ fill: '#ff0' }))
-        .on('pointerout', () => buttonQuit.setStyle({ fill: '#ffffff' }))
+        .on('pointerover', () => this.selectButton(1))
         .on('pointerdown', () => this.handleQuit());
 
-        // Gestion de la touche F pour reprendre
-        this.input.keyboard.on('keydown-F', () => {
+        // Touches de navigation
+        this.cursors = this.input.keyboard.createCursorKeys();
+        
+        // Touche I pour valider
+        this.keyI = this.input.keyboard.addKey('I');
+        
+        // Gestion des événements clavier
+        this.input.keyboard.on('keydown-UP', () => this.changeSelection(-1));
+        this.input.keyboard.on('keydown-DOWN', () => this.changeSelection(1));
+        this.input.keyboard.on('keydown-I', () => this.validateSelection());
+
+        // Sélection initiale
+        this.selectButton(0);
+    }
+
+    selectButton(index) {
+        this.selectedButton = index;
+        this.buttonResume.setStyle({ fill: index === 0 ? '#ff0' : '#ffffff' });
+        this.buttonQuit.setStyle({ fill: index === 1 ? '#ff0' : '#ffffff' });
+    }
+
+    changeSelection(direction) {
+        let newSelection = this.selectedButton + direction;
+        if (newSelection < 0) newSelection = 1;
+        if (newSelection > 1) newSelection = 0;
+        this.selectButton(newSelection);
+    }
+
+    validateSelection() {
+        if (this.selectedButton === 0) {
             this.handleResume();
-        });
+        } else {
+            this.handleQuit();
+        }
     }
 
     handleResume() {
@@ -67,6 +96,11 @@ export default class PauseScene extends Phaser.Scene {
         if (this.previousScene) {
             const previousScene = this.scene.get(this.previousScene);
             if (previousScene) {
+                // Arrêter la musique si elle existe
+                if (previousScene.music) {
+                    previousScene.music.pause();
+                }
+                // Arrêter la scène précédente
                 this.scene.stop(this.previousScene);
             }
         }
