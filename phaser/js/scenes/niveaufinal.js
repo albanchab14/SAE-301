@@ -64,7 +64,7 @@ export default class NiveauFinal extends BaseScene {
     // === BOSS FINAL ===
     this.enemies = this.add.group();
     const boss = new BossFinal(this, 1100, 700);
-    boss.bossMusic = this.sound.add("bossfinalmusic", { loop: true, volume: 0.5 });
+    boss.bossMusic = this.sound.add("bossfinalmusic", { loop: true, volume: 0.2 });
     this.enemies.add(boss);
     this.physics.add.collider(this.enemies, this.calque_plateformes);
 
