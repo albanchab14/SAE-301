@@ -93,17 +93,19 @@ export default class PauseScene extends Phaser.Scene {
     }
 
     handleQuit() {
+        // Arrêter la scène de jeu en cours
         if (this.previousScene) {
-            const previousScene = this.scene.get(this.previousScene);
-            if (previousScene) {
-                // Arrêter la musique si elle existe
-                if (previousScene.music) {
-                    previousScene.music.pause();
-                }
-                // Arrêter la scène précédente
-                this.scene.stop(this.previousScene);
-            }
+            // Arrêter toutes les musiques en cours
+            this.sound.stopAll();
+            
+            // Arrêter la scène précédente
+            this.scene.stop(this.previousScene);
         }
+
+        // Arrêter la scène de pause
+        this.scene.stop(); 
+
+        // Démarrer le menu
         this.scene.start('menu');
     }
 }

@@ -123,12 +123,10 @@ export default class Niveau2 extends Basescene {
     // --- CREATION LEVIERS ---
     this.leversGroup = this.physics.add.staticGroup();
 
-    let lever1 = this.leversGroup.create(310, 222, "img_levier");
+    let lever1 = this.leversGroup.create(1185, 130, "img_levier");
     lever1.number = 1;
     lever1.activated = false;
-    
-    // --- TWEENS ---
-    
+        
     // Pont levis
     this.tween_mouvement = this.tweens.add({
       targets: [this.pont_levis1],
@@ -426,7 +424,30 @@ export default class Niveau2 extends Basescene {
 
   update() {
     this.updatePlayerMovement();
-    this.handleAttack(this.enemies, this.leversGroup);
+    this.handleAttack(this.enemies);
+
+    // Ajouter la gestion des leviers avec la touche I
+    if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
+        // Vérifier la proximité avec les leviers
+        this.leversGroup.getChildren().forEach(lever => {
+            const distance = Phaser.Math.Distance.Between(
+                this.player.x, this.player.y,
+                lever.x, lever.y
+            );
+            
+            if (distance < 100 && !lever.activated) { // Distance d'activation de 100 pixels
+                lever.activated = true;
+                lever.flipX = true;
+                
+                // Activation du pont-levis selon le numéro du levier
+                if (lever.number === 1) {
+                    this.tween_mouvement.play();
+                    this.pont_levis1.setVisible(true);
+                }
+            }
+        });
+    }
+
     this.enemies.children.iterate(enemy => {
       if (enemy instanceof EvilKnight) enemy.update(this.calque_plateformes, this.player);
       if (enemy instanceof Canon) enemy.update(this.player, this.projectilesGroup);
