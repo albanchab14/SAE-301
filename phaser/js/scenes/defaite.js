@@ -13,7 +13,7 @@ export default class defaite extends Phaser.Scene {
     }
 
     create() {
-        this.defaiteMusic = this.sound.add("defaite_music", { loop: false, volume: 0.7 });
+        this.defaiteMusic = this.sound.add("defaite_music", { loop: false, volume: 0.4 });
         this.defaiteMusic.play();
 
         // on place les éléments de fond
