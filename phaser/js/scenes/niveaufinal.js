@@ -66,7 +66,7 @@ export default class NiveauFinal extends BaseScene {
     const boss = new BossFinal(this, 1100, 700);
     boss.bossMusic = this.sound.add("bossfinalmusic", { loop: true, volume: 0.2 });
     this.enemies.add(boss);
-    this.physics.add.collider(this.enemies, this.calque_plateformes);
+    this.physics.add.collider(this.enemies, this.calque_plateformes); 
 
     // === BARRE DE VIE DU BOSS (cachée au départ) ===
     const bossBarWidth = 800;
@@ -95,30 +95,71 @@ export default class NiveauFinal extends BaseScene {
       .setAlpha(0);
 
     // === ZONE DE DÉCLENCHEMENT DU COMBAT ===
-    boss.setActive(false);
-    boss.setVisible(false);
+    // --- ZONE DE DÉCLENCHEMENT DU BOSS FINAL ---
+const zones = this.map4.getObjectLayer("zones");
+const bossObject = zones?.objects.find(obj => obj.name === "bossFinalZone");
 
-    this.bossZone = this.add.zone(this.scale.width / 2 + 125, this.scale.height / 2 + 80, 1000, 700);
-    this.physics.world.enable(this.bossZone);
-    this.bossZone.body.setAllowGravity(false);
-    this.bossZone.body.setImmovable(true);
+if (bossObject) {
+  this.bossZone = this.add.zone(
+    bossObject.x + bossObject.width / 2,
+    bossObject.y + bossObject.height / 2,
+    bossObject.width,
+    bossObject.height
+  );
 
-    this.physics.add.overlap(this.player, this.bossZone, () => {
-      if (!this.bossTriggered) {
-        this.bossTriggered = true;
-        boss.setActive(true);
-        boss.setVisible(true);
-        boss.bossMusic.play();
+  this.physics.world.enable(this.bossZone);
+  this.bossZone.body.setAllowGravity(false);
+  this.bossZone.body.setImmovable(true);
 
-        // Affiche nom et barre de vie
-        this.tweens.add({
-          targets: [this.bossNameText, this.bossHealthBar, this.bossHealthBarBg],
-          alpha: 1,
-          duration: 800,
-          ease: "Power2"
-        });
+  // --- TEXTE DU BOSS ---
+  this.bossNameText = this.add.text(
+    this.scale.width / 1.25,
+    this.scale.height / 1.1,
+    bossObject.properties?.find(p => p.name === "bossname")?.value || "LA GARDIENNE CORROMPUE",
+    {
+      font: "64px Arial",
+      fill: "#ff0000",
+      fontStyle: "bold",
+      stroke: "#000",
+      strokeThickness: 6
+    }
+  ).setOrigin(0.5).setScrollFactor(0).setAlpha(0);
+
+  // --- Détection de l’entrée du joueur ---
+  this.physics.add.overlap(this.player, this.bossZone, () => {
+    if (!this.bossNameShown) {
+      this.bossNameShown = true;
+
+      // Musique du boss
+      if (!boss.bossMusic.isPlaying) {
+        boss.bossMusic.play({ loop: true });
+        if (this.mapMusic?.isPlaying) this.mapMusic.pause();
       }
-    });
+
+      // Apparition du nom
+      this.bossNameText.setAlpha(1);
+      this.tweens.add({
+        targets: this.bossNameText,
+        alpha: 0,
+        duration: 3000,
+        delay: 1500
+      });
+
+      // Activation du boss
+      boss.setActive(true);
+      boss.setVisible(true);
+
+      // Affichage progressif de la barre de vie
+      this.tweens.add({
+        targets: [this.bossHealthBar, this.bossHealthBarBg],
+        alpha: 1,
+        duration: 800,
+        ease: "Power2"
+      });
+    }
+  });
+}
+
 
     // === COLLISIONS JOUEUR ↔ ENNEMIS ===
     this.physics.add.overlap(this.player, this.enemies, (player, enemy) => {
