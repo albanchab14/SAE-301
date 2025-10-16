@@ -43,20 +43,31 @@ export default class Niveau2 extends Basescene {
 
     // --- Musique de fond ---
     if (!this.mapMusic) {
-      // Première fois qu'on lance la scène
-      this.mapMusic = this.sound.add("map2_fond", { loop: true, volume: 0.3 });
-      this.mapMusic.play();
+        this.mapMusic = this.sound.add('map2_fond', {
+            volume: 0.3,
+            loop: true
+        });
     }
+
+    // Événement quand la scène se réveille (retour au niveau)
     this.events.on('wake', () => {
-      if (this.mapMusic && !this.mapMusic.isPlaying) {
-        this.mapMusic.play();
-      }
+        // Vérifier si la musique existe et n'est pas déjà en train de jouer
+        if (this.mapMusic && !this.mapMusic.isPlaying) {
+            this.mapMusic.play();
+        }
     });
+
+    // Événement quand la scène est mise en pause/sommeil
     this.events.on('sleep', () => {
-      if (this.mapMusic && this.mapMusic.isPlaying) {
-        this.mapMusic.stop();
-      }
+        if (this.mapMusic && this.mapMusic.isPlaying) {
+            this.mapMusic.pause();
+        }
     });
+
+    // Démarrer la musique si elle n'est pas déjà en cours
+    if (!this.mapMusic.isPlaying) {
+        this.mapMusic.play();
+    }
 
     // Map
     this.map2 = this.add.tilemap("carte2");
@@ -460,7 +471,7 @@ export default class Niveau2 extends Basescene {
       if (this.physics.overlap(this.player, this.p2)) {
         this.p2.interact();
         return; // si on lit le parchemin, on bloque le reste
-      }
+ experiences }
       if (this.physics.overlap(this.player, this.porte_retour) || this.physics.overlap(this.player, this.porte_retour_boss)) {
         this.scene.switch("selection");
       }
