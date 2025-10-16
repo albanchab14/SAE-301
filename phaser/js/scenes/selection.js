@@ -12,11 +12,30 @@ export default class Selection extends BaseScene {
     // Maps & portes du lobby
     this.load.image("selection_tileset", "./assets/selectionJeu.png");
     this.load.tilemapTiledJSON("map_selection", "./assets/map_selection.json");
-    }
-
+    
+    // Chargement de la musique
+    this.load.audio("lobby_music", "./assets/sfx/lobby.mp3");
+}
 
   create() {
     super.create();
+
+    // --- Musique de fond ---
+    if (!this.sound.get('lobby_music')) {
+        this.mapMusic = this.sound.add('lobby_music', {
+            loop: true,
+            volume: 0.1  // Baisse du volume de 0.2 à 0.1
+        });
+    } else {
+        this.mapMusic = this.sound.get('lobby_music');
+        this.mapMusic.setVolume(0.1);  // Assure que le volume est bien à 0.1 même si la musique existe déjà
+    }
+    
+    // Démarrer la musique si elle n'est pas déjà en cours
+    if (!this.mapMusic.isPlaying) {
+        this.mapMusic.play();
+    }
+
     // Map
     this.map = this.add.tilemap("map_selection");
     const tileset = this.map.addTilesetImage("selection_tileset", "selection_tileset");
@@ -172,23 +191,43 @@ export default class Selection extends BaseScene {
     if (Phaser.Input.Keyboard.JustDown(this.clavier.action)) {
       if (this.physics.overlap(this.player, this.p0)) {
         this.p0.interact();
-        return; // si on lit le parchemin, on bloque le reste
+        return;
       }
       if (this.physics.overlap(this.player, this.porte1)) {
+        if (this.mapMusic) {
+          this.mapMusic.stop();
+        }
         this.scene.switch("niveau1");
       }
       if (this.physics.overlap(this.player, this.porte2)) {
+        if (this.mapMusic) {
+          this.mapMusic.stop();
+        }
         this.scene.switch("niveau2");
       }
       if (this.physics.overlap(this.player, this.porte3)) {
+        if (this.mapMusic) {
+          this.mapMusic.stop();
+        }
         this.scene.switch("niveau3");
       }
       if (this.physics.overlap(this.player, this.portefinale)) {
+        if (this.mapMusic) {
+          this.mapMusic.stop();
+        }
         this.portefinale.play("open_door");
         this.time.delayedCall(1000, () => {
           this.scene.switch("NiveauFinal");
         });
       }
     }
+  }
+
+  // Ajout d'une méthode pour gérer l'arrêt de la musique quand on quitte la scène
+  shutdown() {
+    if (this.mapMusic) {
+        this.mapMusic.stop();
+    }
+    super.shutdown();
   }
 }

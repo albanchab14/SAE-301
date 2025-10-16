@@ -128,20 +128,26 @@ export default class Boss3 extends Enemy {
       });
     }
 
+    // Mettre à jour la direction en fonction de la position du joueur
+    if (player) {
+        this.direction = player.x < this.x ? -1 : 1;
+        this.setFlipX(this.direction === -1);
+    }
+
     // Animations selon l'état
     if (this.state === "idle" || this.state === "alert") this.playIdle();
     else if (this.state === "shoot") this.playAttack();
   }
 
   playIdle() {
-    if (this.direction === 1) this.anims.play("boss3_idle_right", true);
-    else this.anims.play("boss3_idle_left", true);
+    // Utiliser toujours l'animation droite et flipper le sprite si nécessaire
+    this.anims.play("boss3_idle_right", true);
     this.state = "idle";
   }
 
   playAttack() {
-    if (this.direction === 1) this.anims.play("boss3_attack_right", true);
-    else this.anims.play("boss3_attack_left", true);
+    // Utiliser toujours l'animation droite et flipper le sprite si nécessaire
+    this.anims.play("boss3_attack_right", true);
   }
 
   updatePhase() {
@@ -207,6 +213,10 @@ export default class Boss3 extends Enemy {
 
   shootProjectile(player) {
     if (!player || !this.scene) return;
+
+    // Mettre à jour la direction avant de tirer
+    this.direction = player.x < this.x ? -1 : 1;
+    this.setFlipX(this.direction === -1);
 
     const projectile = this.scene.physics.add.sprite(this.x, this.y, "dark_projectile");
     this.projectilesGroup.add(projectile);
