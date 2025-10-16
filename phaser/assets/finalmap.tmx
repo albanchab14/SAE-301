@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="40" height="25" tilewidth="32" tileheight="32" infinite="0" nextlayerid="6" nextobjectid="3">
+ <editorsettings>
+  <export target="finalmap.json" format="json"/>
+ </editorsettings>
  <tileset firstgid="1" name="map4_tileset" tilewidth="32" tileheight="32" tilecount="256" columns="16">
   <image source="tuilesJeu4.png" width="512" height="512"/>
   <tile id="0">
@@ -2566,7 +2569,7 @@
    </properties>
   </tile>
  </tileset>
- <layer id="3" name="calque_background_4" width="40" height="25">
+ <layer id="3" name="calque_background_3" width="40" height="25">
   <data encoding="csv">
 18,19,18,19,18,19,18,19,18,19,18,19,18,19,18,19,18,19,18,19,18,19,18,19,18,19,18,19,18,19,18,19,18,19,18,19,18,19,18,19,
 34,35,34,35,34,35,34,35,34,35,34,35,34,35,34,35,34,35,34,35,34,35,34,35,34,35,34,35,34,35,34,35,34,35,34,35,34,35,34,35,

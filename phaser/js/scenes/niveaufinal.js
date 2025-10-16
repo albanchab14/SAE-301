@@ -26,6 +26,8 @@ export default class NiveauFinal extends BaseScene {
     // === MAP ===
     this.map4 = this.add.tilemap("finalmap");
     const tileset = this.map4.addTilesetImage("map4_tileset", "TuilesJeu4");
+    this.calque_background_3 = this.map4.createLayer("calque_background_3", tileset);
+    this.calque_background_2 = this.map4.createLayer("calque_background_2", tileset);
     this.calque_background = this.map4.createLayer("calque_background", tileset);
     this.calque_plateformes = this.map4.createLayer("calque_plateformes", tileset);
     this.calque_plateformes.setCollisionByProperty({ estSolide: true });
