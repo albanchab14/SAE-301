@@ -8,7 +8,7 @@ export default class victoire extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image("victoire_fond", "./assets/victoire.png");
+        this.load.image("victoire_fond", "./assets/victoire_1.png");
     }
 
     create() {

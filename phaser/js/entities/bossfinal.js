@@ -9,7 +9,8 @@ export default class BossFinal extends Enemy {
     // === PARAMÈTRES ===
     this.maxVie = 12;
     this.vie = this.maxVie;
-    this.detectionRange = 400;
+    this.detectionRange = 800;
+    this.combatStarted = false;
     
     // === BARRE DE VIE ===
     this.lifeBar = scene.add.graphics();
@@ -65,12 +66,16 @@ export default class BossFinal extends Enemy {
     this.updateLifeBar();
     this.alert.setPosition(this.x, this.y - this.height);
 
-    // --- vérifie si le joueur est proche ---
-    const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
-    if (distance > this.detectionRange) {
+    // --- vérifie si le combat a commencé ---
+    if (!this.combatStarted) {
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
+        if (distance > this.detectionRange) {
         // joueur trop loin, le boss reste idle
         this.playIdle();
         return;
+        }
+        // joueur proche, le combat commence
+        this.combatStarted = true;
     }
 
     // --- gestion d'attaque ---
@@ -99,6 +104,7 @@ export default class BossFinal extends Enemy {
         this.playIdle();
     }
 }
+
 
 
   // === ANIMATIONS ===
