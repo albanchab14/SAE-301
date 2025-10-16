@@ -496,7 +496,7 @@ export default class Niveau2 extends Basescene {
     
     if (playerTile) {
         const now = this.time.now;
-        if (now - this.lastPicDamage >= 1000) { // 1000ms = 1 seconde
+        if (now - this.lastPicDamage >= 100) {
             fct.lifeManager.retirerPV(this, 1);
             this.player.setTint(0xff0000);
             this.time.delayedCall(300, () => this.player.setTint(0xffffff));

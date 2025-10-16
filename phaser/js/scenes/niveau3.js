@@ -30,7 +30,7 @@ export default class Niveau3 extends Basescene {
   
     create() {
       super.create();
-
+      
       // --- Musique de fond ---
       if (!this.sound.get('map3_fond')) {
         this.mapMusic = this.sound.add('map3_fond', {
@@ -46,14 +46,60 @@ export default class Niveau3 extends Basescene {
         this.mapMusic.play();
       }
 
-      // Map
+      // Map et calques
       this.map3 = this.add.tilemap("carte3");
       const tileset = this.map3.addTilesetImage("map3_tileset", "Phaser_tuilesdejeu3");
+      
       this.calque_background2 = this.map3.createLayer("calque_background_2", tileset);
-      this.calque_background  = this.map3.createLayer("calque_background", tileset);
+      this.calque_background = this.map3.createLayer("calque_background", tileset);
       this.calque_plateformes = this.map3.createLayer("calque_plateformes", tileset);
-      this.calque_echelles    = this.map3.createLayer("calque_echelles", tileset);
-  
+      this.calque_echelles = this.map3.createLayer("calque_echelles", tileset);
+      this.calque_pics = this.map3.createLayer("pic", tileset);
+
+      // Configurer les collisions pour le calque des pics
+      this.calque_pics.setCollisionByExclusion([-1]);
+
+      // Timer pour les dégâts des pics
+      this.time.addEvent({
+          delay: 100,
+          callback: () => {
+              if (this.player) {
+                  const playerTile = this.calque_pics.getTileAtWorldXY(
+                      this.player.x,
+                      this.player.y + this.player.height / 2,
+                      true
+                  );
+                  
+                  if (playerTile && playerTile.index !== -1) {
+                      // Infliger les dégâts
+                      fct.lifeManager.retirerPV(this, 1);
+                      
+                      // Effet visuel
+                      this.player.setTint(0xff0000);
+                      this.time.delayedCall(300, () => this.player.setTint(0xffffff));
+
+                      // Vérifier la mort
+                      if (this.game.config.pointsDeVie <= 0) {
+                          this.physics.pause();
+                          this.game.config.collectedFragments = 0;
+                          this.game.config.collectedCristals = 0;
+                          this.bossNameShown = false;
+                          if (this.miniCristalGreen) {
+                              this.miniCristalGreen.destroy();
+                              this.miniCristalGreen = null;
+                          }
+                          if (this.mapMusic) {
+                              this.mapMusic.stop();
+                          }
+                          this.scene.start("defaite");
+                      }
+                  }
+              }
+          },
+          callbackScope: this,
+          loop: true
+      });
+
       // Collision plateformes
       this.calque_plateformes.setCollisionByProperty({ estSolide: true });
       this.physics.world.setBounds(0, 0, this.map3.widthInPixels, this.map3.heightInPixels);
@@ -65,7 +111,7 @@ export default class Niveau3 extends Basescene {
       this.porte_retour_boss.setVisible(false);
       this.porte_retour_boss.body.enable = false;
       // Joueur (départ : (100, 600), boss : (4250, 800))
-      this.player = this.createPlayer(4250, 800);
+      this.player = this.createPlayer(100, 600);
       this.physics.add.collider(this.player, this.calque_plateformes);
   
       // Caméra
@@ -148,7 +194,7 @@ export default class Niveau3 extends Basescene {
       this.createFragmentsText(this.game.config.collectedFragments, 9);
       this.events.on('wake', () => { // 1 appel au lancement de scène
         this.updateFragmentsText(this.game.config.collectedFragments, 9);
-        this.player.setPosition(4250, 800); // spawn original : (100, 600) / spawn boss : (4250, 800))
+        this.player.setPosition(100, 600); // spawn original : (100, 600) / spawn boss : (4250, 800))
         this.cameras.main.startFollow(this.player);
       });
       
@@ -426,4 +472,38 @@ export default class Niveau3 extends Basescene {
     this.parcheminCircle.setPosition(this.p3.x, this.p3.y - 30);
 
   }
+
+  handlePicDamage() {
+    if (!this.player) return;
+
+    const playerTile = this.calque_pics.getTileAtWorldXY(
+        this.player.x,
+        this.player.y + this.player.height / 2
+    );
+
+    if (playerTile) {
+        // Infliger les dégâts à chaque appel (chaque seconde)
+        fct.lifeManager.retirerPV(this, 1);
+        
+        // Effet visuel à chaque dégât
+        this.player.setTint(0xff0000);
+        this.time.delayedCall(300, () => this.player.setTint(0xffffff));
+
+        // Vérifier la mort
+        if (this.game.config.pointsDeVie <= 0) {
+            this.physics.pause();
+            this.game.config.collectedFragments = 0;
+            this.game.config.collectedCristals = 0;
+            this.bossNameShown = false;
+            if (this.miniCristalGreen) {
+                this.miniCristalGreen.destroy();
+                this.miniCristalGreen = null;
+            }
+            if (this.mapMusic) {
+                this.mapMusic.stop();
+            }
+            this.scene.start("defaite");
+        }
+    }
+}
 }
