@@ -16,6 +16,7 @@ export default class NiveauFinal extends BaseScene {
     // === Boss ===
     this.load.spritesheet("img_bossFinal", "./assets/bossfinal.png", { frameWidth: 72, frameHeight: 72 });
     this.load.audio("bossfinalmusic", "./assets/sfx/bossfinalfight.mp3");
+    this.load.image("bossfinal_projectile", "./assets/bossfinal_projectile.png");
 
     // === Porte ===
     this.load.image("img_porte4", "./assets/door4.png");
@@ -62,44 +63,56 @@ export default class NiveauFinal extends BaseScene {
 
     // === BOSS FINAL ===
     this.enemies = this.add.group();
-    this.bossfinalAlive = true;
     const boss = new BossFinal(this, 1100, 700);
     boss.bossMusic = this.sound.add("bossfinalmusic", { loop: true, volume: 0.5 });
     this.enemies.add(boss);
     this.physics.add.collider(this.enemies, this.calque_plateformes);
 
-    // === ZONE DE DÉCLENCHEMENT DU COMBAT ===
-    this.bossZone = this.add.zone(this.scale.width / 2 +300, this.scale.height / 2 +80, 900, 700);
-    this.physics.world.enable(this.bossZone);
-    this.bossZone.body.setAllowGravity(false);
-    this.bossZone.body.setImmovable(true);
+    // === BARRE DE VIE DU BOSS (cachée au départ) ===
+    const bossBarWidth = 800;
 
-    this.bossNameText = this.add.text(this.scale.width / 2, this.scale.height / 1.2, "LA GARDIENNE CORROMPUE", {
-      font: "48px Arial",
+    this.bossHealthBarBg = this.add.rectangle(this.scale.width / 2, 100, bossBarWidth, 25, 0x000000)
+      .setScrollFactor(0)
+      .setAlpha(0);
+
+    this.bossHealthBar = this.add.rectangle(this.scale.width / 2, 100, bossBarWidth, 20, 0xff0000)
+      .setScrollFactor(0)
+      .setAlpha(0);
+
+
+    // === NOM DU BOSS ===
+    this.bossNameText = this.add.text(this.scale.width / 2, 50, "LA GARDIENNE CORROMPUE", {
+      font: "32px Arial",
       fill: "#ff0000",
       fontStyle: "bold",
       stroke: "#000",
       strokeThickness: 6
-    }).setOrigin(0.5).setScrollFactor(0).setAlpha(0);
+    }).setOrigin(0.5, 0)
+      .setScrollFactor(0)
+      .setAlpha(0);
+
+    // === ZONE DE DÉCLENCHEMENT DU COMBAT ===
+    this.bossZone = this.add.zone(this.scale.width / 2 + 125, this.scale.height / 2 + 80, 1000, 700);
+    this.physics.world.enable(this.bossZone);
+    this.bossZone.body.setAllowGravity(false);
+    this.bossZone.body.setImmovable(true);
 
     this.physics.add.overlap(this.player, this.bossZone, () => {
       if (!this.bossTriggered) {
         this.bossTriggered = true;
         boss.bossMusic.play();
+
+        // Affiche nom et barre de vie
         this.tweens.add({
-          targets: this.bossNameText,
+          targets: [this.bossNameText, this.bossHealthBar, this.bossHealthBarBg],
           alpha: 1,
-          duration: 400,
-          yoyo: true,
-          hold: 1500,
-          onComplete: () => {
-            this.bossNameText.setAlpha(0);
-          }
+          duration: 800,
+          ease: "Power2"
         });
       }
     });
 
-    // === COLLISION JOUEUR ↔ ENNEMI ===
+    // === COLLISIONS JOUEUR ↔ ENNEMIS ===
     this.physics.add.overlap(this.player, this.enemies, (player, enemy) => {
       const now = this.time.now;
       if (!player.lastHit || now - player.lastHit > 1000) {
@@ -110,11 +123,30 @@ export default class NiveauFinal extends BaseScene {
 
         if (this.game.config.pointsDeVie <= 0) {
           this.physics.pause();
-          if (boss.bossMusic.isPlaying) boss.bossMusic.stop();
+          this.game.config.collectedFragments = 0;
+          this.game.config.collectedCristals = 0;
+          if (boss.bossMusic?.isPlaying) boss.bossMusic.stop();
           this.scene.start("defaite");
         }
       }
     });
+
+    // === COLLISIONS JOUEUR ↔ PROJECTILES DU BOSS ===
+    this.physics.add.overlap(this.player, boss.projectilesGroup, (player, projectile) => {
+      if (!projectile.active) return;
+      projectile.destroy();
+      fct.lifeManager.retirerPV(this, 1);
+      player.setTint(0xff0000);
+      this.time.delayedCall(300, () => player.setTint(0xffffff));
+
+      if (this.game.config.pointsDeVie <= 0) {
+        this.physics.pause();
+        if (boss.bossMusic?.isPlaying) boss.bossMusic.stop();
+        this.scene.start("defaite");
+      }
+    });
+
+    this.boss = boss; // pour y accéder dans update()
   }
 
   update() {
@@ -126,5 +158,11 @@ export default class NiveauFinal extends BaseScene {
         enemy.update(this.calque_plateformes, this.player);
       }
     });
+
+    // === Mise à jour de la barre de vie du boss ===
+    if (this.bossTriggered && this.boss && this.boss.active) {
+      const vieRatio = Phaser.Math.Clamp(this.boss.vie / this.boss.vieMax, 0, 1);
+      this.bossHealthBar.width = 800 * vieRatio;
+    }
   }
 }
