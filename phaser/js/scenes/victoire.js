@@ -8,15 +8,21 @@ export default class victoire extends Phaser.Scene {
     }
 
     preload() {
-        this.load.image("victoire_fond", "./assets/victoire_1.png");
+        this.load.image("victoire_totale", "./assets/victoire_1.png");
+        this.load.image("victoire_partielle", "./assets/victoire_1.png");
     }
 
     create() {
+        // NE MARCHE PAS SANS AUCUNE RAISON
+        const fragments = this.game.config.collectedFragments || 0;
 
-        // on place les éléments de fond
-        this.add.image(0, 0, "victoire_fond")
-        .setOrigin(0)
-        .setDepth(0);
+        const backgroundKey = (fragments >= 9)
+            ? "victoire_totale"   // Bonne fin
+            : "victoire_partielle"; // Mauvaise fin
+
+        this.add.image(0, 0, backgroundKey)
+            .setOrigin(0)
+            .setDepth(0);
 
         // Création des boutons
         bouton_retour = this.add.image(645, 650, "menu_bouton").setDepth(1);
