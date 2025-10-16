@@ -618,7 +618,7 @@
    </properties>
    <point/>
   </object>
-  <object id="12" x="3334" y="1726">
+  <object id="12" x="3334" y="1714">
    <properties>
     <property name="type" value="loup"/>
    </properties>
@@ -660,7 +660,7 @@
    </properties>
    <point/>
   </object>
-  <object id="61" x="5315.15" y="1790.91">
+  <object id="61" x="5315.15" y="1777.91">
    <properties>
     <property name="type" value="loup"/>
    </properties>
