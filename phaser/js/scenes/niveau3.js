@@ -32,21 +32,19 @@ export default class Niveau3 extends Basescene {
       super.create();
 
       // --- Musique de fond ---
-      if (!this.mapMusic) {
-        // Première fois qu'on lance la scène
-        this.mapMusic = this.sound.add("map3_fond", { loop: true, volume: 0.1 });
+      if (!this.sound.get('map3_fond')) {
+        this.mapMusic = this.sound.add('map3_fond', {
+            loop: true,
+            volume: 0.1
+        });
+      } else {
+        this.mapMusic = this.sound.get('map3_fond');
+      }
+    
+      // Démarrer la musique si elle n'est pas déjà en cours
+      if (!this.mapMusic.isPlaying) {
         this.mapMusic.play();
       }
-      this.events.on('wake', () => {
-        if (this.mapMusic && !this.mapMusic.isPlaying) {
-          this.mapMusic.play();
-        }
-      });
-      this.events.on('sleep', () => {
-        if (this.mapMusic && this.mapMusic.isPlaying) {
-          this.mapMusic.stop();
-        }
-      });
 
       // Map
       this.map3 = this.add.tilemap("carte3");
@@ -302,7 +300,10 @@ export default class Niveau3 extends Basescene {
               this.miniCristalGreen.destroy();
               this.miniCristalGreen = null;
             }
-            this.mapMusic.stop();
+            // Arrêter la musique
+            if (this.mapMusic) {
+                this.mapMusic.stop();
+            }
             this.scene.start("defaite");
           }
         }
@@ -327,7 +328,10 @@ export default class Niveau3 extends Basescene {
                 this.miniCristalGreen.destroy();
                 this.miniCristalGreen = null;
               }
-              this.mapMusic.stop();
+              // Arrêter la musique
+              if (this.mapMusic) {
+                  this.mapMusic.stop();
+              }
               this.scene.start("defaite");
             }
             projectile.destroy();
