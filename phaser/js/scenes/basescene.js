@@ -54,8 +54,47 @@ export default class Basescene extends Phaser.Scene {
     this.sonHeal = this.sound.add('son_heal');
     this.bossNameShown = false;
     this.parchemins = [];
+
+        // Ajout de la touche M pour le menu pause
+        this.input.keyboard.on('keydown-M', () => {
+            this.handlePause();
+        });
+
+
+
   }
 
+  handlePause() {
+    if (!this.isPaused) {
+        this.isPaused = true;
+        
+        // Mettre en pause tous les sprites et animations
+        this.physics.pause();
+        
+        // Arrêter les animations des ennemis
+        this.children.list.forEach((gameObject) => {
+            if (gameObject.anims) {
+                gameObject.anims.pause();
+            }
+        });
+
+        // Lancer le menu pause
+        this.scene.launch('pause', { previous: this.scene.key });
+        this.scene.pause();
+    }
+}
+
+resumeFromPause() {
+        this.isPaused = false;
+        this.physics.resume();
+        
+        // Reprendre les animations
+        this.children.list.forEach((gameObject) => {
+            if (gameObject.anims) {
+                gameObject.anims.resume();
+            }
+        });
+    }
   // --- Crée le joueur et initialise ses propriétés ---
   createPlayer(x, y) {
     // Sprite
