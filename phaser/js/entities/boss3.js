@@ -7,44 +7,76 @@ export default class Boss3 extends Enemy {
   constructor(scene, x, y) {
     super(scene, x, y, "img_boss3");
 
-    this.vie = 1;
+    // --- VIE ---
+    this.maxVie = 5;
+    this.vie = this.maxVie;
+
     this.setCollideWorldBounds(true);
     this.body.allowGravity = false;
 
-    this.state = "idle"; // idle / active / mort
+    this.state = "idle"; 
     this.phase = 1;
     this.combatStarted = false;
+    this.hasDroppedCrystal = false;
 
-    // Spots fixes pour téléportation
     this.spots = [
       { x: 3700, y: 1209 },
       { x: 4239, y: 1337 },
       { x: 3156, y: 1337 }
     ];
 
-    // Timers
     this.lastAction = 0;
-    this.actionCooldown = 2500; // cooldown général entre actions
+    this.actionCooldown = 2500;
 
     this.batsGroup = scene.add.group();
 
-    // Texte "!" pour avertissement
     this.alert = scene.add.text(this.x, this.y, "!", {
       fontSize: "32px",
       fill: "#ff0000",
       fontStyle: "bold"
     }).setOrigin(0.5, 1).setVisible(false);
 
+    // --- BARRE DE VIE ---
+    this.lifeBar = scene.add.graphics();
+    this.lifeBar.setDepth(10);
+    this.updateLifeBar();
+
     this.play("boss3_idle_right");
   }
 
+  updateLifeBar() {
+    if (!this.lifeBar) return;
+    const barWidth = 80;
+    const barHeight = 10;
+    const x = this.x - barWidth / 2;
+    const y = this.y - this.height - 30;
+
+    this.lifeBar.clear();
+    this.lifeBar.fillStyle(0x333333, 1);
+    this.lifeBar.fillRect(x, y, barWidth, barHeight);
+
+    const percent = Math.max(this.vie / this.maxVie, 0);
+    const color = percent > 0.5 ? 0x06c80f : (percent > 0.2 ? 0xf8c200 : 0xdb222a);
+    this.lifeBar.fillStyle(color, 1);
+    this.lifeBar.fillRect(x, y, barWidth * percent, barHeight);
+  }
+
+  takeDamage(amount = 1) {
+    this.vie = Math.max(0, this.vie - amount);
+    this.updateLifeBar();
+    if (this.vie <= 0) this.destroy();
+  }
+
   update(player, projectilesGroup) {
-    this.projectilesGroup = projectilesGroup;
     if (!this.body || !player || this.vie <= 0) return;
+
+    this.projectilesGroup = projectilesGroup;
     this.alert.setPosition(this.x, this.y - this.height);
+    this.updateLifeBar();
 
     const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
 
+    // 🔹 Début du combat
     if (!this.combatStarted && distance < 400 && this.hasLineOfSightTo(player, this.scene.calque_plateformes)) {
       this.combatStarted = true;
       this.state = "active";
@@ -56,10 +88,8 @@ export default class Boss3 extends Enemy {
     }
 
     this.updatePhase();
-
     const now = this.scene.time.now;
 
-    // ⚡ Garde-fou : si une alerte est active, on ne fait rien
     if (this.state === "alert") {
       this.playIdle();
       return;
@@ -69,7 +99,6 @@ export default class Boss3 extends Enemy {
     if (now - this.lastAction >= this.actionCooldown) {
       this.lastAction = now;
 
-      // Choix de l'action selon la phase
       let actions = [];
       if (this.phase === 1) actions = ["teleport", "shoot"];
       else if (this.phase === 2) actions = ["teleport", "shoot", "spawnBat"];
@@ -77,35 +106,37 @@ export default class Boss3 extends Enemy {
 
       const choice = Phaser.Utils.Array.GetRandom(actions);
 
+      // Vérification de ligne de vue avant toute action offensive
+      if ((choice === "shoot" || choice === "spawnBat" || choice === "spawnBats") &&
+          !this.hasLineOfSightTo(player, this.scene.calque_plateformes)) {
+        this.state = "idle";
+        return;
+      }
+
       if (choice === "teleport") this.preAction(() => this.teleportToNextSpot());
       else if (choice === "shoot") this.preAction(() => {
-        this.state = "shoot"; // ⚡ Indique que le boss attaque
+        this.state = "shoot";
         this.shootProjectile(player);
       });
       else if (choice === "spawnBat") this.preAction(() => {
-        this.state = "shoot"; // ⚡ Indique que le boss attaque
+        this.state = "shoot";
         this.spawnBats(player, 1);
       });
       else if (choice === "spawnBats") this.preAction(() => {
-        this.state = "shoot"; // ⚡ Indique que le boss attaque
+        this.state = "shoot";
         this.spawnBats(player, 2);
       });
-
-      else if (choice === "spawnBat") this.preAction(() => this.spawnBats(player, 1));
-      else if (choice === "spawnBats") this.preAction(() => this.spawnBats(player, 2));
     }
 
-    // ⚡ Animations selon l’état
+    // Animations selon l'état
     if (this.state === "idle" || this.state === "alert") this.playIdle();
     else if (this.state === "shoot") this.playAttack();
-    else this.playIdle();
   }
 
-  // Méthodes pour simplifier les animations
   playIdle() {
     if (this.direction === 1) this.anims.play("boss3_idle_right", true);
     else this.anims.play("boss3_idle_left", true);
-    this.state = "idle"; // assure que l'état idle est appliqué
+    this.state = "idle";
   }
 
   playAttack() {
@@ -113,9 +144,8 @@ export default class Boss3 extends Enemy {
     else this.anims.play("boss3_attack_left", true);
   }
 
-
   updatePhase() {
-    const hpPercent = this.vie / 10;
+    const hpPercent = this.vie / this.maxVie;
     if (hpPercent > 0.7) this.phase = 1;
     else if (hpPercent > 0.4) this.phase = 2;
     else this.phase = 3;
@@ -126,7 +156,7 @@ export default class Boss3 extends Enemy {
     this.state = "alert";
     this.alert.setVisible(true);
 
-    this.scene.time.delayedCall(600, () => { // 600 ms d’avertissement
+    this.scene.time.delayedCall(600, () => {
       if (!this.body) return;
       this.alert.setVisible(false);
       this.state = "active";
@@ -137,13 +167,11 @@ export default class Boss3 extends Enemy {
   teleportToNextSpot() {
     const currentIndex = this.spots.findIndex(s => s.x === this.x && s.y === this.y);
     let nextIndex;
-    do {
-      nextIndex = Phaser.Math.Between(0, this.spots.length - 1);
-    } while (nextIndex === currentIndex);
+    do { nextIndex = Phaser.Math.Between(0, this.spots.length - 1); } 
+    while (nextIndex === currentIndex);
 
     const nextSpot = this.spots[nextIndex];
     this.setPosition(nextSpot.x, nextSpot.y);
-    this.baseY = nextSpot.y;
 
     const puff = this.scene.add.particles(this.x, this.y, "img_bat", {
       speed: { min: -20, max: 20 },
@@ -153,11 +181,7 @@ export default class Boss3 extends Enemy {
     });
     this.scene.time.delayedCall(400, () => puff.destroy());
 
-    this.scene.tweens.add({
-      targets: this,
-      alpha: { from: 0, to: 1 },
-      duration: 300,
-    });
+    this.scene.tweens.add({ targets: this, alpha: { from: 0, to: 1 }, duration: 300 });
   }
 
   spawnBats(player, count = 1) {
@@ -176,14 +200,8 @@ export default class Boss3 extends Enemy {
       bat.state = "patrol";
 
       bat.setAlpha(0);
-      this.scene.tweens.add({
-        targets: bat,
-        alpha: { from: 0, to: 1 },
-        duration: 300
-      });
-      this.scene.time.delayedCall(500, () => {
-        this.state = "idle"; // revient à idle après 500ms
-      });
+      this.scene.tweens.add({ targets: bat, alpha: { from: 0, to: 1 }, duration: 300 });
+      this.scene.time.delayedCall(500, () => this.state = "idle");
     }
   }
 
@@ -195,21 +213,17 @@ export default class Boss3 extends Enemy {
     projectile.body.setAllowGravity(false);
     projectile.setCollideWorldBounds(false);
 
-    const dx = player.x - projectile.x;
-    const dy = player.y - projectile.y;
-    const angle = Math.atan2(dy, dx);
-
+    const angle = Phaser.Math.Angle.Between(projectile.x, projectile.y, player.x, player.y);
     const speed = this.phase === 3 ? 300 : 220;
-    projectile.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
 
+    projectile.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
     projectile.setRotation(angle);
 
-    const width = 43;
-    const height = 14;
+    const width = 43, height = 14;
     const rotatedWidth = Math.abs(width * Math.cos(angle)) + Math.abs(height * Math.sin(angle));
     const rotatedHeight = Math.abs(width * Math.sin(angle)) + Math.abs(height * Math.cos(angle));
     projectile.body.setSize(rotatedWidth, rotatedHeight);
-    projectile.body.setOffset((width - rotatedWidth) / 2, (height - rotatedHeight) / 2);
+    projectile.body.setOffset((width - rotatedWidth)/2, (height - rotatedHeight)/2);
 
     this.scene.physics.add.overlap(projectile, player, () => {
       if (!projectile.active) return;
@@ -217,13 +231,10 @@ export default class Boss3 extends Enemy {
       fct.lifeManager.retirerPV(this.scene, 1);
       console.log("💥 Le joueur est touché par un projectile !");
     });
-    this.scene.time.delayedCall(500, () => {
-      this.state = "idle"; // revient à idle après 500ms
-    });
-    this.scene.time.delayedCall(5000, () => {
-      if (projectile.active) projectile.destroy();
-    });
-    
+
+    this.scene.time.delayedCall(500, () => this.state = "idle");
+    this.scene.time.delayedCall(5000, () => { if (projectile.active) projectile.destroy(); });
+
     console.log("🔮 Projectile tiré !");
   }
 
@@ -241,20 +252,23 @@ export default class Boss3 extends Enemy {
       fct.lifeManager.heal(scene, scene.maxVies);
       if (!scene.game.config.crystals) scene.game.config.crystals = {};
       scene.game.config.crystals.violet = true;
-      console.log ("💎 Cristal violet récupéré !");
+      console.log("💎 Cristal violet récupéré !");
       if (scene.sonCristal) scene.sonCristal.play({ volume: 1 });
       cristal.destroy();
     });
   }
 
   destroy(fromScene) {
-    if (this.activeTimers) {
-      this.activeTimers.forEach(t => t.remove(false));
-      this.activeTimers = [];
+    if (this.activeTimers) this.activeTimers.forEach(t => t.remove(false));
+    if (this.alert) this.alert.destroy();
+    
+     if (this.lifeBar) {
+        this.lifeBar.destroy();
+        this.lifeBar = null;
     }
 
-    if (this.alert) this.alert.destroy();
     this.dropItem();
+
     if (this.scene && this.scene.porte_retour_boss?.body) {
       this.scene.porte_retour_boss.setVisible(true);
       this.scene.porte_retour_boss.body.enable = true;
@@ -265,10 +279,10 @@ export default class Boss3 extends Enemy {
       this.bossMusic.destroy();
       this.bossMusic = null;
     }
-    if (this.scene && this.scene.mapMusic) {
-      this.scene.mapMusic.resume();
-    }
-    this.boss2Alive = false;
+
+    if (this.scene && this.scene.mapMusic) this.scene.mapMusic.resume();
+
+    this.boss3Alive = false;
     this.dropItem();
     super.destroy(fromScene);
   }
