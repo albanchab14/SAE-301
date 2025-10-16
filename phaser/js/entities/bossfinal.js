@@ -275,20 +275,34 @@ export default class BossFinal extends Enemy {
   // === DESTRUCTION ===
   destroy(fromScene) {
     if (this.activeTimers) {
-      this.activeTimers.forEach(t => t.remove());
-      this.activeTimers = [];
+        this.activeTimers.forEach(t => t.remove());
+        this.activeTimers = [];
     }
     if (this.alert) this.alert.destroy();
     if (this.lifeBar) this.lifeBar.destroy();
 
     if (this.bossMusic?.isPlaying) this.bossMusic.stop();
+
     if (this.scene?.porte_retour_boss?.body) {
-      this.scene.porte_retour_boss.setVisible(true);
-      this.scene.porte_retour_boss.body.enable = true;
+        this.scene.porte_retour_boss.setVisible(true);
+        this.scene.porte_retour_boss.body.enable = true;
     }
 
     if (this.scene?.mapMusic) this.scene.mapMusic.resume();
 
+    if (this.scene?.bossNameText) {
+      this.scene.bossNameText.destroy();
+    }
+    // ✅ Détruire ou cacher la barre de vie longue
+    if (this.scene?.bossHealthBar) {
+        this.scene.bossHealthBar.destroy();
+        this.scene.bossHealthBar = null;
+    }
+    if (this.scene?.bossHealthBarBg) {
+        this.scene.bossHealthBarBg.destroy();
+        this.scene.bossHealthBarBg = null;
+    }
     super.destroy(fromScene);
-  }
+    }
+
 }

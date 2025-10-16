@@ -14,7 +14,7 @@ export default class NiveauFinal extends BaseScene {
     this.load.tilemapTiledJSON("finalmap", "./assets/finalmap.json");
 
     // === Boss ===
-    this.load.spritesheet("img_bossFinal", "./assets/bossfinal.png", { frameWidth: 72, frameHeight: 72 });
+    this.load.spritesheet("img_bossFinal", "./assets/bossfinal.png", { frameWidth: 49, frameHeight: 72 });
     this.load.audio("bossfinalmusic", "./assets/sfx/bossfinalfight.mp3");
     this.load.image("bossfinal_projectile", "./assets/bossfinal_projectile.png");
 
@@ -69,7 +69,8 @@ export default class NiveauFinal extends BaseScene {
     const boss = new BossFinal(this, 1100, 700);
     boss.bossMusic = this.sound.add("bossfinalmusic", { loop: true, volume: 0.2 });
     this.enemies.add(boss);
-    this.physics.add.collider(this.enemies, this.calque_plateformes); 
+    this.physics.add.collider(this.enemies, this.calque_plateformes);
+    boss.setScale(2);
 
 
     // === NOM DU BOSS ===
@@ -102,8 +103,8 @@ if (bossObject) {
 
   // --- TEXTE DU BOSS ---
   this.bossNameText = this.add.text(
-    this.scale.width / 1.25,
-    this.scale.height / 1.1,
+    this.scale.width / 2,
+    50,
     bossObject.properties?.find(p => p.name === "bossname")?.value || "LA GARDIENNE CORROMPUE",
     {
       font: "64px Arial",
@@ -112,7 +113,38 @@ if (bossObject) {
       stroke: "#000",
       strokeThickness: 6
     }
-  ).setOrigin(0.5).setScrollFactor(0).setAlpha(0);
+  )
+  .setOrigin(0.5, 0)
+  .setScrollFactor(0)
+  .setAlpha(0);
+
+  // Barre de vie du boss (sous le nom)
+  const barWidth = 600;
+  const barHeight = 24;
+
+  this.bossHealthBarBg = this.add.rectangle(
+    this.scale.width / 2,
+    this.bossNameText.y + 80,
+    barWidth,
+    barHeight,
+    0x222222
+  )
+  .setOrigin(0.5, 0.5)
+  .setScrollFactor(0)
+  .setAlpha(0);  // cachée au départ
+
+  this.bossHealthBar = this.add.rectangle(
+    this.scale.width / 2 - barWidth / 2,
+    this.bossNameText.y + 80,
+    barWidth,
+    barHeight,
+    0x06c80f
+  )
+  .setOrigin(0, 0.5)
+  .setScrollFactor(0)
+  .setAlpha(0);  // cachée au départ
+
+
 
   // --- Détection de l’entrée du joueur ---
   this.physics.add.overlap(this.player, this.bossZone, () => {
@@ -125,14 +157,27 @@ if (bossObject) {
         if (this.mapMusic?.isPlaying) this.mapMusic.pause();
       }
 
-      // Apparition du nom
-      this.bossNameText.setAlpha(1);
+      // Apparition stylée du nom du boss
+      this.bossNameText.setAlpha(0);
+      this.bossNameText.setScale(0.5);
+
+      // Mettre aussi la barre invisible et petite
+      this.bossHealthBar.setAlpha(0);
+      this.bossHealthBarBg.setAlpha(0);
+
       this.tweens.add({
-        targets: this.bossNameText,
-        alpha: 0,
-        duration: 3000,
-        delay: 1500
+        targets: [this.bossNameText, this.bossHealthBar, this.bossHealthBarBg],
+        alpha: 1,
+        scaleX: 1, // pour la barre, elle se “déroule”
+        scaleY: 1, // pour le nom
+        ease: "Back.Out",
+        duration: 1200,
       });
+
+      
+      // Petit tremblement de caméra pour l'effet dramatique
+      this.cameras.main.shake(400, 0.005);
+
 
       // Activation du boss
       boss.setActive(true);
@@ -199,10 +244,16 @@ if (bossObject) {
 
 
 
-    // === Mise à jour de la barre de vie du boss ===
-    if (this.bossTriggered && this.boss && this.boss.active) {
-      const vieRatio = Phaser.Math.Clamp(this.boss.vie / this.boss.vieMax, 0, 1);
-      this.bossHealthBar.width = 800 * vieRatio
+    if (this.boss && this.boss.active) {
+      const ratio = Phaser.Math.Clamp(this.boss.vie / this.boss.maxVie, 0, 1);
+      this.bossHealthBar.width = 600 * ratio;  // correspond à la largeur max
+      // changement de couleur selon les PV
+      let color;
+      if (ratio > 0.5) color = 0x06c80f;       // vert
+      else if (ratio > 0.2) color = 0xf8c200;  // orange
+      else color = 0xdb222a;                   // rouge
+      this.bossHealthBar.fillColor = color;
     }
+
   }
 }

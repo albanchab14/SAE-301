@@ -33,7 +33,7 @@ var config = {
       gravity: {
         y: 550 // gravité verticale : acceleration ddes corps en pixels par seconde
       },
-      debug: false // permet de voir les hitbox et les vecteurs d'acceleration quand mis à true
+      debug: true // permet de voir les hitbox et les vecteurs d'acceleration quand mis à true
     }
   },
   scene: [basescene, menu, synopsis, settings, credits, selection, Niveau1, Niveau2, Niveau3, NiveauFinal, defaite, victoire, PauseScene], // liste des scènes du jeu
