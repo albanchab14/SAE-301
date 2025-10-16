@@ -73,11 +73,14 @@ export default class NiveauFinal extends BaseScene {
 
     this.bossHealthBarBg = this.add.rectangle(this.scale.width / 2, 100, bossBarWidth, 25, 0x000000)
       .setScrollFactor(0)
+      .setOrigin(0.5, 0.5)
       .setAlpha(0);
 
     this.bossHealthBar = this.add.rectangle(this.scale.width / 2, 100, bossBarWidth, 20, 0xff0000)
       .setScrollFactor(0)
+      .setOrigin(0.5, 0.5)
       .setAlpha(0);
+
 
 
     // === NOM DU BOSS ===
@@ -92,6 +95,9 @@ export default class NiveauFinal extends BaseScene {
       .setAlpha(0);
 
     // === ZONE DE DÉCLENCHEMENT DU COMBAT ===
+    boss.setActive(false);
+    boss.setVisible(false);
+
     this.bossZone = this.add.zone(this.scale.width / 2 + 125, this.scale.height / 2 + 80, 1000, 700);
     this.physics.world.enable(this.bossZone);
     this.bossZone.body.setAllowGravity(false);
@@ -100,6 +106,8 @@ export default class NiveauFinal extends BaseScene {
     this.physics.add.overlap(this.player, this.bossZone, () => {
       if (!this.bossTriggered) {
         this.bossTriggered = true;
+        boss.setActive(true);
+        boss.setVisible(true);
         boss.bossMusic.play();
 
         // Affiche nom et barre de vie
@@ -154,15 +162,17 @@ export default class NiveauFinal extends BaseScene {
     this.handleAttack(this.enemies);
 
     this.enemies.children.iterate(enemy => {
-      if (enemy instanceof BossFinal) {
+      if (enemy.active && enemy instanceof BossFinal) {
         enemy.update(this.calque_plateformes, this.player);
       }
     });
 
+
+
     // === Mise à jour de la barre de vie du boss ===
     if (this.bossTriggered && this.boss && this.boss.active) {
       const vieRatio = Phaser.Math.Clamp(this.boss.vie / this.boss.vieMax, 0, 1);
-      this.bossHealthBar.width = 800 * vieRatio;
+      this.bossHealthBar.width = 800 * vieRatio
     }
   }
 }
