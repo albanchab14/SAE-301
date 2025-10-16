@@ -6,10 +6,12 @@ export default class BossFinal extends Enemy {
   constructor(scene, x, y) {
     super(scene, x, y, "img_bossFinal", 0);
 
-    // === PARAMÈTRES VIE ===
+    // === PARAMÈTRES ===
     this.maxVie = 12;
     this.vie = this.maxVie;
-
+    this.detectionRange = 800;
+    this.combatStarted = false;
+    
     // === BARRE DE VIE ===
     this.lifeBar = scene.add.graphics();
     this.lifeBar.setDepth(10);
@@ -59,17 +61,30 @@ export default class BossFinal extends Enemy {
 
   // === UPDATE ===
   update(platformLayer, player) {
-    if (!this.body) return;
+    if (!this.body || !player) return;
 
     this.updateLifeBar();
     this.alert.setPosition(this.x, this.y - this.height);
 
+    // --- vérifie si le combat a commencé ---
+    if (!this.combatStarted) {
+        const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
+        if (distance > this.detectionRange) {
+        // joueur trop loin, le boss reste idle
+        this.playIdle();
+        return;
+        }
+        // joueur proche, le combat commence
+        this.combatStarted = true;
+    }
+
+    // --- gestion d'attaque ---
     if (this.isAttacking) return;
 
     // --- gestion de phase ---
     if (this.vie <= this.maxVie / 2 && this.phase === 1) {
-      this.phase = 2;
-      this.attackCooldown = 2000;
+        this.phase = 2;
+        this.attackCooldown = 2000;
     }
 
     // --- orientation ---
@@ -78,17 +93,19 @@ export default class BossFinal extends Enemy {
     // --- attaquer périodiquement ---
     const now = this.scene.time.now;
     if (now - this.lastAttack > this.attackCooldown) {
-      this.alert.setVisible(true);
-      const timer = this.scene.time.delayedCall(600, () => {
+        this.alert.setVisible(true);
+        const timer = this.scene.time.delayedCall(600, () => {
         this.alert.setVisible(false);
         this.chooseAttack(player);
-      });
-      this.activeTimers.push(timer);
-      this.lastAttack = now;
+        });
+        this.activeTimers.push(timer);
+        this.lastAttack = now;
     } else {
-      this.playIdle();
+        this.playIdle();
     }
-  }
+}
+
+
 
   // === ANIMATIONS ===
   playIdle() {
