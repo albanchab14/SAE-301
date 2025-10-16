@@ -45,13 +45,14 @@ export default class PauseScene extends Phaser.Scene {
         .on('pointerover', () => this.selectButton(1))
         .on('pointerdown', () => this.handleQuit());
 
-        // Touches de navigation
-        this.cursors = this.input.keyboard.createCursorKeys();
+        // Nettoyage des anciens événements clavier s'ils existent
+        this.input.keyboard.removeAllKeys(true);
         
-        // Touche I pour valider
+        // Réinitialisation des touches
+        this.cursors = this.input.keyboard.createCursorKeys();
         this.keyI = this.input.keyboard.addKey('I');
         
-        // Gestion des événements clavier
+        // Réinitialisation des événements clavier
         this.input.keyboard.on('keydown-UP', () => this.changeSelection(-1));
         this.input.keyboard.on('keydown-DOWN', () => this.changeSelection(1));
         this.input.keyboard.on('keydown-I', () => this.validateSelection());
@@ -93,19 +94,16 @@ export default class PauseScene extends Phaser.Scene {
     }
 
     handleQuit() {
-        // Arrêter la scène de jeu en cours
         if (this.previousScene) {
-            // Arrêter toutes les musiques en cours
-            this.sound.stopAll();
-            
-            // Arrêter la scène précédente
-            this.scene.stop(this.previousScene);
+            const previousScene = this.scene.get(this.previousScene);
+            if (previousScene) {
+                previousScene.isPaused = false;  // Réinitialiser l'état de pause
+                this.sound.stopAll();
+                this.scene.stop(this.previousScene);
+            }
         }
-
-        // Arrêter la scène de pause
-        this.scene.stop(); 
-
-        // Démarrer le menu
+        
+        this.scene.stop();
         this.scene.start('menu');
     }
 }
