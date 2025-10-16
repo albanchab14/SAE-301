@@ -55,9 +55,17 @@ export default class Basescene extends Phaser.Scene {
     this.bossNameShown = false;
     this.parchemins = [];
 
-        // Ajout de la touche M pour le menu pause
+        // Réinitialiser la touche M
+        this.keyM = this.input.keyboard.addKey('M');
+        this.isPaused = false;
+
+        // Utiliser un événement unique pour M
         this.input.keyboard.on('keydown-M', () => {
-            this.handlePause();
+            if (!this.isPaused) {
+                this.isPaused = true;
+                this.scene.pause();
+                this.scene.launch('pause', { previous: this.scene.key });
+            }
         });
 
 
