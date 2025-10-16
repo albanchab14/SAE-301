@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="140" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="35">
+<map version="1.10" tiledversion="1.11.2" orientation="orthogonal" renderorder="right-down" width="140" height="50" tilewidth="32" tileheight="32" infinite="0" nextlayerid="7" nextobjectid="36">
  <editorsettings>
   <export target="map3.json" format="json"/>
  </editorsettings>
@@ -1280,7 +1280,7 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,172,173,174,0,167,0,0,0,0,167,0,172,173,174,0,0,0,0,0,0,0,2684354760,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,187,188,189,0,182,0,0,0,0,182,0,187,188,189,0,0,0,0,0,0,0,2684354761,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,175,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,148,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,175,175,175,0,0,0,0,0,0,0,157,158,159,157,158,159,157,158,159,0,0,0,184,185,186,0,163,0,0,0,0,0,0,0,0,176,177,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,133,131,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,177,176,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,176,177,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,175,175,175,0,0,0,0,0,0,0,157,158,159,157,158,159,157,158,159,0,0,0,184,185,186,0,163,0,0,0,0,0,0,0,0,176,177,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,133,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,177,176,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,176,177,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
@@ -1455,19 +1455,19 @@
    </properties>
    <point/>
   </object>
-  <object id="11" x="3534.67" y="501.333">
+  <object id="11" x="3534.67" y="489.333">
    <properties>
     <property name="type" value="skeleton"/>
    </properties>
    <point/>
   </object>
-  <object id="12" x="4282" y="374">
+  <object id="12" x="4282" y="363">
    <properties>
     <property name="type" value="skeleton"/>
    </properties>
    <point/>
   </object>
-  <object id="13" x="2770" y="1336">
+  <object id="13" x="2770" y="1327.67">
    <properties>
     <property name="type" value="skeleton"/>
    </properties>
@@ -1479,19 +1479,19 @@
    </properties>
    <point/>
   </object>
-  <object id="15" x="1029" y="1397">
+  <object id="15" x="1029" y="1390">
    <properties>
     <property name="type" value="skeleton"/>
    </properties>
    <point/>
   </object>
-  <object id="16" x="294" y="943">
+  <object id="16" x="294" y="940">
    <properties>
     <property name="type" value="bat"/>
    </properties>
    <point/>
   </object>
-  <object id="17" x="569" y="1075">
+  <object id="17" x="569" y="1073">
    <properties>
     <property name="type" value="bat"/>
    </properties>
@@ -1509,7 +1509,7 @@
    </properties>
    <point/>
   </object>
-  <object id="20" x="2094" y="843">
+  <object id="20" x="2094" y="842">
    <properties>
     <property name="type" value="bat"/>
    </properties>
@@ -1521,19 +1521,19 @@
    </properties>
    <point/>
   </object>
-  <object id="22" x="3092" y="924">
+  <object id="22" x="3092" y="914">
    <properties>
     <property name="type" value="skeleton"/>
    </properties>
    <point/>
   </object>
-  <object id="23" x="4379" y="922">
+  <object id="23" x="4379" y="919">
    <properties>
     <property name="type" value="bat"/>
    </properties>
    <point/>
   </object>
-  <object id="24" x="3936" y="570">
+  <object id="24" x="3936" y="551">
    <properties>
     <property name="type" value="skeleton"/>
    </properties>
@@ -1551,31 +1551,31 @@
    </properties>
    <point/>
   </object>
-  <object id="27" x="2994" y="216">
+  <object id="27" x="2994" y="205">
    <properties>
     <property name="type" value="bat"/>
    </properties>
    <point/>
   </object>
-  <object id="28" x="4169" y="275">
+  <object id="28" x="4169" y="267">
    <properties>
     <property name="type" value="bat"/>
    </properties>
    <point/>
   </object>
-  <object id="29" x="2367" y="1433">
+  <object id="29" x="2367" y="1425">
    <properties>
     <property name="type" value="bat"/>
    </properties>
    <point/>
   </object>
-  <object id="30" x="2015" y="988">
+  <object id="30" x="2015" y="983">
    <properties>
     <property name="type" value="skeleton"/>
    </properties>
    <point/>
   </object>
-  <object id="31" x="340" y="1556">
+  <object id="31" x="532" y="1552">
    <properties>
     <property name="type" value="skeleton"/>
    </properties>
@@ -1587,13 +1587,13 @@
    </properties>
    <point/>
   </object>
-  <object id="33" x="2970" y="1548">
+  <object id="34" x="4397.33" y="1553.33">
    <properties>
     <property name="type" value="skeleton"/>
    </properties>
    <point/>
   </object>
-  <object id="34" x="4397.33" y="1553.33">
+  <object id="35" x="2961.33" y="1552">
    <properties>
     <property name="type" value="skeleton"/>
    </properties>
