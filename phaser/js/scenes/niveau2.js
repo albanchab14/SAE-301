@@ -34,7 +34,6 @@ export default class Niveau2 extends Basescene {
     this.load.spritesheet("fireball", "./assets/fireball.png", { frameWidth: 48, frameHeight: 24 });
     this.load.audio("map2_fond", "./assets/sfx/map2_fond.mp3");
     this.load.audio("boss2music", "./assets/sfx/boss2fight.mp3");
-    // this.load.audio("boss2_shoot", "./assets/sfx/fireball.mp3");
 
   }
 
