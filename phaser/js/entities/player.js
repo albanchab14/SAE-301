@@ -26,16 +26,6 @@ export default class Player extends Phaser.Physics.Arcade.Sprite {
     // Gestion animations à définir dans la scène ou ici
   }
 
-  get lives() {
-    // récupère la valeur globale dans la config du jeu
-    return this.scene.game.config.pointsDeVie;
-  }
-
-  set lives(value) {
-    // limite la valeur entre 0 et maxLife
-    this.scene.game.config.pointsDeVie = Phaser.Math.Clamp(value, 0, this.maxLives);
-  }
-
   update(cursors, attackKey) {
     if (this.isAttacking) return;
 

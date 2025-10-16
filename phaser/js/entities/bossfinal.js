@@ -11,7 +11,7 @@ export default class BossFinal extends Enemy {
     this.vie = this.maxVie;
     this.detectionRange = 800;
     this.combatStarted = false;
-    
+
     // === BARRE DE VIE ===
     this.lifeBar = scene.add.graphics();
     this.lifeBar.setDepth(10);
@@ -66,101 +66,190 @@ export default class BossFinal extends Enemy {
     this.updateLifeBar();
     this.alert.setPosition(this.x, this.y - this.height);
 
-    // --- vérifie si le combat a commencé ---
     if (!this.combatStarted) {
-        const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
-        if (distance > this.detectionRange) {
-        // joueur trop loin, le boss reste idle
+      const distance = Phaser.Math.Distance.Between(this.x, this.y, player.x, player.y);
+      if (distance > this.detectionRange) {
         this.playIdle();
         return;
-        }
-        // joueur proche, le combat commence
-        this.combatStarted = true;
+      }
+      this.combatStarted = true;
     }
 
-    // --- gestion d'attaque ---
     if (this.isAttacking) return;
 
-    // --- gestion de phase ---
+    // Phase switch
     if (this.vie <= this.maxVie / 2 && this.phase === 1) {
-        this.phase = 2;
-        this.attackCooldown = 2000;
+      this.phase = 2;
+      this.attackCooldown = 2000;
     }
 
-    // --- orientation ---
     this.direction = player.x > this.x ? 1 : -1;
 
-    // --- attaquer périodiquement ---
     const now = this.scene.time.now;
     if (now - this.lastAttack > this.attackCooldown) {
-        this.alert.setVisible(true);
-        const timer = this.scene.time.delayedCall(600, () => {
+      this.alert.setVisible(true);
+      let timer = this.scene.time.delayedCall(600, () => {
         this.alert.setVisible(false);
         this.chooseAttack(player);
-        });
-        this.activeTimers.push(timer);
-        this.lastAttack = now;
+      });
+      this.activeTimers.push(timer);
+      this.lastAttack = now;
     } else {
-        this.playIdle();
+      this.playIdle();
     }
-}
-
-
+  }
 
   // === ANIMATIONS ===
   playIdle() {
-    if (this.direction === 1)
-      this.anims.play("bossfinal_idle_right", true);
-    else
-      this.anims.play("bossfinal_idle_left", true);
+    if (this.direction === 1) this.anims.play("bossfinal_idle_right", true);
+    else this.anims.play("bossfinal_idle_left", true);
   }
 
   playAttack() {
-    if (this.direction === 1)
-      this.anims.play("bossfinal_attack_right", true);
-    else
-      this.anims.play("bossfinal_attack_left", true);
+    if (this.direction === 1) this.anims.play("bossfinal_attack_right", true);
+    else this.anims.play("bossfinal_attack_left", true);
   }
 
-  // === SYSTÈME D’ATTAQUES SIMPLE ===
+  // === CHOIX D’ATTAQUE PAR PHASE ===
   chooseAttack(player) {
     this.isAttacking = true;
-    const attacks = ["projectile", "smash", "fireRain"];
+
+    let attacks;
+    if (this.phase === 1) attacks = ["projectile", "smash", "teleport", "fireRain"];
+    else attacks = ["projectileAir", "smash", "teleport", "fireRainIntense"];
+
     const chosen = Phaser.Utils.Array.GetRandom(attacks);
 
     switch (chosen) {
       case "projectile": this.attackProjectile(player); break;
+      case "projectileAir": this.attackProjectileAir(player); break;
       case "smash": this.attackSmash(); break;
+      case "teleport": this.attackTeleport(player); break;
       case "fireRain": this.attackFireRain(); break;
+      case "fireRainIntense": this.attackFireRainIntense(); break;
     }
   }
 
+  // === ATTAQUES ===
   attackProjectile(player) {
     this.playAttack();
-    const projectile = this.projectilesGroup.create(this.x, this.y - 20, "bossfinal_projectile");
-    projectile.body.setAllowGravity(false);
-    const dx = player.x - this.x;
-    const dy = player.y - this.y;
-    const angle = Math.atan2(dy, dx);
-    const speed = 300;
-    projectile.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
-    projectile.setRotation(angle);
+    let shots = 0;
+    const maxShots = 3;
 
-    const timer = this.scene.time.delayedCall(4000, () => {
-      if (projectile.active) projectile.destroy();
-      this.isAttacking = false;
+    let timer = this.scene.time.addEvent({
+      delay: 2000,
+      repeat: maxShots - 1,
+      callback: () => {
+        if (!this.active) return;
+        let projectile = this.projectilesGroup.create(this.x, this.y - 20, "bossfinal_projectile");
+        projectile.body.setAllowGravity(false);
+        const dx = player.x - this.x;
+        const dy = player.y - this.y;
+        const angle = Math.atan2(dy, dx);
+        const speed = 300;
+        projectile.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
+        projectile.setRotation(angle);
+
+        shots++;
+        if (shots >= maxShots) this.isAttacking = false;
+      }
     });
     this.activeTimers.push(timer);
   }
+
+  attackProjectileAir(player) {
+  this.playAttack();
+  this.body.setAllowGravity(false);
+  const targetY = this.y - 500;
+
+  this.scene.tweens.add({
+    targets: this,
+    y: targetY,
+    duration: 300,
+    ease: "Power2",
+    onComplete: () => {
+      let shots = 0;
+      const maxShots = 3;
+      let timer = this.scene.time.addEvent({
+        delay: 1000,
+        repeat: maxShots - 1,
+        callback: () => {
+          if (!this.active) return;
+
+          let projectile = this.projectilesGroup.create(this.x, this.y, "bossfinal_projectile");
+          projectile.body.setAllowGravity(false);
+
+          const dx = player.x - this.x;
+          const dy = player.y - this.y;
+          const angle = Math.atan2(dy, dx);
+          const speed = 400;
+          projectile.setVelocity(Math.cos(angle) * speed, Math.sin(angle) * speed);
+          projectile.setRotation(angle);
+
+          shots++;
+          if (shots >= maxShots) {
+            // Remet la gravité et un mini-cooldown avant la prochaine attaque
+            this.body.setAllowGravity(true);
+            this.scene.time.delayedCall(500, () => {
+              this.isAttacking = false;
+            });
+          }
+        }
+      });
+      this.activeTimers.push(timer);
+    }
+  });
+}
+
 
   attackSmash() {
     this.playAttack();
     this.setVelocityY(-400);
-    const timer = this.scene.time.delayedCall(1200, () => {
+    let timer = this.scene.time.delayedCall(500, () => {
       this.createShockwave();
       this.isAttacking = false;
     });
     this.activeTimers.push(timer);
+  }
+
+  attackTeleport(player) {
+    let newX = Phaser.Math.Between(100, this.scene.map4.widthInPixels - 100);
+    const minDistance = 300;
+    if (Math.abs(newX - player.x) < minDistance) {
+      newX += newX > player.x ? minDistance : -minDistance;
+    }
+    this.setX(newX);
+    this.isAttacking = false;
+  }
+
+  attackFireRain() {
+    const nb = 3; // phase 1
+    for (let i = 0; i < nb; i++) {
+      let timer = this.scene.time.delayedCall(i * 1000, () => {
+        let x = Phaser.Math.Between(100, this.scene.map4.widthInPixels - 100);
+        let fire = this.projectilesGroup.create(x, this.y - 500, "bossfinal_projectile");
+        fire.body.setAllowGravity(true);
+        fire.setVelocityY(300);
+        if (i === nb - 1) this.isAttacking = false;
+      });
+      this.activeTimers.push(timer);
+    }
+  }
+
+  attackFireRainIntense() {
+    const nb = 5; // phase 2
+    for (let i = 0; i < nb; i++) {
+      let timer = this.scene.time.delayedCall(i * 500, () => {
+        for (let j = 0; j < 2; j++) {
+          let x = Phaser.Math.Between(100, this.scene.map4.widthInPixels - 100);
+          let fire = this.projectilesGroup.create(x, this.y - 500, "bossfinal_projectile");
+          fire.body.setAllowGravity(true);
+          fire.setVelocityY(350);
+        }
+        if (i === nb - 1) this.isAttacking = false;
+      });
+      this.activeTimers.push(timer);
+    }
   }
 
   createShockwave() {
@@ -173,20 +262,6 @@ export default class BossFinal extends Enemy {
     }
   }
 
-  attackFireRain() {
-    const nb = this.phase === 1 ? 3 : 6;
-    for (let i = 0; i < nb; i++) {
-      const timer = this.scene.time.delayedCall(i * 600, () => {
-        const x = Phaser.Math.Between(100, this.scene.map4.widthInPixels - 100);
-        const fire = this.projectilesGroup.create(x, this.y - 500, "bossfinal_projectile");
-        fire.body.setAllowGravity(true);
-        fire.setVelocityY(300);
-        if (i === nb - 1) this.isAttacking = false;
-      });
-      this.activeTimers.push(timer);
-    }
-  }
-
   // === DÉGÂTS ===
   takeDamage(amount = 1) {
     this.vie = Math.max(0, this.vie - amount);
@@ -194,9 +269,7 @@ export default class BossFinal extends Enemy {
     this.scene.time.delayedCall(200, () => this.clearTint());
     this.updateLifeBar();
 
-    if (this.vie <= 0) {
-      this.destroy();
-    }
+    if (this.vie <= 0) this.destroy();
   }
 
   // === DESTRUCTION ===
@@ -208,14 +281,12 @@ export default class BossFinal extends Enemy {
     if (this.alert) this.alert.destroy();
     if (this.lifeBar) this.lifeBar.destroy();
 
-    // === Stop musique et réafficher porte ===
     if (this.bossMusic?.isPlaying) this.bossMusic.stop();
     if (this.scene?.porte_retour_boss?.body) {
       this.scene.porte_retour_boss.setVisible(true);
       this.scene.porte_retour_boss.body.enable = true;
     }
 
-    // === Reprise musique map ===
     if (this.scene?.mapMusic) this.scene.mapMusic.resume();
 
     super.destroy(fromScene);

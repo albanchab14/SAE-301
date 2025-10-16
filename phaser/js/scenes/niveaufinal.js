@@ -23,6 +23,7 @@ export default class NiveauFinal extends BaseScene {
   }
 
   create() {
+    super.create();
     // === MAP ===
     this.map4 = this.add.tilemap("finalmap");
     const tileset = this.map4.addTilesetImage("map4_tileset", "TuilesJeu4");

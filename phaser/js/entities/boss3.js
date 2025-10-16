@@ -100,7 +100,7 @@ export default class Boss3 extends Enemy {
       this.lastAction = now;
 
       let actions = [];
-      if (this.phase === 1) actions = ["teleport", "shoot"];
+      if (this.phase === 1) actions = ["teleport", "shoot", "spawnBat"];
       else if (this.phase === 2) actions = ["teleport", "shoot", "spawnBat"];
       else actions = ["teleport", "shoot", "spawnBats"];
 
@@ -166,9 +166,10 @@ export default class Boss3 extends Enemy {
       if (!this.body) return;
       this.alert.setVisible(false);
       this.state = "active";
-      callback();
+      callback.call(this); // 🔥 corrige le "this" du callback
     });
   }
+
 
   teleportToNextSpot() {
     const currentIndex = this.spots.findIndex(s => s.x === this.x && s.y === this.y);
@@ -190,26 +191,49 @@ export default class Boss3 extends Enemy {
     this.scene.tweens.add({ targets: this, alpha: { from: 0, to: 1 }, duration: 300 });
   }
 
-  spawnBats(player, count = 1) {
-    const activeBats = this.scene.enemies.getChildren().filter(e => e instanceof Bat).length;
-    if (activeBats >= 6) return;
+  spawnBats(player = this.scene.player, count = 1) {
+    console.log("🦇 Spawn de chauve-souris demandé :", count);
 
-    const spacing = 40;
+    // Vérification des arguments
+    if (!player || typeof count !== "number" || count <= 0) {
+      console.warn("⚠️ spawnBats appelé avec des paramètres invalides :", { player, count });
+      return;
+    }
+
+    const positions = [-100, -50, 50, 100]; // positions horizontales autour du boss
 
     for (let i = 0; i < count; i++) {
-      const offsetX = (i - (count - 1) / 2) * spacing;
-      const batX = this.x + offsetX;
-      const batY = this.y - 60;
+      const batX = this.x + positions[i % positions.length];
+      const batY = this.y - 50;
 
+      console.log(`→ Création bat à (${batX}, ${batY})`);
+
+      // Création de la chauve-souris
       const bat = new Bat(this.scene, batX, batY);
-      this.scene.enemies.add(bat);
-      bat.state = "patrol";
 
+      // Ajout au groupe d'ennemis du niveau
+      this.scene.enemies.add(bat);
+
+      // 🧱 Ajout de la collision physique avec les plateformes
+      this.scene.physics.add.collider(bat, this.scene.calque_plateformes);
+
+      // Activation du comportement et effet d'apparition
+      bat.state = "patrol";
       bat.setAlpha(0);
-      this.scene.tweens.add({ targets: bat, alpha: { from: 0, to: 1 }, duration: 300 });
-      this.scene.time.delayedCall(500, () => this.state = "idle");
+      this.scene.tweens.add({
+        targets: bat,
+        alpha: { from: 0, to: 1 },
+        duration: 300,
+        ease: "Sine.easeIn"
+      });
     }
+
+    // Fin de l'action après le délai de spawn
+    this.scene.time.delayedCall(500, () => {
+      this.state = "idle";
+    });
   }
+
 
   shootProjectile(player) {
     if (!player || !this.scene) return;
@@ -276,8 +300,6 @@ export default class Boss3 extends Enemy {
         this.lifeBar.destroy();
         this.lifeBar = null;
     }
-
-    this.dropItem();
 
     if (this.scene && this.scene.porte_retour_boss?.body) {
       this.scene.porte_retour_boss.setVisible(true);
