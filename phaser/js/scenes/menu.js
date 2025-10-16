@@ -1,3 +1,5 @@
+import { resetGameData } from "../fonctions.js";
+
 var bouton_play;
 var bouton_settings;
 var bouton_credits;
@@ -20,6 +22,8 @@ export default class menu extends Phaser.Scene {
     }
 
     create() {
+        resetGameData(this.game);
+        
         this.add.image(0, 0, "menu_fond").setOrigin(0).setDepth(0);
 
         // ✅ Vérifie si la musique existe déjà

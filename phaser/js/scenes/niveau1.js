@@ -236,8 +236,6 @@ export default class Niveau1 extends Basescene {
 
         if (this.game.config.pointsDeVie <= 0) {
           this.physics.pause();
-          this.game.config.collectedFragments = 0;
-          this.game.config.collectedCristals = 0;
           this.boss1Alive = true;
           this.bossNameShown = false;
           if (this.miniCristalGreen) {
@@ -264,8 +262,6 @@ export default class Niveau1 extends Basescene {
 
         if (this.game.config.pointsDeVie <= 0) {
           this.physics.pause();
-          this.game.config.collectedFragments = 0;
-          this.game.config.collectedCristals = 0;
           this.boss1Alive = true;
           this.bossNameShown = false;
           if (this.miniCristalGreen) {

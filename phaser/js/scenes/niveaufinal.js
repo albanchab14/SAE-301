@@ -86,8 +86,8 @@ export default class NiveauFinal extends BaseScene {
 
     // === ZONE DE DÉCLENCHEMENT DU COMBAT ===
     // --- ZONE DE DÉCLENCHEMENT DU BOSS FINAL ---
-const zones = this.map4.getObjectLayer("zones");
-const bossObject = zones?.objects.find(obj => obj.name === "bossFinalZone");
+    const zones = this.map4.getObjectLayer("zones");
+    const bossObject = zones?.objects.find(obj => obj.name === "bossFinalZone");
 
 if (bossObject) {
   this.bossZone = this.add.zone(
@@ -206,8 +206,6 @@ if (bossObject) {
 
         if (this.game.config.pointsDeVie <= 0) {
           this.physics.pause();
-          this.game.config.collectedFragments = 0;
-          this.game.config.collectedCristals = 0;
           if (boss.bossMusic?.isPlaying) boss.bossMusic.stop();
           this.scene.start("defaite");
         }

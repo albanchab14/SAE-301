@@ -339,8 +339,6 @@ export default class Niveau2 extends Basescene {
 
         if (this.game.config.pointsDeVie <= 0) {
           this.physics.pause();
-          this.game.config.collectedFragments = 0;
-          this.game.config.collectedCristals = 0;
           this.bossNameShown = false;
           if (this.miniCristalGreen) {
             this.miniCristalGreen.destroy();
@@ -364,8 +362,6 @@ export default class Niveau2 extends Basescene {
   
           if (this.game.config.pointsDeVie <= 0) {
             this.physics.pause();
-            this.game.config.collectedFragments = 0;
-            this.game.config.collectedCristals = 0;
             this.bossNameShown = false;
             if (this.miniCristalGreen) {
               this.miniCristalGreen.destroy();
@@ -505,8 +501,6 @@ export default class Niveau2 extends Basescene {
             // Vérification de la mort
             if (this.game.config.pointsDeVie <= 0) {
                 this.physics.pause();
-                this.game.config.collectedFragments = 0;
-                this.game.config.collectedCristals = 0;
                 this.bossNameShown = false;
                 if (this.miniCristalGreen) {
                     this.miniCristalGreen.destroy();

@@ -129,3 +129,10 @@ export let lifeManager = {
 
   updateHearts // Permet d'appeler fct.lifeManager.updateHearts(scene) si besoin
 };
+
+export function resetGameData(game) {
+    game.config.pointsDeVie = 5; // ou this.maxVies, selon ton système
+    game.config.collectedFragments = 0;
+    game.config.collectedCristals = 0;
+    game.config.crystals = { green: false, blue: false, violet: false };
+}
