@@ -30,7 +30,7 @@ export default class menu extends Phaser.Scene {
         const existingMusic = this.sound.get("menu_fond");
         if (!existingMusic) {
             // Aucune musique trouvée → on la crée
-            this.menuMusic = this.sound.add("menu_fond", { loop: true, volume: 0.2 });
+            this.menuMusic = this.sound.add("menu_fond", { loop: true, volume: 0.3 });
             this.menuMusic.play();
             console.log("🎵 Nouvelle musique lancée !");
         } else {
